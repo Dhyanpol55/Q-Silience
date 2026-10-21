@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { buildZZFeatureMapCircuit, computeZZFeatureMapStatevector } from '../services/quantumEngine';
-import { Cpu, Layers } from 'lucide-react';
+import { Cpu, Layers, Atom, Sparkles } from 'lucide-react';
 
 interface QuantumLabPageProps {
   kernelMatrix: number[][] | null;
@@ -33,24 +33,28 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({ kernelMatrix, th
     <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Title & Quantum Mechanics Summary */}
       <div>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className={`text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2 ${headingClass}`}>
-              <Cpu className="w-5 h-5 text-violet-500" />
-              <span>Quantum Circuit & Kernel Architecture</span>
-            </h1>
-            <p className={`mt-1 text-xs sm:text-sm ${textMutedClass}`}>
-              Interactive inspection of Qiskit&apos;s <strong>ZZFeatureMap</strong>, Hilbert space statevector mapping, and Fidelity Quantum Kernel.
-            </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-violet-50 dark:bg-violet-950/60 border border-violet-200 dark:border-violet-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shadow-2xs">
+              <Atom className="w-5 h-5 stroke-[2.2]" />
+            </div>
+            <div>
+              <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
+                <span>Quantum Circuit & Kernel Architecture</span>
+              </h1>
+              <p className={`mt-0.5 text-xs sm:text-sm ${textMutedClass}`}>
+                Interactive inspection of Qiskit&apos;s <strong>ZZFeatureMap</strong>, Hilbert space statevector mapping, and Fidelity Quantum Kernel.
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <span className={`text-xs font-mono ${textMutedClass}`}>Repetitions (d):</span>
-            <div className={`flex rounded-lg p-0.5 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200'}`}>
+            <div className={`flex rounded-xl p-0.5 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200'}`}>
               {[1, 2].map((r) => (
                 <button
                   key={r}
                   onClick={() => setReps(r)}
-                  className={`px-3 py-1 text-xs font-mono font-medium rounded cursor-pointer ${
+                  className={`px-3 py-1.5 text-xs font-mono font-medium rounded-lg cursor-pointer transition-all ${
                     reps === r
                       ? 'bg-violet-600 text-white shadow-xs'
                       : isDark
@@ -68,27 +72,51 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({ kernelMatrix, th
 
       {/* Circuit Metrics Overview */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className={`p-4 rounded-lg border transition-colors ${cardClass}`}>
-          <div className={`text-xs font-mono ${textMutedClass}`}>ENCODED QUBITS</div>
-          <div className={`mt-1 text-2xl font-bold font-mono ${headingClass}`}>{numQubits} Qubits</div>
+        {/* Encoded Qubits */}
+        <div className={`p-4 rounded-xl border transition-all hover:scale-[1.01] ${cardClass}`}>
+          <div className="flex items-center justify-between mb-2">
+            <div className={`text-xs font-mono ${textMutedClass}`}>ENCODED QUBITS</div>
+            <div className="w-8 h-8 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shadow-2xs">
+              <Atom className="w-4 h-4 stroke-[2.2]" />
+            </div>
+          </div>
+          <div className={`text-2xl font-bold font-mono ${headingClass}`}>{numQubits} Qubits</div>
           <div className={`mt-1 text-xs ${textMutedClass}`}>Hilbert Dimension: 2⁴ = 16</div>
         </div>
 
-        <div className={`p-4 rounded-lg border transition-colors ${cardClass}`}>
-          <div className={`text-xs font-mono ${textMutedClass}`}>CIRCUIT DEPTH</div>
-          <div className="mt-1 text-2xl font-bold text-violet-600 dark:text-violet-400 font-mono">{circuit.depth} Layers</div>
+        {/* Circuit Depth */}
+        <div className={`p-4 rounded-xl border transition-all hover:scale-[1.01] ${cardClass}`}>
+          <div className="flex items-center justify-between mb-2">
+            <div className={`text-xs font-mono ${textMutedClass}`}>CIRCUIT DEPTH</div>
+            <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-950/60 border border-violet-200 dark:border-violet-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shadow-2xs">
+              <Layers className="w-4 h-4 stroke-[2.2]" />
+            </div>
+          </div>
+          <div className="text-2xl font-bold text-violet-600 dark:text-violet-400 font-mono">{circuit.depth} Layers</div>
           <div className={`mt-1 text-xs ${textMutedClass}`}>{reps} Entangling Cycles</div>
         </div>
 
-        <div className={`p-4 rounded-lg border transition-colors ${cardClass}`}>
-          <div className={`text-xs font-mono ${textMutedClass}`}>TOTAL QUANTUM GATES</div>
-          <div className="mt-1 text-2xl font-bold text-cyan-600 dark:text-cyan-400 font-mono">{circuit.totalGates} Gates</div>
+        {/* Total Quantum Gates */}
+        <div className={`p-4 rounded-xl border transition-all hover:scale-[1.01] ${cardClass}`}>
+          <div className="flex items-center justify-between mb-2">
+            <div className={`text-xs font-mono ${textMutedClass}`}>TOTAL QUANTUM GATES</div>
+            <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-2xs">
+              <Cpu className="w-4 h-4 stroke-[2.2]" />
+            </div>
+          </div>
+          <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400 font-mono">{circuit.totalGates} Gates</div>
           <div className={`mt-1 text-xs ${textMutedClass}`}>Hadamard + Rz + CNOT</div>
         </div>
 
-        <div className={`p-4 rounded-lg border transition-colors ${cardClass}`}>
-          <div className={`text-xs font-mono ${textMutedClass}`}>QUANTUM KERNEL</div>
-          <div className="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-mono">Fidelity</div>
+        {/* Quantum Kernel */}
+        <div className={`p-4 rounded-xl border transition-all hover:scale-[1.01] ${cardClass}`}>
+          <div className="flex items-center justify-between mb-2">
+            <div className={`text-xs font-mono ${textMutedClass}`}>QUANTUM KERNEL</div>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-2xs">
+              <Sparkles className="w-4 h-4 stroke-[2.2]" />
+            </div>
+          </div>
+          <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-mono">Fidelity</div>
           <div className={`mt-1 text-xs ${textMutedClass}`}>K_ij = |⟨φ(x_i)|φ(x_j)⟩|²</div>
         </div>
       </div>

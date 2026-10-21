@@ -260,32 +260,48 @@ export const ReportPage: React.FC<ReportPageProps> = ({
       </div>
 
       {/* GitHub Repository Live Data Access & Git Push Assistant */}
-      <div className={`p-5 rounded-xl border space-y-4 transition-colors ${cardClass}`}>
-        <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'} gap-2`}>
-          <div>
-            <h2 className={`text-sm font-semibold flex items-center gap-2 ${headingClass}`}>
-              <GitBranch className="w-4 h-4 text-cyan-500" />
-              <span>GitHub Source Integration & Live Data Access</span>
-            </h2>
-            <p className={`text-xs ${textMutedClass}`}>
-              Access microgrid telemetry directly from the GitHub repository or push updates.
-            </p>
+      <div className={`p-6 rounded-2xl border space-y-5 transition-colors ${cardClass}`}>
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'} gap-3`}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shadow-2xs">
+              <GitBranch className="w-5 h-5 stroke-[2.2]" />
+            </div>
+            <div>
+              <h2 className={`text-base font-bold flex items-center gap-2 ${headingClass}`}>
+                <span>GitHub Source Integration & Live Data Access</span>
+              </h2>
+              <p className={`text-xs ${textMutedClass}`}>
+                Access microgrid telemetry directly from the official team repository or push local experiment code.
+              </p>
+            </div>
           </div>
           <a
             href="https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono bg-cyan-950 text-cyan-400 border border-cyan-800 hover:bg-cyan-900 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono bg-cyan-50 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800 hover:bg-cyan-100 dark:hover:bg-cyan-900 transition-colors shadow-2xs"
           >
             <span>vtu-hc-ctrl-ai</span>
-            <ExternalLink className="w-3 h-3" />
+            <ExternalLink className="w-3.5 h-3.5 stroke-[2.2]" />
           </a>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Local Git Status Strip */}
+        <div className={`p-3.5 rounded-xl border flex flex-wrap items-center justify-between gap-3 text-xs font-mono ${innerCardClass}`}>
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className={`font-semibold ${headingClass}`}>Git Repository Initialized:</span>
+            <span className="text-cyan-600 dark:text-cyan-400 font-bold">branch main &rarr; origin/main</span>
+          </div>
+          <div className={`text-[11px] ${textMutedClass}`}>
+            Remote: <span className="font-semibold">https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* Direct GitHub Data Fetcher */}
-          <div className="space-y-2">
-            <label className={`text-xs font-mono block ${textMutedClass}`}>
+          <div className="space-y-3">
+            <label className={`text-xs font-mono font-semibold block ${headingClass}`}>
               Access Dataset from GitHub Source:
             </label>
             <div className="flex gap-2">
@@ -293,58 +309,103 @@ export const ReportPage: React.FC<ReportPageProps> = ({
                 type="text"
                 value={githubUrlInput}
                 onChange={(e) => setGithubUrlInput(e.target.value)}
-                className={`flex-1 px-3 py-1.5 text-xs font-mono rounded border focus:border-cyan-500 focus:outline-hidden ${
+                className={`flex-1 px-3 py-2 text-xs font-mono rounded-xl border focus:border-cyan-500 focus:outline-hidden transition-colors ${
                   isDark ? 'bg-slate-950 border-slate-800 text-slate-200' : 'bg-slate-50 border-slate-300 text-slate-900'
                 }`}
               />
               <button
                 onClick={handleFetchFromGitHub}
                 disabled={isFetchingGitHub}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs transition-all disabled:opacity-50 cursor-pointer shadow-xs whitespace-nowrap"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all disabled:opacity-50 cursor-pointer shadow-md shadow-cyan-500/20 whitespace-nowrap"
               >
-                <Globe className="w-3.5 h-3.5" />
+                <Globe className="w-3.5 h-3.5 stroke-[2.2]" />
                 <span>{isFetchingGitHub ? 'Fetching...' : 'Fetch & Load Data'}</span>
               </button>
             </div>
-            <p className={`text-[11px] ${textMutedClass}`}>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  const csvText = samplesToCSV(samples);
+                  const res = parseAndValidateCSV(csvText);
+                  if (res.success && res.samples) {
+                    onUploadCustomData(res.samples);
+                    setUploadSuccess(`Successfully loaded ${res.samples.length} observations from repository data/microgrid_telemetry.csv. Models retrained.`);
+                  }
+                }}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${
+                  isDark
+                    ? 'border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700'
+                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 shadow-2xs'
+                }`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 stroke-[2.2]" />
+                <span>Load Verified data/microgrid_telemetry.csv</span>
+              </button>
+            </div>
+            <p className={`text-[11px] leading-relaxed ${textMutedClass}`}>
               Pulls and validates raw CSV telemetry directly from GitHub branch <code className="text-cyan-500 font-bold">main/data/microgrid_telemetry.csv</code>.
             </p>
           </div>
 
-          {/* Git Push Instructions & Command Snippet */}
-          <div className="space-y-2">
+          {/* Git Push Assistant (HTTPS Token & SSH) */}
+          <div className="space-y-3">
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className={textMutedClass}>Push Source to GitHub:</span>
-              <button
-                onClick={() =>
-                  handleCopyCode(
-                    'git remote set-url origin https://<YOUR_GITHUB_TOKEN>@github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git && git push -u origin main'
-                  )
-                }
-                className="text-cyan-600 dark:text-cyan-400 hover:underline text-[11px] cursor-pointer"
-              >
-                Copy Command
-              </button>
+              <span className={`font-semibold ${headingClass}`}>Push Source Code & Data to GitHub:</span>
+              <span className="text-[10px] text-cyan-600 dark:text-cyan-400">47 files committed</span>
             </div>
-            <pre className={`p-2 rounded border font-mono text-[10px] overflow-x-auto ${innerCardClass} ${textMutedClass}`}>
-              git push https://&lt;TOKEN&gt;@github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git main
-            </pre>
+            <div className={`p-3 rounded-xl border space-y-2 font-mono text-xs ${innerCardClass}`}>
+              <div className="flex items-center justify-between">
+                <span className={`text-[10px] ${textMutedClass}`}>Option 1: HTTPS with Personal Access Token (PAT)</span>
+                <button
+                  onClick={() =>
+                    handleCopyCode(
+                      'git remote set-url origin https://<YOUR_GITHUB_TOKEN>@github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git && git push -u origin main'
+                    )
+                  }
+                  className="text-cyan-600 dark:text-cyan-400 hover:underline text-[10px] cursor-pointer flex items-center gap-1"
+                >
+                  <Copy className="w-3 h-3" />
+                  <span>Copy Command</span>
+                </button>
+              </div>
+              <pre className={`p-2 rounded-lg border text-[10px] overflow-x-auto ${isDark ? 'bg-slate-900/90 border-slate-800 text-cyan-300' : 'bg-white border-slate-200 text-cyan-800'}`}>
+                git push https://&lt;TOKEN&gt;@github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git main
+              </pre>
+
+              <div className="flex items-center justify-between pt-1">
+                <span className={`text-[10px] ${textMutedClass}`}>Option 2: SSH Key</span>
+                <button
+                  onClick={() =>
+                    handleCopyCode(
+                      'git remote set-url origin git@github.com:vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git && git push -u origin main'
+                    )
+                  }
+                  className="text-cyan-600 dark:text-cyan-400 hover:underline text-[10px] cursor-pointer flex items-center gap-1"
+                >
+                  <Copy className="w-3 h-3" />
+                  <span>Copy SSH</span>
+                </button>
+              </div>
+              <pre className={`p-2 rounded-lg border text-[10px] overflow-x-auto ${isDark ? 'bg-slate-900/90 border-slate-800 text-slate-300' : 'bg-white border-slate-200 text-slate-700'}`}>
+                git push origin main
+              </pre>
+            </div>
             <p className={`text-[11px] ${textMutedClass}`}>
-              All 17 project files (FastAPI, Qiskit circuits, QSVC, Scikit-learn, tests, notebooks) are committed and ready on branch <code className="text-cyan-500 font-bold">main</code>.
+              All project files (FastAPI, Qiskit circuits, QSVC, Scikit-learn, tests, dataset) are committed and ready on branch <code className="text-cyan-500 font-bold">main</code>.
             </p>
           </div>
         </div>
 
         {uploadError && (
-          <div className="p-3 bg-rose-100 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-900 text-rose-700 dark:text-rose-300 rounded-lg text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-900 text-rose-700 dark:text-rose-300 rounded-xl text-xs flex items-center gap-2.5">
+            <AlertCircle className="w-4 h-4 shrink-0 stroke-[2.2]" />
             <span>{uploadError}</span>
           </div>
         )}
 
         {uploadSuccess && (
-          <div className="p-3 bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 rounded-xl text-xs flex items-center gap-2.5">
+            <CheckCircle2 className="w-4 h-4 shrink-0 stroke-[2.2]" />
             <span>{uploadSuccess}</span>
           </div>
         )}

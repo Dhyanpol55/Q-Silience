@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MicrogridSample, FeatureKey, ScalerModel } from '../types/microgrid';
+import { ScalerModel } from '../types/microgrid';
 import { SVCTrainedModel, predictSample } from '../services/svmSolver';
 import { transformSample } from '../services/preprocessing';
-import { evaluatePhysicalLimits } from '../services/scenarioEngine';
 import {
   Play,
   Pause,
@@ -15,6 +14,10 @@ import {
   Cpu,
   ShieldAlert,
   Sliders,
+  Sun,
+  BatteryCharging,
+  Gauge,
+  Sparkles,
 } from 'lucide-react';
 import {
   LineChart,
@@ -171,7 +174,6 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
         ]);
       }
 
-      // Reset one-time injection
       if (anomalyInjection !== 'none') {
         setAnomalyInjection('none');
       }
@@ -217,31 +219,37 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
       {/* Header and Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <Radio className={`w-5 h-5 ${isRunning ? 'text-rose-500 animate-pulse' : 'text-slate-400'}`} />
-            <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
-              Live Microgrid Simulation Stream
-            </h1>
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-950 text-cyan-400 border border-cyan-800">
-              SIMULATED TELEMETRY
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center shadow-xs">
+              <Radio className={`w-5 h-5 ${isRunning ? 'animate-pulse' : 'text-slate-400'}`} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
+                  Live Microgrid Simulation Stream
+                </h1>
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-cyan-950 text-cyan-400 border border-cyan-800 font-semibold">
+                  SIMULATED TELEMETRY
+                </span>
+              </div>
+              <p className={`mt-0.5 text-xs sm:text-sm ${textMutedClass}`}>
+                Continuous stream of smart grid sensor telemetry evaluated in real-time by both Classical SVC and Quantum QSVC.
+              </p>
+            </div>
           </div>
-          <p className={`mt-1 text-xs sm:text-sm ${textMutedClass}`}>
-            Continuous stream of smart grid sensor telemetry evaluated in real-time by both Classical SVC and Quantum QSVC.
-          </p>
         </div>
 
-        {/* Live Controls */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Live Controls with Enhanced Buttons */}
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setIsRunning(!isRunning)}
-            className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shadow-xs ${
               isRunning
                 ? 'bg-amber-500 hover:bg-amber-400 text-slate-950'
                 : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950'
             }`}
           >
-            {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+            {isRunning ? <Pause className="w-4 h-4 fill-slate-950" /> : <Play className="w-4 h-4 fill-slate-950" />}
             <span>{isRunning ? 'Pause Stream' : 'Resume Stream'}</span>
           </button>
 
@@ -250,17 +258,19 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
               setStreamHistory([]);
               setCurrentTick(1);
             }}
-            className={`p-1.5 rounded border transition-colors cursor-pointer ${
-              isDark ? 'border-slate-800 text-slate-400 hover:text-white' : 'border-slate-200 text-slate-600 hover:text-slate-900'
+            className={`p-2 rounded-xl border transition-colors cursor-pointer shadow-xs ${
+              isDark
+                ? 'border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 bg-slate-900'
+                : 'border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-white'
             }`}
             title="Reset Stream"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-4 h-4" />
           </button>
 
           {/* Speed selector */}
           <div className="flex items-center text-xs font-mono">
-            <span className={`mr-1.5 ${textMutedClass}`}>Tick:</span>
+            <span className={`mr-2 ${textMutedClass}`}>Tick:</span>
             {[
               { label: 'Fast (1s)', val: 1000 },
               { label: 'Norm (1.5s)', val: 1500 },
@@ -269,12 +279,12 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
               <button
                 key={sp.val}
                 onClick={() => setStreamSpeedMs(sp.val)}
-                className={`px-2 py-1 text-[11px] rounded first:rounded-r-none last:rounded-l-none border border-slate-700 cursor-pointer ${
+                className={`px-2.5 py-1 text-[11px] rounded first:rounded-r-none last:rounded-l-none border cursor-pointer ${
                   streamSpeedMs === sp.val
-                    ? 'bg-cyan-500 text-slate-950 font-bold'
+                    ? 'bg-cyan-500 text-slate-950 font-bold border-cyan-400 shadow-xs'
                     : isDark
-                    ? 'bg-slate-900 text-slate-400'
-                    : 'bg-slate-100 text-slate-600'
+                    ? 'bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700'
+                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
                 }`}
               >
                 {sp.label}
@@ -284,120 +294,163 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
         </div>
       </div>
 
-      {/* Fault Injection Toolbar */}
-      <div className={`p-4 rounded-xl border transition-colors ${cardClass}`}>
-        <div className="flex items-center justify-between mb-2">
-          <span className={`text-xs font-semibold ${headingClass} flex items-center gap-1.5`}>
-            <Sliders className="w-4 h-4 text-cyan-500" />
+      {/* Fault Injection Toolbar with Enhanced Icons */}
+      <div className={`p-4 rounded-2xl border transition-colors ${cardClass}`}>
+        <div className="flex items-center justify-between mb-3">
+          <span className={`text-xs font-bold ${headingClass} flex items-center gap-2`}>
+            <span className="w-6 h-6 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+              <Sliders className="w-3.5 h-3.5" />
+            </span>
             <span>INJECT OPERATIONAL TRANSIENT ON NEXT TICK:</span>
           </span>
           <span className={`text-[10px] font-mono ${textMutedClass}`}>Test real-time model reaction</span>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5">
           {[
-            { id: 'demand_spike', label: '⚡ Heavy Load Spike (+80 kW)', color: 'text-amber-500' },
-            { id: 'solar_drop', label: '☁ Sudden Solar PV Drop (-85%)', color: 'text-amber-500' },
-            { id: 'voltage_sag', label: '🔻 Feeder Voltage Sag (-11V)', color: 'text-rose-500' },
-            { id: 'cascading', label: '🚨 Cascading Multi-Fault', color: 'text-rose-500' },
+            { id: 'demand_spike', label: 'Heavy Load Spike (+80 kW)', icon: <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> },
+            { id: 'solar_drop', label: 'Sudden Solar PV Drop (-85%)', icon: <Sun className="w-3.5 h-3.5 text-amber-500" /> },
+            { id: 'voltage_sag', label: 'Feeder Voltage Sag (-11V)', icon: <Gauge className="w-3.5 h-3.5 text-rose-500" /> },
+            { id: 'cascading', label: 'Cascading Multi-Fault', icon: <AlertTriangle className="w-3.5 h-3.5 text-rose-500" /> },
           ].map((inj) => (
             <button
               key={inj.id}
               onClick={() => setAnomalyInjection(inj.id)}
-              className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
                 anomalyInjection === inj.id
-                  ? 'bg-rose-950 border-rose-500 text-rose-300 font-bold'
+                  ? 'bg-rose-950 border-rose-500 text-rose-300 font-bold shadow-xs'
                   : isDark
-                  ? 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
-                  : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                  ? 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
+                  : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300'
               }`}
             >
-              {inj.label}
+              {inj.icon}
+              <span>{inj.label}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Live KPI Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className={`p-3.5 rounded-xl border transition-colors ${cardClass}`}>
-          <div className={`text-[10px] font-mono ${textMutedClass}`}>LIVE DEMAND</div>
-          <div className="text-xl font-bold font-mono text-cyan-500 mt-0.5">{latest.demand_kw} kW</div>
-          <div className={`text-[10px] ${textMutedClass}`}>Factory load</div>
+      {/* Live KPI Strip with Enhanced Icon Badges */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5">
+        {/* Demand */}
+        <div className={`p-4 rounded-xl border transition-all ${cardClass}`}>
+          <div className="flex items-center justify-between mb-1.5">
+            <div className={`text-[10px] font-mono font-medium ${textMutedClass}`}>LIVE DEMAND</div>
+            <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+              <Zap className="w-3.5 h-3.5 fill-cyan-500/30 text-cyan-500" />
+            </div>
+          </div>
+          <div className="text-xl font-bold font-mono text-cyan-600 dark:text-cyan-400">{latest.demand_kw} kW</div>
+          <div className={`text-[10px] mt-0.5 ${textMutedClass}`}>Factory load</div>
         </div>
 
-        <div className={`p-3.5 rounded-xl border transition-colors ${cardClass}`}>
-          <div className={`text-[10px] font-mono ${textMutedClass}`}>LIVE SOLAR PV</div>
-          <div className="text-xl font-bold font-mono text-amber-500 mt-0.5">{latest.solar_kw} kW</div>
-          <div className={`text-[10px] ${textMutedClass}`}>Array generation</div>
+        {/* Solar */}
+        <div className={`p-4 rounded-xl border transition-all ${cardClass}`}>
+          <div className="flex items-center justify-between mb-1.5">
+            <div className={`text-[10px] font-mono font-medium ${textMutedClass}`}>LIVE SOLAR PV</div>
+            <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center">
+              <Sun className="w-3.5 h-3.5 text-amber-500" />
+            </div>
+          </div>
+          <div className="text-xl font-bold font-mono text-amber-600 dark:text-amber-400">{latest.solar_kw} kW</div>
+          <div className={`text-[10px] mt-0.5 ${textMutedClass}`}>Array generation</div>
         </div>
 
-        <div className={`p-3.5 rounded-xl border transition-colors ${cardClass}`}>
-          <div className={`text-[10px] font-mono ${textMutedClass}`}>BATTERY SOC</div>
-          <div className="text-xl font-bold font-mono text-emerald-500 mt-0.5">{latest.battery_soc_pct}%</div>
-          <div className={`text-[10px] ${textMutedClass}`}>BESS capacity</div>
+        {/* Battery */}
+        <div className={`p-4 rounded-xl border transition-all ${cardClass}`}>
+          <div className="flex items-center justify-between mb-1.5">
+            <div className={`text-[10px] font-mono font-medium ${textMutedClass}`}>BATTERY SOC</div>
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 flex items-center justify-center">
+              <BatteryCharging className="w-3.5 h-3.5 text-emerald-500" />
+            </div>
+          </div>
+          <div className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">{latest.battery_soc_pct}%</div>
+          <div className={`text-[10px] mt-0.5 ${textMutedClass}`}>BESS capacity</div>
         </div>
 
-        <div className={`p-3.5 rounded-xl border transition-colors ${cardClass}`}>
-          <div className={`text-[10px] font-mono ${textMutedClass}`}>VOLTAGE DEVIATION</div>
+        {/* Voltage Dev */}
+        <div className={`p-4 rounded-xl border transition-all ${cardClass}`}>
+          <div className="flex items-center justify-between mb-1.5">
+            <div className={`text-[10px] font-mono font-medium ${textMutedClass}`}>VOLTAGE DEVIATION</div>
+            <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 flex items-center justify-center">
+              <Gauge className="w-3.5 h-3.5 text-blue-500" />
+            </div>
+          </div>
           <div
-            className={`text-xl font-bold font-mono mt-0.5 ${
-              Math.abs(latest.voltage_dev_v) > 6 ? 'text-rose-500' : 'text-cyan-500'
+            className={`text-xl font-bold font-mono ${
+              Math.abs(latest.voltage_dev_v) > 6 ? 'text-rose-500' : 'text-blue-600 dark:text-blue-400'
             }`}
           >
             {latest.voltage_dev_v > 0 ? `+${latest.voltage_dev_v}` : latest.voltage_dev_v} V
           </div>
-          <div className={`text-[10px] ${textMutedClass}`}>Nominal ±3V (IEEE 1547)</div>
+          <div className={`text-[10px] mt-0.5 ${textMutedClass}`}>Nominal ±3V (IEEE 1547)</div>
         </div>
 
-        <div className={`p-3.5 rounded-xl border transition-colors ${cardClass}`}>
-          <div className={`text-[10px] font-mono ${textMutedClass}`}>FREQUENCY DEVIATION</div>
+        {/* Freq Dev */}
+        <div className={`p-4 rounded-xl border transition-all ${cardClass}`}>
+          <div className="flex items-center justify-between mb-1.5">
+            <div className={`text-[10px] font-mono font-medium ${textMutedClass}`}>FREQUENCY DEVIATION</div>
+            <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-500 flex items-center justify-center">
+              <Activity className="w-3.5 h-3.5 text-violet-500" />
+            </div>
+          </div>
           <div
-            className={`text-xl font-bold font-mono mt-0.5 ${
-              Math.abs(latest.frequency_dev_hz) > 0.2 ? 'text-rose-500' : 'text-violet-500'
+            className={`text-xl font-bold font-mono ${
+              Math.abs(latest.frequency_dev_hz) > 0.2 ? 'text-rose-500' : 'text-violet-600 dark:text-violet-400'
             }`}
           >
             {latest.frequency_dev_hz > 0 ? `+${latest.frequency_dev_hz}` : latest.frequency_dev_hz} Hz
           </div>
-          <div className={`text-[10px] ${textMutedClass}`}>Nominal ±0.05 Hz</div>
+          <div className={`text-[10px] mt-0.5 ${textMutedClass}`}>Nominal ±0.05 Hz</div>
         </div>
       </div>
 
       {/* Real-Time Detection Badges */}
-      <div className={`p-4 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors ${cardClass}`}>
-        <div className="flex items-center gap-4">
-          <div>
-            <span className={`text-xs font-mono block ${textMutedClass}`}>CLASSICAL SVC PREDICTION</span>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              {latest.classicalPred === 'ABNORMAL' ? (
-                <span className="text-sm font-bold text-rose-500 flex items-center gap-1">
-                  <AlertTriangle className="w-4 h-4 text-rose-500" />
-                  ANOMALY DETECTED
-                </span>
-              ) : (
-                <span className="text-sm font-bold text-emerald-500 flex items-center gap-1">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  NORMAL OPERATION
-                </span>
-              )}
+      <div className={`p-5 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors ${cardClass}`}>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+              <Cpu className="w-5 h-5" />
+            </div>
+            <div>
+              <span className={`text-[11px] font-mono block ${textMutedClass}`}>CLASSICAL SVC</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                {latest.classicalPred === 'ABNORMAL' ? (
+                  <span className="text-sm font-bold text-rose-500 flex items-center gap-1">
+                    <AlertTriangle className="w-4 h-4 text-rose-500" />
+                    ANOMALY DETECTED
+                  </span>
+                ) : (
+                  <span className="text-sm font-bold text-emerald-500 flex items-center gap-1">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    NORMAL OPERATION
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="h-8 w-px bg-slate-700/60" />
+          <div className="h-10 w-px bg-slate-300 dark:bg-slate-700/60" />
 
-          <div>
-            <span className={`text-xs font-mono block ${textMutedClass}`}>QUANTUM QSVC PREDICTION</span>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              {latest.quantumPred === 'ABNORMAL' ? (
-                <span className="text-sm font-bold text-rose-500 flex items-center gap-1">
-                  <AlertTriangle className="w-4 h-4 text-rose-500" />
-                  ANOMALY DETECTED
-                </span>
-              ) : (
-                <span className="text-sm font-bold text-emerald-500 flex items-center gap-1">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  NORMAL OPERATION
-                </span>
-              )}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <span className={`text-[11px] font-mono block ${textMutedClass}`}>QUANTUM QSVC</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                {latest.quantumPred === 'ABNORMAL' ? (
+                  <span className="text-sm font-bold text-rose-500 flex items-center gap-1">
+                    <AlertTriangle className="w-4 h-4 text-rose-500" />
+                    ANOMALY DETECTED
+                  </span>
+                ) : (
+                  <span className="text-sm font-bold text-emerald-500 flex items-center gap-1">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    NORMAL OPERATION
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -408,21 +461,25 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
       </div>
 
       {/* Live Recharts Streaming Chart: Voltage & Frequency Deviations */}
-      <div className={`p-5 rounded-xl border space-y-4 transition-colors ${cardClass}`}>
+      <div className={`p-5 rounded-2xl border space-y-4 transition-colors ${cardClass}`}>
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className={`text-sm font-semibold flex items-center gap-2 ${headingClass}`}>
-              <Activity className="w-4 h-4 text-cyan-500" />
-              <span>Real-Time Rolling Telemetry (Last 25 Ticks)</span>
-            </h2>
-            <p className={`text-xs ${textMutedClass}`}>
-              Tracking Voltage Deviation (V) and Frequency Deviation (Hz) against IEEE 1547 stability boundaries
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+              <Activity className="w-4.5 h-4.5" />
+            </div>
+            <div>
+              <h2 className={`text-sm font-bold ${headingClass}`}>Real-Time Rolling Telemetry (Last 25 Ticks)</h2>
+              <p className={`text-xs ${textMutedClass}`}>
+                Tracking Voltage Deviation (V) and Frequency Deviation (Hz) against IEEE 1547 stability boundaries
+              </p>
+            </div>
           </div>
-          <span className="text-xs font-mono text-cyan-500">Tick #{currentTick}</span>
+          <span className="text-xs font-mono text-cyan-600 dark:text-cyan-400 font-semibold px-2 py-0.5 rounded-md bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800">
+            Tick #{currentTick}
+          </span>
         </div>
 
-        <div className={`h-72 w-full p-2 rounded-lg border transition-colors ${innerCardClass}`}>
+        <div className={`h-72 w-full p-2 rounded-xl border transition-colors ${innerCardClass}`}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={streamHistory} margin={{ top: 15, right: 30, left: 10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
@@ -435,7 +492,7 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
                   const pt = payload[0].payload as LiveStreamPoint;
                   return (
                     <div
-                      className={`p-3 border rounded-lg text-xs font-mono shadow-xl ${
+                      className={`p-3 border rounded-xl text-xs font-mono shadow-xl ${
                         isDark ? 'bg-slate-900 border-slate-700 text-slate-200' : 'bg-white border-slate-200 text-slate-800'
                       }`}
                     >
@@ -445,8 +502,8 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
                           {pt.isAnomaly ? 'ANOMALY' : 'NORMAL'}
                         </span>
                       </div>
-                      <div>Voltage Dev: <span className="font-bold text-cyan-400">{pt.voltage_dev_v} V</span></div>
-                      <div>Freq Dev: <span className="font-bold text-violet-400">{pt.frequency_dev_hz} Hz</span></div>
+                      <div>Voltage Dev: <span className="font-bold text-cyan-500">{pt.voltage_dev_v} V</span></div>
+                      <div>Freq Dev: <span className="font-bold text-violet-500">{pt.frequency_dev_hz} Hz</span></div>
                       <div>Classical SVC: <span className="font-bold">{pt.classicalPred}</span></div>
                       <div>Quantum QSVC: <span className="font-bold">{pt.quantumPred}</span></div>
                       <div className="mt-1 text-[10px] text-slate-500 font-sans italic">{pt.rootCause}</div>
@@ -482,30 +539,34 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
         </div>
       </div>
 
-      {/* Real-time Alert Log */}
-      <div className={`p-5 rounded-xl border space-y-3 transition-colors ${cardClass}`}>
-        <h3 className={`text-sm font-semibold flex items-center gap-2 ${headingClass}`}>
-          <ShieldAlert className="w-4 h-4 text-rose-500" />
-          <span>Real-Time Anomaly Event Stream (Last Triggered Incidents)</span>
-        </h3>
+      {/* Real-time Alert Log with Enhanced Icons */}
+      <div className={`p-5 rounded-2xl border space-y-3 transition-colors ${cardClass}`}>
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center">
+            <ShieldAlert className="w-4 h-4" />
+          </div>
+          <h3 className={`text-sm font-bold ${headingClass}`}>
+            Real-Time Anomaly Event Stream (Last Triggered Incidents)
+          </h3>
+        </div>
 
         {recentAlerts.length > 0 ? (
           <div className="space-y-2">
             {recentAlerts.map((al) => (
               <div
                 key={al.id}
-                className={`p-3 rounded-lg border flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono transition-colors ${innerCardClass}`}
+                className={`p-3 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono transition-colors ${innerCardClass}`}
               >
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-rose-500">{al.id}</span>
                   <span className={textMutedClass}>[{al.time}]</span>
-                  <span className={`font-sans ${headingClass}`}>{al.reason}</span>
+                  <span className={`font-sans font-medium ${headingClass}`}>{al.reason}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800">
+                  <span className="px-2.5 py-0.5 rounded-md text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800 font-semibold">
                     SVC: {al.cPred}
                   </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] bg-violet-950 text-violet-300 border border-violet-800">
+                  <span className="px-2.5 py-0.5 rounded-md text-[10px] bg-violet-950 text-violet-300 border border-violet-800 font-semibold">
                     QSVC: {al.qPred}
                   </span>
                 </div>

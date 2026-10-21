@@ -3,7 +3,23 @@ import { FeatureKey, ScalerModel } from '../types/microgrid';
 import { SVCTrainedModel, predictSample } from '../services/svmSolver';
 import { transformSample } from '../services/preprocessing';
 import { PRESET_SCENARIOS, evaluatePhysicalLimits, PresetScenario } from '../services/scenarioEngine';
-import { Zap, AlertTriangle, CheckCircle2, Sliders, Activity, Info, Sparkles } from 'lucide-react';
+import {
+  Zap,
+  AlertTriangle,
+  CheckCircle2,
+  Sliders,
+  Activity,
+  Info,
+  Sparkles,
+  Sun,
+  BatteryCharging,
+  Gauge,
+  Cpu,
+  Atom,
+  ShieldCheck,
+  ShieldAlert,
+  Flame,
+} from 'lucide-react';
 
 interface ScenarioLabPageProps {
   classicalModel: SVCTrainedModel | null;
@@ -46,9 +62,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
   };
 
   // Preprocessing into scaled angle vector [0, 2pi]
-  const scaledVector = scaler
-    ? transformSample(currentValues, scaler)
-    : [0, 0, 0, 0];
+  const scaledVector = scaler ? transformSample(currentValues, scaler) : [0, 0, 0, 0];
 
   // Model Inferences
   const classicalPred = classicalModel ? predictSample(classicalModel, scaledVector) : null;
@@ -66,33 +80,54 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
   const headingClass = isDark ? 'text-white' : 'text-slate-900';
   const textMutedClass = isDark ? 'text-slate-400' : 'text-slate-600';
 
+  const getPresetIcon = (id: string) => {
+    switch (id) {
+      case 'normal_equilibrium':
+        return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
+      case 'sudden_demand_spike':
+        return <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />;
+      case 'solar_drop':
+        return <Sun className="w-4 h-4 text-amber-500" />;
+      case 'voltage_sag':
+        return <Gauge className="w-4 h-4 text-rose-500" />;
+      default:
+        return <Flame className="w-4 h-4 text-rose-500" />;
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Header */}
       <div>
-        <h1 className={`text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2 ${headingClass}`}>
-          <Sliders className="w-5 h-5 text-cyan-500" />
-          <span>Interactive Microgrid Scenario Lab</span>
-        </h1>
-        <p className={`mt-1 text-xs sm:text-sm ${textMutedClass}`}>
-          Inject sensor measurements or select standard grid stress presets to evaluate real-time classical and quantum model responses.
-        </p>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shadow-xs">
+            <Sliders className="w-5 h-5" />
+          </div>
+          <div>
+            <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
+              Interactive Microgrid Scenario Lab
+            </h1>
+            <p className={`mt-0.5 text-xs sm:text-sm ${textMutedClass}`}>
+              Inject sensor measurements or select standard grid stress presets to evaluate real-time classical and quantum model responses.
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Preset Scenarios Strip */}
-      <div className={`p-4 rounded-xl border transition-colors ${cardClass}`}>
-        <div className="text-xs font-semibold mb-3 flex items-center gap-2">
+      {/* Preset Scenarios Strip with Enhanced Icons */}
+      <div className={`p-5 rounded-2xl border transition-colors ${cardClass}`}>
+        <div className="text-xs font-bold mb-3 flex items-center gap-2">
           <span className={headingClass}>OPERATIONAL TEST PRESETS</span>
           <span className={`font-normal ${textMutedClass}`}>· Select to populate realistic multi-modal telemetry</span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {PRESET_SCENARIOS.map((preset) => {
             const isSelected = activePresetId === preset.id;
             return (
               <button
                 key={preset.id}
                 onClick={() => handleApplyPreset(preset)}
-                className={`p-3 rounded-lg text-left transition-all border cursor-pointer ${
+                className={`p-3.5 rounded-xl text-left transition-all border cursor-pointer ${
                   isSelected
                     ? isDark
                       ? 'bg-slate-800 border-cyan-500 shadow-md ring-1 ring-cyan-500/40'
@@ -102,10 +137,13 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                     : 'bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-slate-100'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className={`text-xs font-semibold truncate ${headingClass}`}>{preset.name}</span>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-6 h-6 rounded-lg bg-slate-200/60 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                    {getPresetIcon(preset.id)}
+                  </div>
+                  <span className={`text-xs font-bold truncate ${headingClass}`}>{preset.name}</span>
                 </div>
-                <div className="mt-1 text-[10px] text-cyan-600 dark:text-cyan-400 font-mono">{preset.badge}</div>
+                <div className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono font-medium">{preset.badge}</div>
                 <div className={`mt-1 text-[11px] line-clamp-2 leading-tight ${textMutedClass}`}>
                   {preset.description}
                 </div>
@@ -118,10 +156,12 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
       {/* Sensor Controls & Live Inferences Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Sensor Sliders: 7 cols */}
-        <div className={`lg:col-span-7 p-5 rounded-xl border space-y-5 transition-colors ${cardClass}`}>
-          <div className={`flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-            <h2 className={`text-sm font-semibold flex items-center gap-2 ${headingClass}`}>
-              <Zap className="w-4 h-4 text-cyan-500" />
+        <div className={`lg:col-span-7 p-6 rounded-2xl border space-y-5 transition-colors ${cardClass}`}>
+          <div className={`flex items-center justify-between pb-3 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+            <h2 className={`text-sm font-bold flex items-center gap-2.5 ${headingClass}`}>
+              <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 flex items-center justify-center">
+                <Zap className="w-4 h-4 fill-cyan-500/30" />
+              </div>
               <span>Multi-Modal Telemetry Controls</span>
             </h2>
             <span className={`text-xs font-mono ${textMutedClass}`}>IEEE 1547 Calibrated</span>
@@ -130,8 +170,11 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           {/* Slider 1: Electricity Demand */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className={`font-medium ${headingClass}`}>Electricity Demand</span>
-              <span className="font-mono font-semibold text-cyan-600 dark:text-cyan-400">{demand.toFixed(1)} kW</span>
+              <span className={`font-semibold flex items-center gap-1.5 ${headingClass}`}>
+                <Zap className="w-3.5 h-3.5 text-cyan-500" />
+                <span>Electricity Demand</span>
+              </span>
+              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{demand.toFixed(1)} kW</span>
             </div>
             <input
               type="range"
@@ -143,7 +186,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 setDemand(parseFloat(e.target.value));
                 setActivePresetId('custom');
               }}
-              className="w-full accent-cyan-500 h-1.5 rounded cursor-pointer"
+              className="w-full accent-cyan-500 h-1.5 rounded-lg cursor-pointer"
             />
             <div className={`flex justify-between text-[10px] font-mono ${textMutedClass}`}>
               <span>10 kW (Night min)</span>
@@ -155,8 +198,11 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           {/* Slider 2: Solar PV Generation */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className={`font-medium ${headingClass}`}>Solar Power Generation</span>
-              <span className="font-mono font-semibold text-amber-600 dark:text-amber-400">{solar.toFixed(1)} kW</span>
+              <span className={`font-semibold flex items-center gap-1.5 ${headingClass}`}>
+                <Sun className="w-3.5 h-3.5 text-amber-500" />
+                <span>Solar Power Generation</span>
+              </span>
+              <span className="font-mono font-bold text-amber-600 dark:text-amber-400">{solar.toFixed(1)} kW</span>
             </div>
             <input
               type="range"
@@ -168,7 +214,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 setSolar(parseFloat(e.target.value));
                 setActivePresetId('custom');
               }}
-              className="w-full accent-amber-500 h-1.5 rounded cursor-pointer"
+              className="w-full accent-amber-500 h-1.5 rounded-lg cursor-pointer"
             />
             <div className={`flex justify-between text-[10px] font-mono ${textMutedClass}`}>
               <span>0 kW (Overcast/Night)</span>
@@ -180,8 +226,11 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           {/* Slider 3: Battery SoC */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className={`font-medium ${headingClass}`}>Battery State of Charge (SoC)</span>
-              <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">{soc.toFixed(1)} %</span>
+              <span className={`font-semibold flex items-center gap-1.5 ${headingClass}`}>
+                <BatteryCharging className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Battery State of Charge (SoC)</span>
+              </span>
+              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{soc.toFixed(1)} %</span>
             </div>
             <input
               type="range"
@@ -193,7 +242,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 setSoc(parseFloat(e.target.value));
                 setActivePresetId('custom');
               }}
-              className="w-full accent-emerald-500 h-1.5 rounded cursor-pointer"
+              className="w-full accent-emerald-500 h-1.5 rounded-lg cursor-pointer"
             />
             <div className={`flex justify-between text-[10px] font-mono ${textMutedClass}`}>
               <span>5% (Depleted - Cutoff)</span>
@@ -205,9 +254,12 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           {/* Slider 4: Voltage Deviation */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className={`font-medium ${headingClass}`}>Feeder Voltage Deviation</span>
+              <span className={`font-semibold flex items-center gap-1.5 ${headingClass}`}>
+                <Gauge className="w-3.5 h-3.5 text-blue-500" />
+                <span>Feeder Voltage Deviation</span>
+              </span>
               <span
-                className={`font-mono font-semibold ${
+                className={`font-mono font-bold ${
                   Math.abs(voltageDev) > 6 ? 'text-rose-500' : Math.abs(voltageDev) > 3 ? 'text-amber-500' : headingClass
                 }`}
               >
@@ -224,7 +276,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 setVoltageDev(parseFloat(e.target.value));
                 setActivePresetId('custom');
               }}
-              className="w-full accent-cyan-500 h-1.5 rounded cursor-pointer"
+              className="w-full accent-cyan-500 h-1.5 rounded-lg cursor-pointer"
             />
             <div className={`flex justify-between text-[10px] font-mono ${textMutedClass}`}>
               <span>-20 V (Severe sag)</span>
@@ -236,9 +288,12 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           {/* Slider 5: Frequency Deviation */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className={`font-medium ${headingClass}`}>Grid Frequency Deviation</span>
+              <span className={`font-semibold flex items-center gap-1.5 ${headingClass}`}>
+                <Activity className="w-3.5 h-3.5 text-violet-500" />
+                <span>Grid Frequency Deviation</span>
+              </span>
               <span
-                className={`font-mono font-semibold ${
+                className={`font-mono font-bold ${
                   Math.abs(freqDev) > 0.2 ? 'text-rose-500' : Math.abs(freqDev) > 0.05 ? 'text-amber-500' : headingClass
                 }`}
               >
@@ -255,7 +310,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 setFreqDev(parseFloat(e.target.value));
                 setActivePresetId('custom');
               }}
-              className="w-full accent-cyan-500 h-1.5 rounded cursor-pointer"
+              className="w-full accent-cyan-500 h-1.5 rounded-lg cursor-pointer"
             />
             <div className={`flex justify-between text-[10px] font-mono ${textMutedClass}`}>
               <span>-1.0 Hz (Under-frequency)</span>
@@ -267,23 +322,26 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           {/* Scaled Angle Vector (Circuit Inputs) */}
           <div className={`pt-3 border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
             <div className={`text-[11px] font-mono mb-2 flex items-center justify-between ${textMutedClass}`}>
-              <span>QUANTUM CIRCUIT ENCODING ANGLES (x ∈ [0, 2π])</span>
-              <span className="text-cyan-600 dark:text-cyan-400 text-[10px]">ZZFeatureMap Angles</span>
+              <span className="flex items-center gap-1.5">
+                <Atom className="w-3.5 h-3.5 text-violet-500" />
+                QUANTUM CIRCUIT ENCODING ANGLES (x ∈ [0, 2π])
+              </span>
+              <span className="text-cyan-600 dark:text-cyan-400 text-[10px] font-bold">ZZFeatureMap</span>
             </div>
-            <div className="grid grid-cols-4 gap-2 text-center font-mono text-xs">
-              <div className={`p-2 rounded border ${innerCardClass}`}>
+            <div className="grid grid-cols-4 gap-2.5 text-center font-mono text-xs">
+              <div className={`p-2.5 rounded-xl border ${innerCardClass}`}>
                 <div className={`text-[10px] ${textMutedClass}`}>q0: Demand</div>
                 <div className="text-cyan-600 dark:text-cyan-300 font-bold mt-0.5">{scaledVector[0]?.toFixed(3) || '0.000'} rad</div>
               </div>
-              <div className={`p-2 rounded border ${innerCardClass}`}>
+              <div className={`p-2.5 rounded-xl border ${innerCardClass}`}>
                 <div className={`text-[10px] ${textMutedClass}`}>q1: Solar</div>
                 <div className="text-amber-600 dark:text-amber-300 font-bold mt-0.5">{scaledVector[1]?.toFixed(3) || '0.000'} rad</div>
               </div>
-              <div className={`p-2 rounded border ${innerCardClass}`}>
+              <div className={`p-2.5 rounded-xl border ${innerCardClass}`}>
                 <div className={`text-[10px] ${textMutedClass}`}>q2: Voltage</div>
                 <div className="text-violet-600 dark:text-violet-300 font-bold mt-0.5">{scaledVector[2]?.toFixed(3) || '0.000'} rad</div>
               </div>
-              <div className={`p-2 rounded border ${innerCardClass}`}>
+              <div className={`p-2.5 rounded-xl border ${innerCardClass}`}>
                 <div className={`text-[10px] ${textMutedClass}`}>q3: Frequency</div>
                 <div className="text-emerald-600 dark:text-emerald-300 font-bold mt-0.5">{scaledVector[3]?.toFixed(3) || '0.000'} rad</div>
               </div>
@@ -294,17 +352,19 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
         {/* Real-Time Model Inferences & Physical Diagnosis: 5 cols */}
         <div className="lg:col-span-5 space-y-4">
           {/* Classical SVC Prediction Card */}
-          <div className={`p-4 rounded-xl border transition-colors ${cardClass}`}>
-            <div className={`flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-              <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-cyan-500" />
-                <span className={`text-xs font-semibold ${headingClass}`}>CLASSICAL SVC (RBF)</span>
+          <div className={`p-5 rounded-2xl border transition-colors ${cardClass}`}>
+            <div className={`flex items-center justify-between pb-2.5 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+                  <Cpu className="w-4 h-4" />
+                </div>
+                <span className={`text-xs font-bold ${headingClass}`}>CLASSICAL SVC (RBF)</span>
               </div>
               <span className={`text-[10px] font-mono ${textMutedClass}`}>Scikit-Learn Equivalent</span>
             </div>
 
             {classicalPred ? (
-              <div className="mt-3 flex items-center justify-between">
+              <div className="mt-3.5 flex items-center justify-between">
                 <div>
                   <div className={`text-[11px] ${textMutedClass}`}>Predicted State</div>
                   <div className="flex items-center gap-2 mt-0.5">
@@ -324,7 +384,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
 
                 <div className="text-right">
                   <div className={`text-[11px] ${textMutedClass}`}>Abnormal Probability</div>
-                  <div className={`text-sm font-mono font-bold ${headingClass}`}>
+                  <div className={`text-base font-mono font-bold ${headingClass}`}>
                     {(classicalPred.probabilityAbnormal * 100).toFixed(1)}%
                   </div>
                   <div className={`text-[10px] font-mono ${textMutedClass}`}>
@@ -338,17 +398,19 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           </div>
 
           {/* Quantum QSVC Prediction Card */}
-          <div className={`p-4 rounded-xl border transition-colors ${cardClass}`}>
-            <div className={`flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-violet-500" />
-                <span className={`text-xs font-semibold ${headingClass}`}>QUANTUM QSVC (ZZFeatureMap)</span>
+          <div className={`p-5 rounded-2xl border transition-colors ${cardClass}`}>
+            <div className={`flex items-center justify-between pb-2.5 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <span className={`text-xs font-bold ${headingClass}`}>QUANTUM QSVC (ZZFeatureMap)</span>
               </div>
-              <span className="text-[10px] font-mono text-violet-600 dark:text-violet-400">Fidelity Quantum Kernel</span>
+              <span className="text-[10px] font-mono text-violet-600 dark:text-violet-400 font-semibold">Fidelity Quantum Kernel</span>
             </div>
 
             {quantumPred ? (
-              <div className="mt-3 flex items-center justify-between">
+              <div className="mt-3.5 flex items-center justify-between">
                 <div>
                   <div className={`text-[11px] ${textMutedClass}`}>Predicted State</div>
                   <div className="flex items-center gap-2 mt-0.5">
@@ -368,7 +430,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
 
                 <div className="text-right">
                   <div className={`text-[11px] ${textMutedClass}`}>Abnormal Probability</div>
-                  <div className={`text-sm font-mono font-bold ${headingClass}`}>
+                  <div className={`text-base font-mono font-bold ${headingClass}`}>
                     {(quantumPred.probabilityAbnormal * 100).toFixed(1)}%
                   </div>
                   <div className={`text-[10px] font-mono ${textMutedClass}`}>
@@ -382,11 +444,14 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           </div>
 
           {/* Engineering Physical Threshold Diagnosis */}
-          <div className={`p-4 rounded-xl border space-y-3 transition-colors ${cardClass}`}>
-            <div className="text-xs font-semibold flex items-center justify-between">
-              <span className={headingClass}>PHYSICAL HEURISTIC DIAGNOSIS</span>
+          <div className={`p-5 rounded-2xl border space-y-3 transition-colors ${cardClass}`}>
+            <div className="text-xs font-bold flex items-center justify-between">
+              <span className={`flex items-center gap-2 ${headingClass}`}>
+                <ShieldCheck className="w-4 h-4 text-cyan-500" />
+                PHYSICAL HEURISTIC DIAGNOSIS
+              </span>
               <span
-                className={`text-[10px] font-mono px-2 py-0.5 rounded ${
+                className={`text-[10px] font-mono px-2.5 py-0.5 rounded-md font-semibold ${
                   diagnosis.isEngineeringAbnormal
                     ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400 border border-rose-300 dark:border-rose-800'
                     : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800'
@@ -397,7 +462,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-              <div className={`p-2 rounded border ${innerCardClass}`}>
+              <div className={`p-2.5 rounded-xl border ${innerCardClass}`}>
                 <span className={`text-[10px] block ${textMutedClass}`}>Voltage Deviation:</span>
                 <span
                   className={
@@ -411,7 +476,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                   {diagnosis.voltageStatus.toUpperCase()} (±3V limit)
                 </span>
               </div>
-              <div className={`p-2 rounded border ${innerCardClass}`}>
+              <div className={`p-2.5 rounded-xl border ${innerCardClass}`}>
                 <span className={`text-[10px] block ${textMutedClass}`}>Frequency Deviation:</span>
                 <span
                   className={
@@ -431,7 +496,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
               <div className="space-y-1.5 pt-1">
                 {diagnosis.warnings.map((w, idx) => (
                   <div key={idx} className="text-[11px] text-amber-600 dark:text-amber-300 flex items-start gap-1.5">
-                    <span className="text-amber-500">·</span>
+                    <span className="text-amber-500 font-bold">·</span>
                     <span>{w}</span>
                   </div>
                 ))}
@@ -443,7 +508,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
             )}
 
             <div className={`pt-2 border-t text-[10px] flex items-center gap-1.5 ${isDark ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-500'}`}>
-              <Info className="w-3 h-3 text-cyan-500 shrink-0" />
+              <Info className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
               <span>Model predictions are probabilistic statistical estimates, not verified utility switchgear actions.</span>
             </div>
           </div>

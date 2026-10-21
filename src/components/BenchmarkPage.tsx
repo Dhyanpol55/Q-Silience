@@ -1,6 +1,19 @@
 import React from 'react';
 import { ModelMetrics, LowDataBenchmarkPoint } from '../types/microgrid';
-import { BarChart3, Scale, Info, TrendingUp } from 'lucide-react';
+import {
+  BarChart3,
+  Scale,
+  Info,
+  TrendingUp,
+  Cpu,
+  Atom,
+  RefreshCw,
+  Sparkles,
+  CheckCircle2,
+  ShieldCheck,
+  Trophy,
+  Timer,
+} from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -82,8 +95,10 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className={`text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2 ${headingClass}`}>
-            <Scale className="w-5 h-5 text-cyan-500" />
+          <h1 className={`text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2.5 ${headingClass}`}>
+            <div className="w-8 h-8 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shadow-2xs">
+              <Scale className="w-4.5 h-4.5 stroke-[2.2]" />
+            </div>
             <span>Fair Classical vs Quantum Model Benchmark</span>
           </h1>
           <p className={`mt-1 text-xs sm:text-sm ${textMutedClass}`}>
@@ -94,8 +109,9 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
         <button
           onClick={onRerunBenchmark}
           disabled={isBenchmarking}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs transition-all disabled:opacity-50 cursor-pointer shadow-xs"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all disabled:opacity-50 cursor-pointer shadow-md shadow-cyan-500/20"
         >
+          <RefreshCw className={`w-3.5 h-3.5 stroke-[2.2] ${isBenchmarking ? 'animate-spin' : ''}`} />
           <span>{isBenchmarking ? 'Running Benchmark...' : 'Re-run Evaluation'}</span>
         </button>
       </div>
@@ -105,9 +121,14 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
         {/* Classical SVC Card */}
         <div className={`p-5 rounded-xl border space-y-4 transition-colors ${cardClass}`}>
           <div className={`flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-            <div>
-              <span className="text-xs font-mono text-cyan-600 dark:text-cyan-400">CLASSICAL BASELINE</span>
-              <h2 className={`text-base font-bold ${headingClass}`}>Support Vector Classifier (SVC)</h2>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-2xs">
+                <Cpu className="w-4.5 h-4.5 stroke-[2.2]" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Classical Baseline</span>
+                <h2 className={`text-base font-bold ${headingClass}`}>Support Vector Classifier (SVC)</h2>
+              </div>
             </div>
             <span className={`text-xs font-mono ${textMutedClass}`}>Kernel: RBF</span>
           </div>
@@ -178,9 +199,14 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
         {/* Quantum QSVC Card */}
         <div className={`p-5 rounded-xl border space-y-4 transition-colors ${cardClass}`}>
           <div className={`flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-            <div>
-              <span className="text-xs font-mono text-violet-600 dark:text-violet-400">QUANTUM CLASSIFIER</span>
-              <h2 className={`text-base font-bold ${headingClass}`}>Quantum SVC (QSVC)</h2>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-950/60 border border-violet-200 dark:border-violet-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shadow-2xs">
+                <Atom className="w-4.5 h-4.5 stroke-[2.2]" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider">Quantum Classifier</span>
+                <h2 className={`text-base font-bold ${headingClass}`}>Quantum SVC (QSVC)</h2>
+              </div>
             </div>
             <span className={`text-xs font-mono ${textMutedClass}`}>Kernel: ZZFeatureMap</span>
           </div>

@@ -172,7 +172,7 @@ export default function App() {
   return (
     <div
       className={`min-h-screen flex flex-col font-sans transition-colors duration-200 ${
-        isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+        isDark ? 'bg-[#090d16] text-slate-100' : 'bg-white text-slate-900'
       }`}
     >
       <Header
