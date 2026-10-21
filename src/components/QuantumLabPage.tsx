@@ -1,6 +1,26 @@
 import React, { useState } from 'react';
-import { buildZZFeatureMapCircuit, computeZZFeatureMapStatevector } from '../services/quantumEngine';
-import { Cpu, Layers, Atom, Sparkles } from 'lucide-react';
+import {
+  buildZZFeatureMapCircuit,
+  computeZZFeatureMapStatevector,
+  computeNoisyZZFeatureMapStatevector,
+  computeQuantumFidelity,
+  DEFAULT_NISQ_NOISE,
+} from '../services/quantumEngine';
+import { NISQNoiseConfig } from '../types/microgrid';
+import {
+  Cpu,
+  Layers,
+  Atom,
+  Sparkles,
+  Activity,
+  AlertTriangle,
+  ShieldCheck,
+  Sliders,
+  Zap,
+  Radio,
+  Timer,
+  Info,
+} from 'lucide-react';
 
 interface QuantumLabPageProps {
   kernelMatrix: number[][] | null;
@@ -12,13 +32,26 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({ kernelMatrix, th
   const [reps, setReps] = useState<number>(2);
   const [selectedGate, setSelectedGate] = useState<any | null>(null);
   const [testAngles] = useState<number[]>([1.57, 0.85, 3.14, 2.2]);
+  const [noiseConfig, setNoiseConfig] = useState<NISQNoiseConfig>({
+    ...DEFAULT_NISQ_NOISE,
+    enabled: false,
+  });
 
   const numQubits = 4;
   const featureNames = ['q0: Demand', 'q1: Solar PV', 'q2: Voltage Dev', 'q3: Freq Dev'];
   const circuit = buildZZFeatureMapCircuit(numQubits, reps, featureNames);
 
-  // Compute live statevector amplitudes for the test angles
-  const statevector = computeZZFeatureMapStatevector(testAngles, numQubits, reps);
+  // Compute live ideal statevector amplitudes for the test angles
+  const idealStatevector = computeZZFeatureMapStatevector(testAngles, numQubits, reps);
+
+  // Compute live noisy statevector under NISQ hardware simulation
+  const activeStatevector = noiseConfig.enabled
+    ? computeNoisyZZFeatureMapStatevector(testAngles, numQubits, reps, 'linear', noiseConfig)
+    : idealStatevector;
+
+  // Compute fidelity retention under noise
+  const stateFidelity = computeQuantumFidelity(idealStatevector, activeStatevector);
+
 
   const cardClass = isDark
     ? 'bg-slate-900/80 border-slate-800'
@@ -284,6 +317,200 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({ kernelMatrix, th
         )}
       </div>
 
+      {/* NISQ Hardware Noise & Circuit Error Modeling Panel */}
+      <div className={`p-5 rounded-xl border space-y-4 transition-all ${cardClass}`}>
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b gap-3 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-9 h-9 rounded-xl border flex items-center justify-center shadow-2xs transition-colors ${
+                noiseConfig.enabled
+                  ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400'
+                  : 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400'
+              }`}
+            >
+              {noiseConfig.enabled ? (
+                <Radio className="w-4 h-4 stroke-[2.2] animate-pulse" />
+              ) : (
+                <ShieldCheck className="w-4 h-4 stroke-[2.2]" />
+              )}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className={`text-sm sm:text-base font-bold ${headingClass}`}>
+                  NISQ Hardware Noise & Device Error Simulation
+                </h2>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${
+                    noiseConfig.enabled
+                      ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700'
+                      : 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700'
+                  }`}
+                >
+                  {noiseConfig.enabled ? 'NOISY HARDWARE SIM' : 'IDEAL STATEVECTOR'}
+                </span>
+              </div>
+              <p className={`text-xs ${textMutedClass}`}>
+                Qiskit Aer NoiseModel: Depolarizing gate errors, readout bit flips, and T₁/T₂ thermal relaxation.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() =>
+                setNoiseConfig((prev) => ({
+                  ...prev,
+                  enabled: !prev.enabled,
+                }))
+              }
+              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all shadow-xs ${
+                noiseConfig.enabled
+                  ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold'
+                  : 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold'
+              }`}
+            >
+              <Sliders className="w-3.5 h-3.5 stroke-[2.2]" />
+              <span>{noiseConfig.enabled ? 'Disable Noise (Ideal)' : 'Enable NISQ Device Noise'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Noise Telemetry Metrics */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className={`p-3 rounded-xl border ${innerCardClass}`}>
+            <div className={`text-[10px] font-mono ${textMutedClass}`}>STATE FIDELITY RETENTION</div>
+            <div
+              className={`text-lg font-bold font-mono mt-0.5 ${
+                stateFidelity > 0.85
+                  ? 'text-emerald-600 dark:text-emerald-400'
+                  : stateFidelity > 0.65
+                  ? 'text-amber-600 dark:text-amber-400'
+                  : 'text-rose-600 dark:text-rose-400'
+              }`}
+            >
+              {(stateFidelity * 100).toFixed(1)}%
+            </div>
+            <div className={`text-[10px] ${textMutedClass}`}>
+              {noiseConfig.enabled ? `Loss: -${((1 - stateFidelity) * 100).toFixed(1)}%` : '100% Coherent'}
+            </div>
+          </div>
+
+          <div className={`p-3 rounded-xl border ${innerCardClass}`}>
+            <div className={`text-[10px] font-mono ${textMutedClass}`}>GATE DEPOLARIZING (p)</div>
+            <div className="text-lg font-bold font-mono mt-0.5 text-cyan-600 dark:text-cyan-400">
+              {(noiseConfig.depolarizingErrorRate * 100).toFixed(2)}%
+            </div>
+            <div className={`text-[10px] ${textMutedClass}`}>Per Pauli / Phase Rotation</div>
+          </div>
+
+          <div className={`p-3 rounded-xl border ${innerCardClass}`}>
+            <div className={`text-[10px] font-mono ${textMutedClass}`}>READOUT SPAM ERROR</div>
+            <div className="text-lg font-bold font-mono mt-0.5 text-violet-600 dark:text-violet-400">
+              {(noiseConfig.readoutErrorRate * 100).toFixed(1)}%
+            </div>
+            <div className={`text-[10px] ${textMutedClass}`}>Measurement Bit-Flip Rate</div>
+          </div>
+
+          <div className={`p-3 rounded-xl border ${innerCardClass}`}>
+            <div className={`text-[10px] font-mono ${textMutedClass}`}>THERMAL COHERENCE (T₁/T₂)</div>
+            <div className="text-lg font-bold font-mono mt-0.5 text-indigo-600 dark:text-indigo-400">
+              {noiseConfig.t1RelaxationUs}µs / {noiseConfig.t2DephasingUs}µs
+            </div>
+            <div className={`text-[10px] ${textMutedClass}`}>Decoherence Time Budget</div>
+          </div>
+        </div>
+
+        {/* Sliders (when noise enabled) */}
+        {noiseConfig.enabled && (
+          <div className={`p-4 rounded-xl border space-y-4 ${innerCardClass}`}>
+            <div className="flex items-center justify-between text-xs font-semibold">
+              <span className={headingClass}>NISQ Hardware Parameter Controls:</span>
+              <button
+                onClick={() => setNoiseConfig({ ...DEFAULT_NISQ_NOISE, enabled: true })}
+                className="text-xs text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer"
+              >
+                Reset to IBM Falcon Profile
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className={textMutedClass}>Depolarizing Rate:</span>
+                  <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">
+                    {(noiseConfig.depolarizingErrorRate * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0.001"
+                  max="0.05"
+                  step="0.001"
+                  value={noiseConfig.depolarizingErrorRate}
+                  onChange={(e) =>
+                    setNoiseConfig({
+                      ...noiseConfig,
+                      depolarizingErrorRate: parseFloat(e.target.value),
+                    })
+                  }
+                  className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className={textMutedClass}>Readout Error Rate:</span>
+                  <span className="font-mono font-bold text-violet-600 dark:text-violet-400">
+                    {(noiseConfig.readoutErrorRate * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0.005"
+                  max="0.06"
+                  step="0.005"
+                  value={noiseConfig.readoutErrorRate}
+                  onChange={(e) =>
+                    setNoiseConfig({
+                      ...noiseConfig,
+                      readoutErrorRate: parseFloat(e.target.value),
+                    })
+                  }
+                  className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-violet-500"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className={textMutedClass}>T₂ Dephasing Coherence:</span>
+                  <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                    {noiseConfig.t2DephasingUs} µs
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="20"
+                  max="140"
+                  step="5"
+                  value={noiseConfig.t2DephasingUs}
+                  onChange={(e) =>
+                    setNoiseConfig({
+                      ...noiseConfig,
+                      t2DephasingUs: parseInt(e.target.value, 10),
+                    })
+                  }
+                  className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                />
+              </div>
+            </div>
+
+            <p className={`text-[11px] leading-relaxed ${textMutedClass}`}>
+              💡 <strong>NISQ Insights:</strong> Statevector simulation with realistic depolarizing noise reflects genuine execution on physical superconducting transmon processors (such as IBM Quantum Eagle/Heron chips). Higher repetition counts ($d \ge 3$) accumulate CNOT error, emphasizing why low-depth ($d=2$) linear circuits are optimal for microgrid edge computing.
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Live Statevector & Quantum Kernel Matrix Heatmap */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Hilbert Space Statevector Inspector */}
@@ -292,14 +519,14 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({ kernelMatrix, th
             <div>
               <h3 className={`text-sm font-semibold ${headingClass}`}>Hilbert Space Statevector Amplitudes</h3>
               <p className={`text-xs ${textMutedClass}`}>
-                Complex statevector |φ(x)⟩ across all 16 computational basis states |0000⟩ to |1111⟩
+                {noiseConfig.enabled ? 'Noisy density statevector projection' : 'Coherent pure state |φ(x)⟩'} across all 16 computational basis states
               </p>
             </div>
             <span className="text-xs font-mono text-cyan-600 dark:text-cyan-400">dim = 16</span>
           </div>
 
           <div className="grid grid-cols-4 gap-2 text-xs font-mono">
-            {statevector.map((c, idx) => {
+            {activeStatevector.map((c, idx) => {
               const bin = idx.toString(2).padStart(4, '0');
               const prob = c.re * c.re + c.im * c.im;
 

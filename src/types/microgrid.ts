@@ -92,3 +92,38 @@ export interface BenchmarkReport {
     kernelType: string;
   };
 }
+
+export interface NISQNoiseConfig {
+  enabled: boolean;
+  depolarizingErrorRate: number; // e.g. 0.015 (1.5%)
+  readoutErrorRate: number;      // e.g. 0.02 (2.0%)
+  t1RelaxationUs: number;        // e.g. 50 microseconds
+  t2DephasingUs: number;         // e.g. 70 microseconds
+  twoQubitGateErrorRate: number; // e.g. 0.01 (1.0% CNOT error)
+}
+
+export interface QuantumFeatureAttribution {
+  featureKey: FeatureKey;
+  name: string;
+  score: number;             // Permutation sensitivity score
+  percentage: number;        // Normalized contribution %
+  direction: 'anomaly_driver' | 'stabilizer';
+  sensorValue: number;
+  nominalBand: string;
+  description: string;
+}
+
+export interface HyperparameterSweepPoint {
+  id: string;
+  reps: number;
+  entanglement: 'linear' | 'full';
+  cParam: number;
+  classicalF1: number;
+  classicalAccuracy: number;
+  quantumF1: number;
+  quantumAccuracy: number;
+  quantumTrainTimeMs: number;
+  circuitDepth: number;
+  totalGates: number;
+}
+

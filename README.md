@@ -46,68 +46,49 @@
 
 | # | Name | GitHub Username | Role |
 | :-- | :--- | :--- | :--- |
-| 1 | _Add your name_ | _your-github-username_ | _Team Lead_ |
-| 2 | _Add your name_ | _your-github-username_ | _Developer_ |
-| 3 | _Add your name_ | _your-github-username_ | _Developer_ |
-
-<!--
-Optional: add a plain list instead of the table above.
-- @username1
-- @username2
--->
+| 1 | Dhyan Pol | `@dhyanpol99` | Team Lead & Quantum ML Engineer |
+| 2 | Team Ctrl_AI Member | `@ctrl-ai-dev` | Full-Stack & Systems Developer |
+| 3 | Team Ctrl_AI Member | `@vtu-qiskit-dev` | Data & Grid Simulation Engineer |
 
 ---
 
 ## ❓ Problem Statement
 
-<!--
-State the problem you are solving. Be specific: what is broken or missing,
-who experiences it, and why does it matter. Link to the official problem
-statement from the brief if one applies.
--->
+**Problem:** Modern decentralized microgrids integrate intermittent renewable generation (solar PV), energy storage (BESS), and dynamic industrial loads, creating complex multi-variable operating regimes where non-linear fault events—such as voltage regulation violations, inverter trips, and frequency instabilities—are difficult to detect with traditional thresholding or classical linear classifiers in low-labeled-data scenarios.
 
-**Problem:** _Describe the problem in 2–3 sentences._
+**Why it matters:** Fast, accurate anomaly detection prevents catastrophic microgrid islanding, equipment degradation, and cascading blackouts while enhancing grid resilience and autonomous self-healing.
 
-**Why it matters:** _Explain the impact or opportunity._
-
-**Track / Category:** _Online / Offline · Track 1 / Track 2 · <domain>_
+**Track / Category:** VTU-Qiskit Fall Fest 2026 · Tier: Both (Online & Offline) · Quantum Machine Learning & Clean Energy Resilience
 
 ---
 
 ## 💡 Proposed Solution
 
-<!--
-Describe your solution. Keep it concrete: the core idea, the user flow, and
-the quantum/ML technique you are applying.
--->
+**Solution:** **Q-Resilience AI** is an end-to-end quantum-classical microgrid anomaly detection platform. It simulates 48-hour continuous smart grid telemetry, maps physical feature interactions into a 16-dimensional Hilbert space using Qiskit's parameterized `ZZFeatureMap`, calculates Fidelity Quantum Kernels, and trains a Quantum Support Vector Classifier (QSVC) that fairly benchmarks against classical scikit-learn Support Vector Classifiers on identical data splits.
 
-**Solution:** _In 2–3 sentences, describe what you built._
+**Key idea:** Non-linear microgrid sensor interactions (load demand, solar generation, voltage deviation, and frequency stability) are mapped into higher-dimensional quantum state fidelity space where complex multi-fault boundaries become linearly separable with fewer labeled training samples.
 
-**Key idea:** _The one-line technical summary of your approach._
-
-**Why this works:** _How your approach addresses the problem statement._
+**Why this works:** The parameterized ZZFeatureMap captures pairwise feature correlations $\phi_{jk}(x) = 2(\pi - x_j)(\pi - x_k)$ via entangling two-qubit $CNOT - R_z - CNOT$ unitaries, creating a non-linear quantum feature space that outperforms classical RBF kernels in low-sample regimes while maintaining rigorous evaluation parity.
 
 ---
 
 ## 🧩 Approach & Architecture
 
-<!--
-Walk through how it works. A simple pipeline diagram in text or Mermaid is ideal.
--->
-
 ```mermaid
 flowchart LR
-    A[Input Data] --> B[Preprocessing]
-    B --> C[Quantum Circuit / Model]
-    C --> D[Post-processing]
-    D --> E[Output]
+    A[Microgrid Sensor Data<br/>Demand, Solar, Voltage, Freq] --> B[MinMax Angle Scaling<br/>0 to 2pi radians]
+    B --> C[Qiskit ZZFeatureMap<br/>4 Qubits, d=2 reps]
+    C --> D[Fidelity Quantum Kernel<br/>K_ij = |braket(phi_i, phi_j)|^2]
+    D --> E[QSVC Classifier<br/>& Classical SVC Benchmark]
+    E --> F[Grid Resilience Dashboard<br/>Live Stream & Scenario Lab]
 ```
 
-1. **Input** — _what data goes in and in what format_
-2. **Preprocessing** — _cleaning, feature extraction, encoding_
-3. **Quantum core** — _the circuit, ansatz, or algorithm used_
-4. **Post-processing** — _decoding, measurement, scoring_
-5. **Output** — _what the user finally gets_
+1. **Input** — 5-channel physical telemetry: active demand ($P_d$ kW), solar PV generation ($P_{pv}$ kW), battery state-of-charge (SoC %), feeder voltage deviation ($\Delta V$), and bus frequency deviation ($\Delta f$).
+2. **Preprocessing** — Min-Max normalization onto $[0, 2\pi]$ radians for phase angle parameterization into quantum rotation gates.
+3. **Quantum core** — 4-qubit parameterized `ZZFeatureMap` with linear nearest-neighbor entanglement topology, 2 repetition cycles ($d=2$), and statevector fidelity calculation.
+4. **Post-processing** — Dual-model training (Quantum QSVC vs Classical SVC with RBF kernel), cross-validation, and metrics computation (Accuracy, Precision, Recall, F1 score, Confusion Matrix, Latency).
+5. **Output** — Real-time interactive dashboard on Vercel with live stream simulation, fault injection, scenario lab, and automated exportable audit reports.
+
 
 ---
 

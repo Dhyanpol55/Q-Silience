@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vtu-hc-ctrl-ai"
+version = "1.0.0"
+description = "Q-Resilience AI: Quantum-Enhanced Microgrid Anomaly Detection with Qiskit QSVC and Classical SVM Benchmarks"
+readme = "README.md"
+authors = [
+    { name = "Ctrl_AI", email = "team-ctrl-ai@vtu-qiskit.org" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.11"
+keywords = ["quantum-computing", "qiskit", "qml", "microgrid", "anomaly-detection", "qsvc"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "qiskit>=1.3.0",
+    "qiskit-machine-learning>=0.7.2",
+    "qiskit-algorithms>=0.3.0",
+    "scikit-learn>=1.5.0",
+    "numpy>=1.26.4,<2.1.0",
+    "pandas>=2.2.0",
+    "pydantic>=2.9.0",
+    "joblib>=1.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "httpx>=0.27.0",
+    "jupyterlab>=4.2.0",
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q"
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

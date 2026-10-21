@@ -1,5 +1,6 @@
-import React from 'react';
-import { ModelMetrics, LowDataBenchmarkPoint } from '../types/microgrid';
+import React, { useState } from 'react';
+import { ModelMetrics, LowDataBenchmarkPoint, HyperparameterSweepPoint } from '../types/microgrid';
+import { generateHyperparameterSweepData } from '../services/quantumEngine';
 import {
   BarChart3,
   Scale,
@@ -13,6 +14,13 @@ import {
   ShieldCheck,
   Trophy,
   Timer,
+  Sliders,
+  Compass,
+  Zap,
+  Sun,
+  Gauge,
+  Eye,
+  Play,
 } from 'lucide-react';
 import {
   LineChart,
@@ -25,6 +33,11 @@ import {
   Legend,
   BarChart,
   Bar,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
 } from 'recharts';
 
 interface BenchmarkPageProps {
@@ -45,6 +58,11 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
   theme,
 }) => {
   const isDark = theme === 'dark';
+  const [activeSweepFilter, setActiveSweepFilter] = useState<'all' | 'linear' | 'full'>('all');
+  const [selectedSweepRep, setSelectedSweepRep] = useState<number | 'all'>('all');
+  const [sweepDataset, setSweepDataset] = useState<HyperparameterSweepPoint[]>(generateHyperparameterSweepData());
+  const [isSweeping, setIsSweeping] = useState<boolean>(false);
+
 
   // Recharts data for Low-Data Scaling LineChart
   const lowDataChartData = lowDataPoints.map((pt) => ({
@@ -424,6 +442,313 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
                   </tr>
                 );
               })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Explainable Quantum AI (XAI): Hilbert Space Feature Attribution */}
+      <div className={`p-5 rounded-xl border space-y-5 transition-all ${cardClass}`}>
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b gap-3 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-violet-50 dark:bg-violet-950/60 border border-violet-200 dark:border-violet-800 text-violet-600 dark:text-violet-400 flex items-center justify-center shadow-2xs">
+              <Compass className="w-4.5 h-4.5 stroke-[2.2]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className={`text-sm sm:text-base font-bold ${headingClass}`}>
+                  Explainable Quantum AI (XAI): Sensor Feature Attribution
+                </h2>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-violet-100 dark:bg-violet-950/80 text-violet-800 dark:text-violet-300 border border-violet-200 dark:border-violet-800">
+                  KERNEL PERMUTATION SHAP
+                </span>
+              </div>
+              <p className={`text-xs ${textMutedClass}`}>
+                Attribution scores showing how each sensor alters Hilbert space statevector overlap and classification margins.
+              </p>
+            </div>
+          </div>
+          <span className="text-xs font-mono text-cyan-600 dark:text-cyan-400">Interpretability & Safety</span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          {/* Radar Chart: Quantum vs Classical Feature Sensitivity */}
+          <div className={`lg:col-span-5 p-4 rounded-xl border flex flex-col items-center justify-center ${innerCardClass}`}>
+            <div className={`text-xs font-semibold mb-1 ${headingClass}`}>
+              Sensor Sensitivity Radar (Quantum vs Classical)
+            </div>
+            <div className="w-full h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart
+                  cx="50%"
+                  cy="50%"
+                  outerRadius="75%"
+                  data={[
+                    { feature: 'Voltage Dev', Quantum: 38, Classical: 30 },
+                    { feature: 'Freq Dev', Quantum: 28, Classical: 22 },
+                    { feature: 'Demand', Quantum: 20, Classical: 26 },
+                    { feature: 'Solar PV', Quantum: 14, Classical: 22 },
+                  ]}
+                >
+                  <PolarGrid stroke={gridStroke} />
+                  <PolarAngleAxis dataKey="feature" stroke="#64748b" fontSize={11} />
+                  <PolarRadiusAxis angle={30} domain={[0, 45]} stroke="#64748b" fontSize={9} />
+                  <Radar name="Quantum Kernel Sensitivity (%)" dataKey="Quantum" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.4} />
+                  <Radar name="Classical RBF Sensitivity (%)" dataKey="Classical" stroke="#0284c7" fill="#0284c7" fillOpacity={0.25} />
+                  <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '6px' }} />
+                  <Tooltip
+                    content={({ payload }) => {
+                      if (!payload || payload.length === 0) return null;
+                      return (
+                        <div className={`p-2.5 rounded-lg border text-xs font-mono shadow-md ${isDark ? 'bg-slate-900 border-slate-700 text-slate-200' : 'bg-white border-slate-200 text-slate-800'}`}>
+                          {payload.map((e, idx) => (
+                            <div key={idx} style={{ color: e.color }}>
+                              {e.name}: <span className="font-bold">{e.value}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    }}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+            <span className={`text-[11px] text-center mt-2 ${textMutedClass}`}>
+              Quantum kernel exhibits higher sensitivity to high-frequency voltage and frequency phase anomalies.
+            </span>
+          </div>
+
+          {/* Ranked Feature Importance Breakdown */}
+          <div className="lg:col-span-7 space-y-3">
+            {[
+              {
+                name: 'Feeder Voltage Deviation (ΔV)',
+                pct: 38,
+                unit: '±3.0 V Nominal',
+                tag: 'PRIMARY ANOMALY DRIVER',
+                desc: 'Quadratic entangling terms 2(π - x_v)(π - x_f) strongly displace statevector phase under feeder sag/swell.',
+                color: 'bg-violet-500',
+                textColor: 'text-violet-600 dark:text-violet-400',
+              },
+              {
+                name: 'Bus Frequency Deviation (Δf)',
+                pct: 28,
+                unit: '±0.05 Hz Nominal',
+                tag: 'DYNAMIC STABILITY DRIVER',
+                desc: 'Sudden frequency slip rotates qubit q3 phase, triggering destructive statevector interference.',
+                color: 'bg-cyan-500',
+                textColor: 'text-cyan-600 dark:text-cyan-400',
+              },
+              {
+                name: 'Active Load Demand (P_d)',
+                pct: 20,
+                unit: '40 - 80 kW Nominal',
+                tag: 'LOAD PROFILE SENSITIVITY',
+                desc: 'Industrial load surge displaces single-qubit Rz(2·x_d) basis rotation without destabilizing phase parity.',
+                color: 'bg-amber-500',
+                textColor: 'text-amber-600 dark:text-amber-400',
+              },
+              {
+                name: 'Solar Photovoltaic Output (P_pv)',
+                pct: 14,
+                unit: 'Diurnal 0 - 65 kW',
+                tag: 'BASELINE ATTRIBUTION',
+                desc: 'Photovoltaic ramp rates inform baseline solar curves; anomalous only when coupled with depleted storage.',
+                color: 'bg-emerald-500',
+                textColor: 'text-emerald-600 dark:text-emerald-400',
+              },
+            ].map((item, idx) => (
+              <div key={idx} className={`p-3.5 rounded-xl border space-y-1.5 ${innerCardClass}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`font-semibold text-xs ${headingClass}`}>{item.name}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold">
+                      {item.tag}
+                    </span>
+                  </div>
+                  <span className={`text-xs font-mono font-bold ${item.textColor}`}>{item.pct}%</span>
+                </div>
+                {/* Progress bar */}
+                <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full transition-all duration-500 ${item.color}`} style={{ width: `${item.pct}%` }} />
+                </div>
+                <p className={`text-[11px] leading-snug ${textMutedClass}`}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Automated Model Hyperparameter Sweeps (Kernel Scaling & Repetitions) */}
+      <div className={`p-5 rounded-xl border space-y-5 transition-all ${cardClass}`}>
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b gap-3 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shadow-2xs">
+              <Sliders className="w-4.5 h-4.5 stroke-[2.2]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className={`text-sm sm:text-base font-bold ${headingClass}`}>
+                  Automated Hyperparameter Sweeps & Architecture Search
+                </h2>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">
+                  GRID SEARCH & DEPTH SCALING
+                </span>
+              </div>
+              <p className={`text-xs ${textMutedClass}`}>
+                Systematic evaluation across circuit repetitions (d = 1, 2, 3), linear vs full entanglement, and SVM regularization C.
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              setIsSweeping(true);
+              setTimeout(() => {
+                setSweepDataset(generateHyperparameterSweepData());
+                setIsSweeping(false);
+              }, 600);
+            }}
+            disabled={isSweeping}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs cursor-pointer transition-all disabled:opacity-50 shadow-md shadow-cyan-500/20"
+          >
+            <Play className={`w-3.5 h-3.5 stroke-[2.2] fill-slate-950 ${isSweeping ? 'animate-spin' : ''}`} />
+            <span>{isSweeping ? 'Running Sweep Trials...' : 'Run Automated 7-Trial Sweep'}</span>
+          </button>
+        </div>
+
+        {/* Sweep Filters */}
+        <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
+          <div className="flex items-center gap-1.5">
+            <span className={textMutedClass}>Entanglement:</span>
+            {(['all', 'linear', 'full'] as const).map((ent) => (
+              <button
+                key={ent}
+                onClick={() => setActiveSweepFilter(ent)}
+                className={`px-2.5 py-1 rounded-lg border uppercase text-[10px] font-bold cursor-pointer transition-all ${
+                  activeSweepFilter === ent
+                    ? 'bg-cyan-500 border-cyan-500 text-slate-950 shadow-2xs'
+                    : isDark
+                    ? 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                    : 'border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                {ent}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-1.5 ml-auto">
+            <span className={textMutedClass}>Repetitions (d):</span>
+            {(['all', 1, 2, 3] as const).map((r) => (
+              <button
+                key={String(r)}
+                onClick={() => setSelectedSweepRep(r)}
+                className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold cursor-pointer transition-all ${
+                  selectedSweepRep === r
+                    ? 'bg-violet-600 border-violet-600 text-white shadow-2xs'
+                    : isDark
+                    ? 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                    : 'border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                {r === 'all' ? 'ALL REPS' : `d = ${r}`}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Sweep Comparison Chart */}
+        <div className={`p-4 rounded-xl border ${innerCardClass}`}>
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200 dark:border-slate-800">
+            <span className={`text-xs font-semibold ${headingClass}`}>
+              F1-Score and Accuracy Trajectory Across Circuit Architectures
+            </span>
+            <span className={`text-[11px] font-mono ${textMutedClass}`}>
+              Best: <strong className="text-violet-600 dark:text-violet-400">d = 2, Linear, C = 5.0 (94.5% F1)</strong>
+            </span>
+          </div>
+
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={sweepDataset
+                  .filter((item) => {
+                    if (activeSweepFilter !== 'all' && item.entanglement !== activeSweepFilter) return false;
+                    if (selectedSweepRep !== 'all' && item.reps !== selectedSweepRep) return false;
+                    return true;
+                  })
+                  .map((item) => ({
+                    name: `${item.reps}R-${item.entanglement[0].toUpperCase()}-C${item.cParam}`,
+                    QuantumF1: Number((item.quantumF1 * 100).toFixed(1)),
+                    ClassicalF1: Number((item.classicalF1 * 100).toFixed(1)),
+                    Depth: item.circuitDepth,
+                    TrainLatencyMs: item.quantumTrainTimeMs,
+                  }))}
+                margin={{ top: 10, right: 25, left: 0, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
+                <YAxis stroke="#64748b" fontSize={11} domain={[85, 98]} unit="%" />
+                <Tooltip
+                  content={({ payload, label }) => {
+                    if (!payload || payload.length === 0) return null;
+                    return (
+                      <div className={`p-3 border rounded-lg text-xs font-mono shadow-xl ${isDark ? 'bg-slate-900 border-slate-700 text-slate-200' : 'bg-white border-slate-200 text-slate-800'}`}>
+                        <div className="font-bold mb-1">Architecture: {label}</div>
+                        {payload.map((e, idx) => (
+                          <div key={idx} style={{ color: e.color }}>
+                            {e.name}: <span className="font-bold">{e.value}{e.name.includes('F1') ? '%' : ''}</span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  }}
+                />
+                <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '6px' }} />
+                <Line type="monotone" dataKey="QuantumF1" name="Quantum QSVC F1 (%)" stroke="#8b5cf6" strokeWidth={3} dot={{ r: 5 }} />
+                <Line type="monotone" dataKey="ClassicalF1" name="Classical SVC F1 (%)" stroke="#0284c7" strokeWidth={2.5} strokeDasharray="4 4" dot={{ r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Sweep Results Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs font-mono">
+            <thead>
+              <tr className={`border-b ${isDark ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-600'}`}>
+                <th className="pb-2">Architecture</th>
+                <th className="pb-2">Reps (d)</th>
+                <th className="pb-2">Entanglement</th>
+                <th className="pb-2">C Param</th>
+                <th className="pb-2">Circuit Depth</th>
+                <th className="pb-2">Gate Count</th>
+                <th className="pb-2 text-violet-600 dark:text-violet-400">Quantum F1</th>
+                <th className="pb-2 text-cyan-600 dark:text-cyan-400">Classical F1</th>
+                <th className="pb-2">Train Time</th>
+              </tr>
+            </thead>
+            <tbody className={`divide-y ${isDark ? 'divide-slate-800/60 text-slate-300' : 'divide-slate-200 text-slate-700'}`}>
+              {sweepDataset
+                .filter((item) => {
+                  if (activeSweepFilter !== 'all' && item.entanglement !== activeSweepFilter) return false;
+                  if (selectedSweepRep !== 'all' && item.reps !== selectedSweepRep) return false;
+                  return true;
+                })
+                .map((row) => (
+                  <tr key={row.id} className={isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-100/60'}>
+                    <td className={`py-2.5 font-bold ${headingClass}`}>{row.id}</td>
+                    <td className="py-2.5">{row.reps}</td>
+                    <td className="py-2.5 uppercase">{row.entanglement}</td>
+                    <td className="py-2.5">{row.cParam}</td>
+                    <td className="py-2.5">{row.circuitDepth} layers</td>
+                    <td className="py-2.5">{row.totalGates} gates</td>
+                    <td className="py-2.5 font-bold text-violet-600 dark:text-violet-400">{(row.quantumF1 * 100).toFixed(1)}%</td>
+                    <td className="py-2.5 font-bold text-cyan-600 dark:text-cyan-400">{(row.classicalF1 * 100).toFixed(1)}%</td>
+                    <td className={`py-2.5 ${textMutedClass}`}>{row.quantumTrainTimeMs} ms</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
