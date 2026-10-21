@@ -8,18 +8,7 @@
     "backend": {
       "root": "backend",
       "framework": "fastapi",
-      "bindings": [
-        {
-          "type": "service",
-          "service": "q-resilience-ai",
-          "format": "url",
-          "env": "Q_RESILIENCE_AI_URL"
-        }
-      ]
-    },
-    "q-resilience-ai": {
-      "root": "q-resilience-ai",
-      "runtime": "python"
+      "entrypoint": "main.py"
     }
   },
   "rewrites": [
