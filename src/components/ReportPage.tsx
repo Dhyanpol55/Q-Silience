@@ -469,48 +469,41 @@ export const ReportPage: React.FC<ReportPageProps> = ({
             </p>
           </div>
 
-          {/* Git Push Assistant (HTTPS Token & SSH) */}
+          {/* Git Push Assistant (Public Key SSH Authentication Only) */}
           <div className="space-y-3">
             <div className="flex items-center justify-between text-xs font-mono">
               <span className={`font-semibold ${headingClass}`}>Push Source Code & Data to GitHub:</span>
-              <span className="text-[10px] text-cyan-600 dark:text-cyan-400">47 files committed</span>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                PUBLIC KEY (SSH) AUTH ONLY
+              </span>
             </div>
-            <div className={`p-3 rounded-xl border space-y-2 font-mono text-xs ${innerCardClass}`}>
+            <div className={`p-3.5 rounded-xl border space-y-3 font-mono text-xs ${innerCardClass}`}>
               <div className="flex items-center justify-between">
-                <span className={`text-[10px] ${textMutedClass}`}>Option 1: HTTPS with Personal Access Token (PAT)</span>
+                <span className="text-[11px] font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>SSH Public Key Authentication (No Account API Keys Used)</span>
+                </span>
                 <button
                   onClick={() =>
                     handleCopyCode(
-                      'git remote set-url origin https://<YOUR_GITHUB_TOKEN>@github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git && git push -u origin main'
+                      'git remote set-url origin git@github.com:Dhyanpol55/Q-Silience.git && git push -u origin main'
                     )
                   }
-                  className="text-cyan-600 dark:text-cyan-400 hover:underline text-[10px] cursor-pointer flex items-center gap-1"
+                  className="text-cyan-600 dark:text-cyan-400 hover:underline text-[10px] cursor-pointer flex items-center gap-1 font-bold"
                 >
                   <Copy className="w-3 h-3" />
-                  <span>Copy Command</span>
+                  <span>Copy SSH Push Command</span>
                 </button>
               </div>
-              <pre className={`p-2 rounded-lg border text-[10px] overflow-x-auto ${isDark ? 'bg-slate-900/90 border-slate-800 text-cyan-300' : 'bg-white border-slate-200 text-cyan-800'}`}>
-                git push https://&lt;TOKEN&gt;@github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git main
+
+              <pre className={`p-2.5 rounded-lg border text-[11px] overflow-x-auto ${isDark ? 'bg-slate-900/90 border-slate-800 text-slate-200' : 'bg-white border-slate-200 text-slate-800'}`}>
+                git remote set-url origin git@github.com:Dhyanpol55/Q-Silience.git && git push -u origin main
               </pre>
 
-              <div className="flex items-center justify-between pt-1">
-                <span className={`text-[10px] ${textMutedClass}`}>Option 2: SSH Key</span>
-                <button
-                  onClick={() =>
-                    handleCopyCode(
-                      'git remote set-url origin git@github.com:vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git && git push -u origin main'
-                    )
-                  }
-                  className="text-cyan-600 dark:text-cyan-400 hover:underline text-[10px] cursor-pointer flex items-center gap-1"
-                >
-                  <Copy className="w-3 h-3" />
-                  <span>Copy SSH</span>
-                </button>
+              <div className="text-[10px] text-slate-400 space-y-1">
+                <div>• Public Key: Uses your local SSH public key (<code className="text-slate-300">~/.ssh/id_ed25519.pub</code>)</div>
+                <div>• Zero personal account tokens, secret keys, or private API credentials are stored or transmitted.</div>
               </div>
-              <pre className={`p-2 rounded-lg border text-[10px] overflow-x-auto ${isDark ? 'bg-slate-900/90 border-slate-800 text-slate-300' : 'bg-white border-slate-200 text-slate-700'}`}>
-                git push origin main
-              </pre>
             </div>
             <p className={`text-[11px] ${textMutedClass}`}>
               All project files (FastAPI, Qiskit circuits, QSVC, Scikit-learn, tests, dataset) are committed and ready on branch <code className="text-cyan-500 font-bold">main</code>.

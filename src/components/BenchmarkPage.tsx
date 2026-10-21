@@ -698,7 +698,7 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
                         <div className="font-bold mb-1">Architecture: {label}</div>
                         {payload.map((e, idx) => (
                           <div key={idx} style={{ color: e.color }}>
-                            {e.name}: <span className="font-bold">{e.value}{e.name.includes('F1') ? '%' : ''}</span>
+                            {String(e.name ?? '')}: <span className="font-bold">{e.value}{String(e.name ?? '').includes('F1') ? '%' : ''}</span>
                           </div>
                         ))}
                       </div>

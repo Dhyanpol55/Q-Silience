@@ -7,8 +7,29 @@ export interface MicrogridSample {
   voltage_dev_v: number;
   frequency_dev_hz: number;
   is_abnormal: 0 | 1; // 0 = Normal, 1 = Abnormal
-  scenario_type: 'normal' | 'demand_spike' | 'solar_drop' | 'voltage_sag' | 'frequency_instability' | 'cascading_failure' | 'custom';
+  scenario_type:
+    | 'normal'
+    | 'normal_operation'
+    | 'demand_spike'
+    | 'demand_surge'
+    | 'solar_drop'
+    | 'low_battery_charge'
+    | 'voltage_sag'
+    | 'voltage_deviation'
+    | 'frequency_instability'
+    | 'frequency_deviation'
+    | 'cascading_failure'
+    | 'custom'
+    | string;
   scenario_reason?: string;
+}
+
+export interface SensorInput {
+  demand_kw: number;
+  solar_kw: number;
+  battery_soc_pct: number;
+  voltage_dev_v: number;
+  frequency_dev_hz: number;
 }
 
 export type FeatureKey = 'demand_kw' | 'solar_kw' | 'battery_soc_pct' | 'voltage_dev_v' | 'frequency_dev_hz';

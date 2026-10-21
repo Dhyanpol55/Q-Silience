@@ -9,6 +9,7 @@ import { Header, PageId } from './components/Header';
 import { OverviewPage } from './components/OverviewPage';
 import { LiveSimulationPage } from './components/LiveSimulationPage';
 import { ScenarioLabPage } from './components/ScenarioLabPage';
+import { AnomalyInvestigationPage } from './components/AnomalyInvestigationPage';
 import { QuantumLabPage } from './components/QuantumLabPage';
 import { BenchmarkPage } from './components/BenchmarkPage';
 import { ReportPage } from './components/ReportPage';
@@ -210,6 +211,16 @@ export default function App() {
 
         {currentPage === 'scenario_lab' && (
           <ScenarioLabPage
+            classicalModel={classicalModel}
+            quantumModel={quantumModel}
+            scaler={datasetSplit?.scaler || null}
+            theme={theme}
+          />
+        )}
+
+        {currentPage === 'investigation' && (
+          <AnomalyInvestigationPage
+            samples={samples}
             classicalModel={classicalModel}
             quantumModel={quantumModel}
             scaler={datasetSplit?.scaler || null}

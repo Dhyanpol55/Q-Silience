@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ScalerModel } from '../types/microgrid';
 import { SVCTrainedModel, predictSample } from '../services/svmSolver';
 import { transformSample } from '../services/preprocessing';
+import { MicrogridDigitalTwin } from './MicrogridDigitalTwin';
 import {
   Play,
   Pause,
@@ -459,6 +460,17 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
           Trigger: &quot;{latest.rootCause}&quot;
         </div>
       </div>
+
+      {/* Dynamic Microgrid Digital Twin Synchronized with Live Telemetry */}
+      <MicrogridDigitalTwin
+        demandKw={latest.demand_kw}
+        solarKw={latest.solar_kw}
+        batterySocPct={latest.battery_soc_pct}
+        voltageDevV={latest.voltage_dev_v}
+        frequencyDevHz={latest.frequency_dev_hz}
+        scenarioName={latest.isAnomaly ? latest.rootCause : 'Live Telemetry Stream'}
+        theme={theme}
+      />
 
       {/* Live Recharts Streaming Chart: Voltage & Frequency Deviations */}
       <div className={`p-5 rounded-2xl border space-y-4 transition-colors ${cardClass}`}>

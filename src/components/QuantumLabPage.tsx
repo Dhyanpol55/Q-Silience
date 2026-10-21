@@ -72,16 +72,21 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({ kernelMatrix, th
               <Atom className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
-                <span>Quantum Circuit & Kernel Architecture</span>
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
+                  Quantum Circuit & Kernel Architecture
+                </h1>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-violet-100 dark:bg-violet-950/80 text-violet-800 dark:text-violet-300 border border-violet-200 dark:border-violet-800">
+                  QISKIT 1.3+ ZZFEATUREMAP
+                </span>
+              </div>
               <p className={`mt-0.5 text-xs sm:text-sm ${textMutedClass}`}>
-                Interactive inspection of Qiskit&apos;s <strong>ZZFeatureMap</strong>, Hilbert space statevector mapping, and Fidelity Quantum Kernel.
+                Mathematical formulation, non-linear Hilbert space mapping ($2^4 = 16$ dimensions), and Fidelity Quantum Kernel ($|\langle\Phi(x)|\Phi(z)\rangle|^2$).
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className={`text-xs font-mono ${textMutedClass}`}>Repetitions (d):</span>
+            <span className={`text-xs font-mono ${textMutedClass}`}>Circuit Repetitions (d):</span>
             <div className={`flex rounded-xl p-0.5 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200'}`}>
               {[1, 2].map((r) => (
                 <button
@@ -98,6 +103,59 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({ kernelMatrix, th
                   d = {r}
                 </button>
               ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mathematical Foundation & Workflow Card */}
+      <div className={`p-5 rounded-2xl border ${cardClass}`}>
+        <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-violet-500" />
+            <h2 className={`text-sm font-bold ${headingClass}`}>
+              Quantum-Kernel Workflow & Mathematical Formulation
+            </h2>
+          </div>
+          <span className="text-[10px] font-mono text-violet-600 dark:text-violet-400 font-bold">
+            HAVEL-HILBERT PROJECTION
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div className={`p-3.5 rounded-xl border ${innerCardClass} space-y-1.5`}>
+            <div className="font-bold font-mono text-cyan-600 dark:text-cyan-400">
+              1. Feature Normalization & Angle Mapping
+            </div>
+            <p className={textMutedClass}>
+              Continuous sensor features x in R^4 (Demand, Solar, Voltage Dev, Freq Dev) are scaled into angle coordinates [0, 2π] using training-fit MinMaxScaler:
+            </p>
+            <div className="p-2 rounded bg-slate-900 text-cyan-300 font-mono text-[11px]">
+              {'x_j\' = 2π · (x_j - min(x_j)) / (max(x_j) - min(x_j))'}
+            </div>
+          </div>
+
+          <div className={`p-3.5 rounded-xl border ${innerCardClass} space-y-1.5`}>
+            <div className="font-bold font-mono text-violet-600 dark:text-violet-400">
+              2. ZZ Feature Map Unitary U_Φ(x)
+            </div>
+            <p className={textMutedClass}>
+              Applies Hadamard superposition followed by single-qubit phase rotations and two-qubit entangling ZZ terms:
+            </p>
+            <div className="p-2 rounded bg-slate-900 text-violet-300 font-mono text-[11px]">
+              {'φ_j(x) = x_j,  φ_jk(x) = (π - x_j)(π - x_k)'}
+            </div>
+          </div>
+
+          <div className={`p-3.5 rounded-xl border ${innerCardClass} space-y-1.5`}>
+            <div className="font-bold font-mono text-emerald-600 dark:text-emerald-400">
+              3. Fidelity Quantum Kernel K_ij
+            </div>
+            <p className={textMutedClass}>
+              Calculates the transition probability (quantum state overlap) in 16-dimensional complex Hilbert space:
+            </p>
+            <div className="p-2 rounded bg-slate-900 text-emerald-300 font-mono text-[11px]">
+              {'K(x, z) = |⟨Φ(x)|Φ(z)⟩|² = |⟨0ⁿ| U_Φ†(x) U_Φ(z) |0ⁿ⟩|²'}
             </div>
           </div>
         </div>
@@ -315,6 +373,32 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({ kernelMatrix, th
             </button>
           </div>
         )}
+
+        {/* Qiskit Exact Circuit ASCII Summary */}
+        <div className={`p-4 rounded-xl border text-xs font-mono space-y-2 ${innerCardClass}`}>
+          <div className="flex items-center justify-between">
+            <span className="font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-2">
+              <Cpu className="w-4 h-4" />
+              <span>Qiskit 1.3+ Compiled Circuit Representation (ZZFeatureMap)</span>
+            </span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-violet-950 text-violet-300 border border-violet-800">
+              num_qubits=4, reps={reps}, linear
+            </span>
+          </div>
+          <div className="overflow-x-auto p-3 rounded-lg bg-slate-950 text-slate-300 border border-slate-800 text-[10px] leading-tight select-all">
+            <pre>
+{`     ┌───┐┌─────────────┐                                                             ┌───┐┌─────────────┐
+q_0: ┤ H ├┤ Rz(2.0*x[0]) ├──■─────────────────────────────■──────────────────────────┤ H ├┤ Rz(2.0*x[0]) ├──■─────────────────────────────■──────────
+     ├───┤├─────────────┤┌─┴─┐┌────────────────────────┐┌─┴─┐                         ├───┤├─────────────┤┌─┴─┐┌────────────────────────┐┌─┴─┐     
+q_1: ┤ H ├┤ Rz(2.0*x[1]) ├┤ X ├┤ Rz(2*(π-x[0])*(π-x[1])) ├┤ X ├──■───────────────────┤ H ├┤ Rz(2.0*x[1]) ├┤ X ├┤ Rz(2*(π-x[0])*(π-x[1])) ├┤ X ├──■──
+     ├───┤├─────────────┤└───┘└────────────────────────┘└───┘┌─┴─┐┌───────────────────┴───┤├─────────────┤└───┘└────────────────────────┘└───┘┌─┴─┐┌
+q_2: ┤ H ├┤ Rz(2.0*x[2]) ├────────────────────────────────────┤ X ├┤ Rz(2*(π-x[1])*(π-x[2])) ├┤ Rz(2.0*x[2]) ├────────────────────────────────────┤ X ├┤
+     ├───┤├─────────────┤                                     └───┘└───────────────────┬───┤├─────────────┤                                     └───┘└
+q_3: ┤ H ├┤ Rz(2.0*x[3]) ├─────────────────────────────────────────────────────────────┤ X ├┤ Rz(2.0*x[3]) ├───────────────────────────────────────────
+     └───┘└─────────────┘                                                              └───┘└─────────────┘                                           `}
+            </pre>
+          </div>
+        </div>
       </div>
 
       {/* NISQ Hardware Noise & Circuit Error Modeling Panel */}
