@@ -1,15 +1,10 @@
 version: '3.8'
 
-# Q-Resilience AI: Quantum Microgrid Anomaly Detection Platform
-# Orchestrates FastAPI + Qiskit backend and Vite + React frontend
-# Repository: https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git
-# Team: Ctrl_AI (VTU-QFF-HC-0025)
-
 services:
   backend:
     build:
-      context: .
-      dockerfile: Dockerfile.backend
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: q-resilience-backend
     ports:
       - "8000:8000"
@@ -17,7 +12,7 @@ services:
       - PORT=8000
       - PYTHONUNBUFFERED=1
     volumes:
-      - ./data:/app/data
+      - ./backend/data:/app/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -28,8 +23,8 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.frontend
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: q-resilience-frontend
     ports:
       - "3000:3000"
