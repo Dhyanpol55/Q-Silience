@@ -592,17 +592,64 @@ export const ReportPage: React.FC<ReportPageProps> = ({
 
       {/* Render & FastAPI Backend Live Tester */}
       <div className={`p-5 rounded-xl border space-y-4 transition-colors ${cardClass}`}>
-        <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'} gap-2`}>
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'} gap-3`}>
           <div>
-            <h2 className={`text-sm font-semibold flex items-center gap-2 ${headingClass}`}>
-              <Server className="w-4 h-4 text-cyan-500" />
-              <span>Render Backend: FastAPI & Uvicorn API Explorer</span>
-            </h2>
-            <p className={`text-xs ${textMutedClass}`}>
-              Interactive client for the Python backend powering Qiskit quantum circuits and classical ML on Render.
-            </p>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shadow-2xs">
+                <Server className="w-4 h-4 text-cyan-500" />
+              </div>
+              <div>
+                <h2 className={`text-sm sm:text-base font-bold flex items-center gap-2 ${headingClass}`}>
+                  <span>Render Backend: FastAPI & Qiskit ML Service</span>
+                </h2>
+                <p className={`text-xs ${textMutedClass}`}>
+                  Deploy and connect the Python FastAPI service on Render running genuine Qiskit 1.3+ circuits and Scikit-learn models.
+                </p>
+              </div>
+            </div>
           </div>
-          <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400">FastAPI 0.115+ · Uvicorn</span>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://dashboard.render.com/blueprints"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition-all cursor-pointer shadow-md shadow-cyan-500/20"
+            >
+              <span>Deploy on Render</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+            <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-semibold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800">
+              render.yaml Ready
+            </span>
+          </div>
+        </div>
+
+        {/* 3-Step Render Setup Guide */}
+        <div className={`p-4 rounded-xl border text-xs font-mono space-y-2.5 ${innerCardClass}`}>
+          <div className="font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-cyan-500" />
+            <span>How to Deploy Backend to Render in 3 Steps:</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px]">
+            <div className={`p-3 rounded-lg border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+              <div className="font-bold text-slate-200 mb-1">Step 1: Open Render Dashboard</div>
+              <p className={textMutedClass}>
+                Go to <a href="https://dashboard.render.com" target="_blank" rel="noopener noreferrer" className="text-cyan-500 underline">dashboard.render.com</a> &gt; Click <strong>New +</strong> &gt; Select <strong>Blueprint</strong>.
+              </p>
+            </div>
+            <div className={`p-3 rounded-lg border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+              <div className="font-bold text-slate-200 mb-1">Step 2: Connect GitHub Repo</div>
+              <p className={textMutedClass}>
+                Select <code className="text-cyan-400 font-bold">Dhyanpol55/Q-Silience</code>. Render automatically reads root <code className="text-slate-300">render.yaml</code> and builds the backend.
+              </p>
+            </div>
+            <div className={`p-3 rounded-lg border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+              <div className="font-bold text-slate-200 mb-1">Step 3: Paste URL &amp; Connect</div>
+              <p className={textMutedClass}>
+                Copy your Render web service URL (e.g. <code className="text-cyan-400">https://q-resilience-backend.onrender.com</code>) below and click Execute.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
