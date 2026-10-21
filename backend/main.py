@@ -9,8 +9,12 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 import time
 import io
+import os
 import pandas as pd
 import numpy as np
+
+# Vercel service binding for internal q-resilience-ai service
+Q_RESILIENCE_AI_URL = os.environ.get("Q_RESILIENCE_AI_URL")
 
 # Qiskit and Scikit-learn
 try:
@@ -279,6 +283,7 @@ state.generate_data(n_samples=100, seed=42)
 # Endpoints
 # -----------------------------------------------------------------------------
 @app.get("/health")
+@app.get("/api/health")
 def health_check():
     return {
         "status": "healthy",
@@ -287,6 +292,7 @@ def health_check():
         "qiskit_version": QISKIT_VERSION,
         "models_ready": state.classical_model is not None,
         "dataset_samples": len(state.df),
+        "q_resilience_service_bound": bool(Q_RESILIENCE_AI_URL),
     }
 
 @app.get("/api/dataset")

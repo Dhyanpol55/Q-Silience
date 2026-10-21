@@ -48,14 +48,16 @@ export interface BackendCircuitInfo {
   ascii_diagram?: string;
 }
 
-const DEFAULT_BACKEND_URL = 'https://q-resilience-api.onrender.com';
 const STORAGE_KEY = 'q_resilience_backend_url';
 
 export function getStoredBackendUrl(): string {
   try {
-    return localStorage.getItem(STORAGE_KEY) || DEFAULT_BACKEND_URL;
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored !== null && stored !== undefined) return stored;
+    // When running on Vercel or same-domain, default to empty string for relative rewrites (/api and /health)
+    return (import.meta as any).env?.VITE_API_BASE_URL ?? '';
   } catch {
-    return DEFAULT_BACKEND_URL;
+    return '';
   }
 }
 
@@ -77,11 +79,20 @@ export async function pingBackend(baseUrl: string = getStoredBackendUrl()): Prom
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-    const res = await fetch(`${cleanUrl}/health`, {
+    let res = await fetch(`${cleanUrl}/health`, {
       method: 'GET',
       headers: { Accept: 'application/json' },
       signal: controller.signal,
     });
+
+    if (!res.ok && res.status === 404) {
+      res = await fetch(`${cleanUrl}/api/health`, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        signal: controller.signal,
+      });
+    }
+
     clearTimeout(timeoutId);
 
     const latencyMs = Math.round(performance.now() - t0);
