@@ -35,6 +35,11 @@ export default function App() {
     }
   }, [theme]);
 
+  // Smooth scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
   // Training & Evaluation states
   const [isTraining, setIsTraining] = useState<boolean>(true);
   const [classicalModel, setClassicalModel] = useState<SVCTrainedModel | null>(null);

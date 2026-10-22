@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ModelMetrics, LowDataBenchmarkPoint, HyperparameterSweepPoint } from '../types/microgrid';
 import { generateHyperparameterSweepData } from '../services/quantumEngine';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 import {
   BarChart3,
   Scale,
@@ -58,6 +59,7 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
   theme,
 }) => {
   const isDark = theme === 'dark';
+  useScrollReveal([lowDataPoints.length]);
   const [activeSweepFilter, setActiveSweepFilter] = useState<'all' | 'linear' | 'full'>('all');
   const [selectedSweepRep, setSelectedSweepRep] = useState<number | 'all'>('all');
   const [sweepDataset, setSweepDataset] = useState<HyperparameterSweepPoint[]>(generateHyperparameterSweepData());

@@ -1,10 +1,11 @@
 import React from 'react';
 import { MicrogridSample, ModelMetrics } from '../types/microgrid';
 import { SVCTrainedModel } from '../services/svmSolver';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 import {
   Zap,
   Info,
-  ArrowUpRight,
+  ChevronRight,
   TrendingUp,
   Database,
   GitFork,
@@ -52,6 +53,9 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
 }) => {
   const isDark = theme === 'dark';
 
+  // Enable viewport scroll animations
+  useScrollReveal([samples.length]);
+
   const normalSamples = samples.filter((s) => s.is_abnormal === 0);
   const abnormalSamples = samples.filter((s) => s.is_abnormal === 1);
   const abnormalPct = ((abnormalSamples.length / samples.length) * 100).toFixed(1);
@@ -93,22 +97,22 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
     reason: s.scenario_reason,
   }));
 
-  // Theme-adaptive classes
+  // Standardized semantic surface and text tokens (under 12 distinct text colors)
   const cardClass = isDark
     ? 'bg-slate-900/80 border-slate-800'
     : 'bg-white border-slate-200 shadow-xs';
   const innerCardClass = isDark
-    ? 'bg-slate-950 border-slate-800/80'
-    : 'bg-slate-50 border-slate-200';
-  const headingClass = isDark ? 'text-white' : 'text-slate-900';
+    ? 'bg-slate-950/70 border-slate-800/80'
+    : 'bg-slate-50/80 border-slate-200/80';
+  const headingClass = isDark ? 'text-slate-100' : 'text-slate-900';
   const textMutedClass = isDark ? 'text-slate-400' : 'text-slate-600';
   const gridStroke = isDark ? '#1e293b' : '#e2e8f0';
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      {/* Hero Section */}
+      {/* Hero Section with Scroll Reveal */}
       <div
-        className={`p-6 sm:p-8 rounded-2xl border relative overflow-hidden transition-all ${
+        className={`scroll-reveal p-6 sm:p-8 rounded-2xl border relative overflow-hidden transition-all ${
           isDark
             ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950/40 border-slate-800 shadow-xl'
             : 'bg-gradient-to-br from-white via-cyan-50/40 to-slate-50 border-slate-200/90 shadow-xs'
@@ -116,12 +120,14 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
       >
         <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-3xl">
+          {/* Issue 5 Fix: Replaced long all-caps with readable Title Case */}
           <div className="text-xs font-mono text-cyan-600 dark:text-cyan-400 mb-2 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-cyan-500 inline-block animate-pulse" />
-            <span>RESEARCH INITIATIVE</span>
+            <span className="font-semibold text-slate-800 dark:text-slate-200">Research Initiative</span>
             <span aria-hidden="true" className="text-slate-400 dark:text-slate-500">·</span>
-            <span>VTU QISKIT FALL FEST 2026</span>
+            <span className="text-slate-600 dark:text-slate-400 font-medium">VTU Qiskit Fall Fest 2026</span>
           </div>
+
           <h1 className={`text-2xl sm:text-3xl font-extrabold tracking-tight leading-snug ${headingClass}`}>
             Quantum-Enhanced Microgrid Anomaly Detection
           </h1>
@@ -130,43 +136,36 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
+            {/* Issue 1 & Issue 8 Fix: Standardized btn-primary with ChevronRight internal navigation icon */}
             <button
               onClick={onNavigateToScenarioLab}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-md shadow-cyan-500/20 cursor-pointer"
+              className="btn-primary group"
             >
-              <span className="w-6 h-6 rounded-lg bg-cyan-600/30 flex items-center justify-center">
-                <Zap className="w-3.5 h-3.5 text-slate-950 fill-slate-950 stroke-[2.2]" />
-              </span>
+              <Zap className="w-3.5 h-3.5 fill-current stroke-[2.2]" />
               <span>Launch Scenario Lab</span>
-              <ArrowUpRight className="w-4 h-4 stroke-[2.2]" />
+              <ChevronRight className="w-3.5 h-3.5 stroke-[2.5] transition-transform group-hover:translate-x-0.5" />
             </button>
+
+            {/* Issue 1 Fix: Standardized btn-secondary */}
             <button
               onClick={onNavigateToQuantumLab}
-              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer shadow-xs ${
-                isDark
-                  ? 'bg-slate-800/90 hover:bg-slate-700 text-slate-200 border-slate-700'
-                  : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200 hover:border-slate-300'
-              }`}
+              className="btn-secondary group"
             >
-              <span className={`w-6 h-6 rounded-lg flex items-center justify-center ${
-                isDark ? 'bg-slate-700/60 text-cyan-400' : 'bg-cyan-50 text-cyan-700 border border-cyan-100'
-              }`}>
-                <Atom className="w-3.5 h-3.5 stroke-[2.2]" />
-              </span>
+              <Atom className="w-3.5 h-3.5 text-cyan-500 stroke-[2.2]" />
               <span>Inspect ZZFeatureMap Circuit</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Dataset & Architecture Status Cards with Enhanced Icons */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {/* Dataset & Architecture Status Cards (Scroll Reveal with Stagger) */}
+      <div className="scroll-reveal delay-100 grid grid-cols-2 sm:grid-cols-4 gap-4">
         {/* Total Dataset */}
         <div className={`p-4 rounded-xl border transition-all hover:scale-[1.01] ${cardClass}`}>
           <div className="flex items-center justify-between mb-2">
             <div className={`text-xs font-mono font-medium ${textMutedClass}`}>TOTAL DATASET</div>
-            <div className="w-9 h-9 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200/80 dark:border-cyan-800/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shadow-2xs">
-              <Database className="w-4.5 h-4.5 stroke-[2.2]" />
+            <div className="w-8 h-8 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200/80 dark:border-cyan-800/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+              <Database className="w-4 h-4 stroke-[2]" />
             </div>
           </div>
           <div className={`text-2xl font-bold font-mono ${headingClass}`}>{samples.length}</div>
@@ -179,8 +178,8 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
         <div className={`p-4 rounded-xl border transition-all hover:scale-[1.01] ${cardClass}`}>
           <div className="flex items-center justify-between mb-2">
             <div className={`text-xs font-mono font-medium ${textMutedClass}`}>TRAIN / TEST SPLIT</div>
-            <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-2xs">
-              <GitFork className="w-4.5 h-4.5 stroke-[2.2]" />
+            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center">
+              <GitFork className="w-4 h-4 stroke-[2]" />
             </div>
           </div>
           <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400 font-mono">75% / 25%</div>
@@ -191,8 +190,8 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
         <div className={`p-4 rounded-xl border transition-all hover:scale-[1.01] ${cardClass}`}>
           <div className="flex items-center justify-between mb-2">
             <div className={`text-xs font-mono font-medium ${textMutedClass}`}>CLASSICAL SVC</div>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-2xs">
-              <Cpu className="w-4.5 h-4.5 stroke-[2.2]" />
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <Cpu className="w-4 h-4 stroke-[2]" />
             </div>
           </div>
           <div className={`text-2xl font-bold font-mono ${headingClass}`}>
@@ -207,8 +206,8 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
         <div className={`p-4 rounded-xl border transition-all hover:scale-[1.01] ${cardClass}`}>
           <div className="flex items-center justify-between mb-2">
             <div className={`text-xs font-mono font-medium ${textMutedClass}`}>QUANTUM QSVC</div>
-            <div className="w-9 h-9 rounded-xl bg-violet-50 dark:bg-violet-950/60 border border-violet-200/80 dark:border-violet-800/60 text-violet-600 dark:text-violet-400 flex items-center justify-center shadow-2xs">
-              <Atom className="w-4.5 h-4.5 stroke-[2.2]" />
+            <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-950/60 border border-violet-200/80 dark:border-violet-800/60 text-violet-600 dark:text-violet-400 flex items-center justify-center">
+              <Atom className="w-4 h-4 stroke-[2]" />
             </div>
           </div>
           <div className="text-2xl font-bold text-violet-600 dark:text-violet-400 font-mono">
@@ -220,13 +219,13 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
         </div>
       </div>
 
-      {/* Recharts Scatter Visualizer: Voltage vs Frequency Space */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Recharts Scatter Visualizer & Sidebar (Scroll Reveal with Stagger) */}
+      <div className="scroll-reveal delay-150 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className={`lg:col-span-2 p-5 rounded-2xl border transition-colors ${cardClass}`}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shadow-2xs">
-                <Activity className="w-4.5 h-4.5" />
+              <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+                <Activity className="w-4 h-4" />
               </div>
               <div>
                 <h2 className={`text-sm font-bold ${headingClass}`}>Recharts Telemetry Distribution Space</h2>
@@ -237,11 +236,11 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
             </div>
             <div className="flex items-center gap-4 text-xs font-mono">
               <div className={`flex items-center gap-1.5 ${headingClass}`}>
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-2xs shadow-emerald-500/50" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
                 <span>Normal ({normalSamples.length})</span>
               </div>
               <div className={`flex items-center gap-1.5 ${headingClass}`}>
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block shadow-2xs shadow-rose-500/50" />
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
                 <span>Abnormal ({abnormalSamples.length})</span>
               </div>
             </div>
@@ -295,7 +294,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
                         </div>
                         <div>Demand: <span className="font-bold">{d.demand} kW</span></div>
                         <div>Solar: <span className="font-bold">{d.solar} kW</span></div>
-                        <div className="mt-1 text-[10px] text-slate-500 font-sans italic">{d.reason}</div>
+                        <div className="mt-1 text-xs text-slate-500 font-sans italic">{d.reason}</div>
                       </div>
                     );
                   }}
@@ -307,12 +306,12 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
           </div>
         </div>
 
-        {/* Configured Grid Scenarios with Enhanced Icons */}
+        {/* Issue 9 Fix: Reduced visual noise in Configured Grid Scenarios sidebar */}
         <div className={`p-5 rounded-2xl border flex flex-col justify-between transition-colors ${cardClass}`}>
           <div>
             <div className="flex items-center gap-2.5 mb-1">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center">
-                <Layers className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center">
+                <Layers className="w-4 h-4 stroke-[2]" />
               </div>
               <h2 className={`text-sm font-bold ${headingClass}`}>Configured Grid Scenarios</h2>
             </div>
@@ -320,17 +319,18 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
               Transparent, deterministic rules generating normal and faulted conditions
             </p>
 
-            <div className="space-y-3">
-              {/* Normal */}
+            <div className="space-y-2.5">
+              {/* Normal Equilibrium */}
               <div className={`p-3 rounded-xl border transition-colors ${innerCardClass}`}>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className={`font-semibold ${headingClass} flex items-center gap-2`}>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                     Normal Equilibrium
                   </span>
                   <span className="font-mono text-slate-500">{scenarioCounts['normal'] || 0} samples</span>
                 </div>
-                <p className={`mt-1 text-[11px] leading-snug ${textMutedClass}`}>
+                {/* Issue 6 Fix: Changed from text-[11px] to text-xs leading-relaxed */}
+                <p className={`mt-1.5 text-xs leading-relaxed ${textMutedClass}`}>
                   Balanced generation and load within IEEE 1547 nominal envelope (±3V, ±0.05Hz).
                 </p>
               </div>
@@ -338,13 +338,14 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
               {/* Demand Spike */}
               <div className={`p-3 rounded-xl border transition-colors ${innerCardClass}`}>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5 text-amber-500" />
+                  <span className={`font-semibold ${headingClass} flex items-center gap-2`}>
+                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
                     Industrial Demand Spike
                   </span>
                   <span className="font-mono text-slate-500">{scenarioCounts['demand_spike'] || 0} samples</span>
                 </div>
-                <p className={`mt-1 text-[11px] leading-snug ${textMutedClass}`}>
+                {/* Issue 6 Fix: Changed from text-[11px] to text-xs leading-relaxed */}
+                <p className={`mt-1.5 text-xs leading-relaxed ${textMutedClass}`}>
                   Load surge exceeding BESS inverter ramping rate causing voltage sag (-8V).
                 </p>
               </div>
@@ -352,29 +353,31 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
               {/* Solar Drop */}
               <div className={`p-3 rounded-xl border transition-colors ${innerCardClass}`}>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                    <Sun className="w-3.5 h-3.5 text-amber-500" />
+                  <span className={`font-semibold ${headingClass} flex items-center gap-2`}>
+                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
                     Solar PV Inverter Trip
                   </span>
                   <span className="font-mono text-slate-500">{scenarioCounts['solar_drop'] || 0} samples</span>
                 </div>
-                <p className={`mt-1 text-[11px] leading-snug ${textMutedClass}`}>
+                {/* Issue 6 Fix: Changed from text-[11px] to text-xs leading-relaxed */}
+                <p className={`mt-1.5 text-xs leading-relaxed ${textMutedClass}`}>
                   Sudden 85% generation drop during midday peak causing frequency droop (-0.24Hz).
                 </p>
               </div>
 
-              {/* Cascading */}
+              {/* Cascading Overload */}
               <div className={`p-3 rounded-xl border transition-colors ${innerCardClass}`}>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+                  <span className={`font-semibold ${headingClass} flex items-center gap-2`}>
+                    <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
                     Cascading Overload
                   </span>
                   <span className="font-mono text-slate-500">
                     {(scenarioCounts['cascading_failure'] || 0) + (scenarioCounts['voltage_sag'] || 0)} samples
                   </span>
                 </div>
-                <p className={`mt-1 text-[11px] leading-snug ${textMutedClass}`}>
+                {/* Issue 6 Fix: Changed from text-[11px] to text-xs leading-relaxed */}
+                <p className={`mt-1.5 text-xs leading-relaxed ${textMutedClass}`}>
                   Compounded faults: low battery (&lt;15%) coupled with solar drop and peak load.
                 </p>
               </div>
@@ -382,11 +385,11 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
           </div>
 
           <div
-            className={`mt-4 pt-3 border-t text-[11px] flex items-center gap-2 ${
+            className={`mt-4 pt-3 border-t text-xs flex items-center gap-2 ${
               isDark ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-500'
             }`}
           >
-            <span className="w-4 h-4 rounded-full bg-cyan-500/10 text-cyan-500 flex items-center justify-center shrink-0">
+            <span className="w-4 h-4 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
               <Info className="w-3 h-3" />
             </span>
             <span>Deterministic seed ensures 100% reproducible experiments.</span>
@@ -394,12 +397,12 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
         </div>
       </div>
 
-      {/* Recharts AreaChart: 24-Hour Telemetry Profiles with Enhanced Icon Header */}
-      <div className={`p-5 rounded-2xl border space-y-4 transition-colors ${cardClass}`}>
+      {/* Recharts AreaChart: 24-Hour Telemetry Profiles (Scroll Reveal) */}
+      <div className={`scroll-reveal delay-200 p-5 rounded-2xl border space-y-4 transition-colors ${cardClass}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shadow-2xs">
-              <TrendingUp className="w-4.5 h-4.5" />
+            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
             </div>
             <div>
               <h2 className={`text-sm font-bold ${headingClass}`}>
@@ -410,8 +413,9 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
               </p>
             </div>
           </div>
-          <span className="text-xs font-mono text-cyan-600 dark:text-cyan-400 font-semibold px-2 py-0.5 rounded-md bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800">
-            Time-Series Telemetry
+          {/* Issue 7 Fix: Replaced button-like saturated badge with quiet, unboxed neutral label */}
+          <span className="text-xs font-mono text-slate-500 dark:text-slate-400 font-medium">
+            Time-Series Telemetry (24h)
           </span>
         </div>
 
@@ -420,11 +424,11 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
             <AreaChart data={timeSeriesData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorSolar" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4} />
+                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.35} />
                   <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorDemand" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
+                  <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.35} />
                   <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
                 </linearGradient>
               </defs>
@@ -458,13 +462,13 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
         </div>
       </div>
 
-      {/* Scientific Integrity Disclaimer */}
+      {/* Scientific Integrity Disclaimer (Scroll Reveal) */}
       <div
-        className={`p-4 rounded-xl border text-xs flex items-start gap-3 transition-colors ${
-          isDark ? 'bg-slate-900/60 border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
+        className={`scroll-reveal delay-300 p-4 rounded-xl border text-xs flex items-start gap-3 transition-colors ${
+          isDark ? 'bg-slate-900/60 border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
         }`}
       >
-        <span className="w-5 h-5 rounded-lg bg-cyan-500/10 text-cyan-500 flex items-center justify-center shrink-0 mt-0.5">
+        <span className="w-5 h-5 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 mt-0.5">
           <Info className="w-3.5 h-3.5" />
         </span>
         <div>

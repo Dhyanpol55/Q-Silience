@@ -5,6 +5,7 @@ import { transformSample } from '../services/preprocessing';
 import { PRESET_SCENARIOS, evaluatePhysicalLimits, PresetScenario } from '../services/scenarioEngine';
 import { MicrogridDigitalTwin } from './MicrogridDigitalTwin';
 import { predictWithBackend, getStoredBackendUrl } from '../services/apiClient';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 import {
   Zap,
   AlertTriangle,
@@ -41,6 +42,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
   theme,
 }) => {
   const isDark = theme === 'dark';
+  useScrollReveal();
 
   // Sensor State initialized with normal operation
   const [demand, setDemand] = useState<number>(52.0);

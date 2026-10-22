@@ -258,7 +258,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Navigation Segmented Control */}
             <nav
-              className={`hidden md:flex items-center space-x-1 p-1 rounded-xl border transition-colors overflow-x-auto ${
+              className={`hidden md:flex items-center gap-1 p-1 rounded-xl border transition-colors overflow-x-auto ${
                 isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-slate-100 border-slate-200'
               }`}
             >
@@ -268,7 +268,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <button
                     key={item.id}
                     onClick={() => onSelectPage(item.id)}
-                    className={`group flex items-center space-x-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150 cursor-pointer shrink-0 ${
+                    className={`group flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150 cursor-pointer shrink-0 ${
                       isActive
                         ? isDark
                           ? 'bg-cyan-500 text-slate-950 font-semibold shadow-xs'
@@ -285,24 +285,24 @@ export const Header: React.FC<HeaderProps> = ({
               })}
             </nav>
 
-            {/* Status Bar, Backend Indicator & Theme Switcher */}
-            <div className="flex items-center space-x-2 sm:space-x-3 text-xs font-mono">
-              {/* Backend Status Pill */}
+            {/* Utility Action Controls: Perfectly vertically centered with unified 36px height & 12px text */}
+            <div className="flex items-center gap-2.5 ml-4 shrink-0">
+              {/* Backend Status Button (Unified h-9 height, >=12px text) */}
               <button
                 onClick={() => setBackendModalOpen(true)}
                 title="Inspect FastAPI Backend Status & Endpoints"
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer text-[11px] ${
+                className={`h-9 flex items-center gap-2 px-3 rounded-xl border text-xs font-medium transition-all cursor-pointer shrink-0 ${
                   backendHealth.status === 'healthy'
                     ? isDark
                       ? 'bg-emerald-950/60 border-emerald-800/80 text-emerald-300'
                       : 'bg-emerald-50 border-emerald-300 text-emerald-800'
                     : isDark
-                    ? 'bg-slate-900 border-slate-800 text-slate-400'
-                    : 'bg-slate-100 border-slate-300 text-slate-600'
+                    ? 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800'
+                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs'
                 }`}
               >
-                <Server className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline font-sans">
+                <Server className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline font-sans text-xs font-medium">
                   {backendHealth.status === 'healthy' ? (
                     <>FastAPI: {backendHealth.latencyMs}ms</>
                   ) : backendHealth.status === 'checking' ? (
@@ -312,7 +312,7 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                 </span>
                 <span
-                  className={`w-2 h-2 rounded-full ${
+                  className={`w-2 h-2 rounded-full shrink-0 ${
                     backendHealth.status === 'healthy'
                       ? 'bg-emerald-500'
                       : backendHealth.status === 'checking'
@@ -322,41 +322,35 @@ export const Header: React.FC<HeaderProps> = ({
                 />
               </button>
 
-              {/* Theme Toggle (Light / White vs Dark) */}
+              {/* Theme Toggle Button (Unified h-9 height, >=12px text) */}
               <button
                 onClick={onToggleTheme}
                 title={isDark ? 'Switch to Pure White Background' : 'Switch to Dark Mode'}
-                className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer shadow-2xs ${
+                className={`h-9 flex items-center gap-2 px-3 rounded-xl border text-xs font-medium transition-all cursor-pointer shadow-2xs shrink-0 ${
                   isDark
-                    ? 'bg-slate-900 border-slate-800 text-amber-300 hover:bg-slate-800'
+                    ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800'
                     : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
-                <span
-                  className={`w-6 h-6 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110 ${
-                    isDark
-                      ? 'bg-amber-950/80 text-amber-400 border border-amber-800/50'
-                      : 'bg-amber-50 text-amber-600 border border-amber-200/80'
-                  }`}
-                >
-                  {isDark ? <Sun className="w-3.5 h-3.5 stroke-[2.2]" /> : <Moon className="w-3.5 h-3.5 stroke-[2.2]" />}
+                <span className={isDark ? 'text-amber-400' : 'text-slate-600'}>
+                  {isDark ? <Sun className="w-4 h-4 stroke-[2]" /> : <Moon className="w-4 h-4 stroke-[2]" />}
                 </span>
-                <span className="hidden lg:inline font-sans font-medium text-[11px]">
-                  {isDark ? 'White' : 'Dark'}
+                <span className="hidden lg:inline font-sans text-xs font-medium">
+                  {isDark ? 'Light' : 'Dark'}
                 </span>
               </button>
 
-              {/* Reset Data Button */}
+              {/* Reset Data Button (Unified h-9 height, standardized icon button) */}
               <button
                 onClick={onResetData}
                 title="Reset dataset with new random seed"
-                className={`group p-2 rounded-xl border transition-colors cursor-pointer shadow-2xs ${
+                className={`h-9 w-9 flex items-center justify-center rounded-xl border transition-all cursor-pointer shadow-2xs shrink-0 ${
                   isDark
                     ? 'border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 bg-slate-900'
-                    : 'border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-white'
+                    : 'border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 bg-white'
                 }`}
               >
-                <RefreshCw className="w-3.5 h-3.5 stroke-[2.2] group-hover:rotate-180 transition-transform duration-500" />
+                <RefreshCw className="w-3.5 h-3.5 stroke-[2] hover:rotate-180 transition-transform duration-500" />
               </button>
             </div>
           </div>
