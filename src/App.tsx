@@ -148,43 +148,59 @@ export default function App() {
   };
 
   // Ordered list of tabs for scroll-spy and sequential navigation
-  const tabSequence: { id: PageId; label: string; number: string; subtitle: string }[] = useMemo(
+  const tabSequence = useMemo(
     () => [
-      { id: 'overview', label: 'Overview', number: '01', subtitle: 'Executive Dashboard & Real-Time Telemetry' },
-      { id: 'scenario_lab', label: 'Scenario Lab', number: '02', subtitle: 'Microgrid Physics Compliance & Fault Injector' },
-      { id: 'investigation', label: 'Investigation', number: '03', subtitle: 'Historical Telemetry Space & Deep Anomaly Forensics' },
-      { id: 'live_stream', label: 'Live Stream', number: '04', subtitle: 'Real-Time Streaming Telemetry & Continuous Dual ML' },
-      { id: 'quantum_lab', label: 'Quantum Circuit', number: '05', subtitle: 'Qiskit ZZFeatureMap & Statevector Kernel Inspection' },
-      { id: 'benchmark', label: 'Benchmark', number: '06', subtitle: 'Rigorous Classical vs Quantum Evaluation & Low-Data Regimes' },
-      { id: 'report', label: 'Report & Git', number: '07', subtitle: 'VTU Hackathon Audit Checklist, Branch Guide & CSV Export' },
+      { id: 'overview' as PageId, label: 'Overview', number: '01', subtitle: 'Executive Dashboard & Real-Time Telemetry', accent: 'cyan' },
+      { id: 'scenario_lab' as PageId, label: 'Scenario Lab', number: '02', subtitle: 'Physics Compliance & Transient Injector', accent: 'amber' },
+      { id: 'investigation' as PageId, label: 'Investigation', number: '03', subtitle: 'State Space & Anomaly Forensics', accent: 'cyan' },
+      { id: 'live_stream' as PageId, label: 'Live Stream', number: '04', subtitle: 'Continuous Telemetry & Dual ML Stream', accent: 'rose' },
+      { id: 'quantum_lab' as PageId, label: 'Quantum Circuit', number: '05', subtitle: 'Qiskit ZZFeatureMap Hilbert Space', accent: 'violet' },
+      { id: 'benchmark' as PageId, label: 'Benchmark', number: '06', subtitle: 'Empirical Scikit-Learn vs QSVC Comparison', accent: 'sky' },
+      { id: 'report' as PageId, label: 'Report & Git', number: '07', subtitle: 'VTU Dossier, Source Audit & CSV Export', accent: 'indigo' },
     ],
     []
   );
 
+  const [scrollPercent, setScrollPercent] = useState<number>(0);
   const isManualScrolling = useRef<boolean>(false);
 
-  // Smooth scroll to target tab section
+  // Smooth scroll to target tab section with arrival pulse
   const handleSelectPage = useCallback((pageId: PageId) => {
     setCurrentPage(pageId);
     isManualScrolling.current = true;
     const el = document.getElementById(`section-${pageId}`);
     if (el) {
-      const headerOffset = 76;
+      const headerOffset = 80;
       const elementPosition = el.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
       window.scrollTo({
         top: offsetPosition,
         behavior: 'smooth',
       });
+
+      // Add visual arrival highlight pulse
+      el.classList.remove('section-targeted');
+      void el.offsetWidth; // force browser layout reflow
+      el.classList.add('section-targeted');
+      setTimeout(() => {
+        el.classList.remove('section-targeted');
+      }, 1300);
     }
     setTimeout(() => {
       isManualScrolling.current = false;
     }, 850);
   }, []);
 
-  // Real-time scroll spy: updates active tab as user scrolls through sections
+  // Real-time scroll spy and depth percentage tracker
   useEffect(() => {
     const handleScroll = () => {
+      // Calculate scroll progress percentage (0 - 100)
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight > 0) {
+        const pct = Math.min(100, Math.max(0, (window.scrollY / docHeight) * 100));
+        setScrollPercent(Math.round(pct));
+      }
+
       if (isManualScrolling.current) return;
 
       const headerOffset = 180;
@@ -204,11 +220,18 @@ export default function App() {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, [tabSequence]);
 
   // Entrance scroll animation observer for each tab section
   useEffect(() => {
+    // Immediately ensure top overview is marked visible
+    const overviewEl = document.getElementById('section-overview');
+    if (overviewEl) {
+      overviewEl.classList.add('section-visible');
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -218,8 +241,8 @@ export default function App() {
         });
       },
       {
-        threshold: 0.05,
-        rootMargin: '0px 0px -50px 0px',
+        threshold: 0.08,
+        rootMargin: '0px 0px -40px 0px',
       }
     );
 

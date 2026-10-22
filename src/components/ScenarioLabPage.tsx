@@ -164,21 +164,22 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           <button
             onClick={handleRunSimulation}
             disabled={isExecuting}
+            aria-label="Run microgrid scenario simulation"
             className={`px-4 py-2 text-xs font-mono font-bold rounded-xl flex items-center gap-2 cursor-pointer transition-all shadow-md ${
               isExecuting
                 ? 'bg-slate-400 text-white cursor-not-allowed'
-                : 'bg-cyan-500 hover:bg-cyan-400 text-white shadow-cyan-500/30 active:scale-95'
+                : 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold shadow-cyan-500/30 active:scale-95'
             }`}
           >
             {isExecuting ? (
               <>
-                <RotateCcw className="w-4 h-4 animate-spin" />
-                <span>Simulating...</span>
+                <RotateCcw className="w-4 h-4 animate-spin text-slate-950" />
+                <span className="text-slate-950">Simulating...</span>
               </>
             ) : (
               <>
-                <Play className="w-4 h-4 fill-white" />
-                <span>Run Scenario Simulation</span>
+                <Play className="w-4 h-4 fill-slate-950 text-slate-950" />
+                <span className="text-slate-950">Run Scenario Simulation</span>
               </>
             )}
           </button>
@@ -194,7 +195,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
             <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
             <span>{executionMessage}</span>
           </div>
-          <span className="text-[10px] uppercase font-bold text-cyan-500">Live Result</span>
+          <span className="text-[10px] uppercase font-bold text-cyan-700 dark:text-cyan-300">Live Result</span>
         </div>
       )}
 
@@ -205,7 +206,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
             <span className={headingClass}>SELECTABLE OPERATIONAL SCENARIOS</span>
             <span className={`font-normal ${textMutedClass}`}>· Click to load realistic microgrid sensor parameters</span>
           </div>
-          <span className="text-[11px] font-mono text-cyan-600 dark:text-cyan-400">
+          <span className="text-[11px] font-mono text-cyan-800 dark:text-cyan-300 font-semibold">
             6 Presets + Multi-Modal Overload
           </span>
         </div>
@@ -217,6 +218,8 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
               <button
                 key={preset.id}
                 onClick={() => handleApplyPreset(preset)}
+                aria-pressed={isSelected}
+                aria-label={`Select scenario preset ${preset.name}: ${preset.badge}`}
                 className={`p-3 rounded-xl text-left transition-all border cursor-pointer ${
                   isSelected
                     ? isDark
@@ -233,7 +236,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                   </div>
                   <span className={`text-[11px] font-bold truncate ${headingClass}`}>{preset.name}</span>
                 </div>
-                <div className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono font-medium truncate">
+                <div className="text-[10px] text-cyan-800 dark:text-cyan-300 font-mono font-semibold truncate">
                   {preset.badge}
                 </div>
                 <div className={`mt-1 text-[10px] line-clamp-2 leading-tight ${textMutedClass}`}>
@@ -262,7 +265,7 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
         <div className={`lg:col-span-7 p-6 rounded-2xl border space-y-5 transition-colors ${cardClass}`}>
           <div className={`flex items-center justify-between pb-3 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
             <h2 className={`text-sm font-bold flex items-center gap-2.5 ${headingClass}`}>
-              <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 flex items-center justify-center">
+              <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
                 <Zap className="w-4 h-4 fill-cyan-500/30" />
               </div>
               <span>Multi-Modal Telemetry Controls</span>
@@ -275,18 +278,24 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           {/* Slider 1: Electricity Demand */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className={`font-semibold flex items-center gap-1.5 ${headingClass}`}>
-                <Zap className="w-3.5 h-3.5 text-cyan-500" />
+              <label htmlFor="slider-demand" className={`font-semibold flex items-center gap-1.5 cursor-pointer ${headingClass}`}>
+                <Zap className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Electricity Demand</span>
-              </span>
-              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{demand.toFixed(1)} kW</span>
+              </label>
+              <span className="font-mono font-bold text-cyan-800 dark:text-cyan-300">{demand.toFixed(1)} kW</span>
             </div>
             <input
+              id="slider-demand"
               type="range"
               min="10"
               max="180"
               step="0.5"
               value={demand}
+              aria-label="Electricity Demand in kilowatts"
+              aria-valuemin={10}
+              aria-valuemax={180}
+              aria-valuenow={demand}
+              aria-valuetext={`${demand.toFixed(1)} kilowatts`}
               onChange={(e) => {
                 setDemand(parseFloat(e.target.value));
                 setActivePresetId('custom');
@@ -304,18 +313,24 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           {/* Slider 2: Solar PV Generation */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className={`font-semibold flex items-center gap-1.5 ${headingClass}`}>
-                <Sun className="w-3.5 h-3.5 text-amber-500" />
+              <label htmlFor="slider-solar" className={`font-semibold flex items-center gap-1.5 cursor-pointer ${headingClass}`}>
+                <Sun className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                 <span>Solar Power Generation</span>
-              </span>
-              <span className="font-mono font-bold text-amber-600 dark:text-amber-400">{solar.toFixed(1)} kW</span>
+              </label>
+              <span className="font-mono font-bold text-amber-800 dark:text-amber-300">{solar.toFixed(1)} kW</span>
             </div>
             <input
+              id="slider-solar"
               type="range"
               min="0"
               max="90"
               step="0.5"
               value={solar}
+              aria-label="Solar Power Generation in kilowatts"
+              aria-valuemin={0}
+              aria-valuemax={90}
+              aria-valuenow={solar}
+              aria-valuetext={`${solar.toFixed(1)} kilowatts`}
               onChange={(e) => {
                 setSolar(parseFloat(e.target.value));
                 setActivePresetId('custom');
@@ -333,18 +348,24 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           {/* Slider 3: Battery SoC */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className={`font-semibold flex items-center gap-1.5 ${headingClass}`}>
-                <BatteryCharging className="w-3.5 h-3.5 text-emerald-500" />
+              <label htmlFor="slider-battery" className={`font-semibold flex items-center gap-1.5 cursor-pointer ${headingClass}`}>
+                <BatteryCharging className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>Battery State of Charge (SoC)</span>
-              </span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{soc.toFixed(1)} %</span>
+              </label>
+              <span className="font-mono font-bold text-emerald-800 dark:text-emerald-300">{soc.toFixed(1)} %</span>
             </div>
             <input
+              id="slider-battery"
               type="range"
               min="5"
               max="100"
               step="0.5"
               value={soc}
+              aria-label="Battery State of Charge percentage"
+              aria-valuemin={5}
+              aria-valuemax={100}
+              aria-valuenow={soc}
+              aria-valuetext={`${soc.toFixed(1)} percent`}
               onChange={(e) => {
                 setSoc(parseFloat(e.target.value));
                 setActivePresetId('custom');
@@ -362,24 +383,30 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           {/* Slider 4: Voltage Deviation */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className={`font-semibold flex items-center gap-1.5 ${headingClass}`}>
-                <Gauge className="w-3.5 h-3.5 text-blue-500" />
+              <label htmlFor="slider-voltage" className={`font-semibold flex items-center gap-1.5 cursor-pointer ${headingClass}`}>
+                <Gauge className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Feeder Voltage Deviation</span>
-              </span>
+              </label>
               <span
                 className={`font-mono font-bold ${
-                  Math.abs(voltageDev) > 6 ? 'text-rose-500' : Math.abs(voltageDev) > 3 ? 'text-amber-500' : headingClass
+                  Math.abs(voltageDev) > 6 ? 'text-rose-600 dark:text-rose-400' : Math.abs(voltageDev) > 3 ? 'text-amber-700 dark:text-amber-300' : headingClass
                 }`}
               >
                 {voltageDev > 0 ? `+${voltageDev.toFixed(2)}` : voltageDev.toFixed(2)} V
               </span>
             </div>
             <input
+              id="slider-voltage"
               type="range"
               min="-20"
               max="20"
               step="0.2"
               value={voltageDev}
+              aria-label="Feeder Voltage Deviation in Volts"
+              aria-valuemin={-20}
+              aria-valuemax={20}
+              aria-valuenow={voltageDev}
+              aria-valuetext={`${voltageDev > 0 ? '+' : ''}${voltageDev.toFixed(2)} Volts`}
               onChange={(e) => {
                 setVoltageDev(parseFloat(e.target.value));
                 setActivePresetId('custom');
@@ -397,24 +424,30 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           {/* Slider 5: Frequency Deviation */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className={`font-semibold flex items-center gap-1.5 ${headingClass}`}>
-                <Activity className="w-3.5 h-3.5 text-violet-500" />
+              <label htmlFor="slider-frequency" className={`font-semibold flex items-center gap-1.5 cursor-pointer ${headingClass}`}>
+                <Activity className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
                 <span>Grid Frequency Deviation</span>
-              </span>
+              </label>
               <span
                 className={`font-mono font-bold ${
-                  Math.abs(freqDev) > 0.2 ? 'text-rose-500' : Math.abs(freqDev) > 0.05 ? 'text-amber-500' : headingClass
+                  Math.abs(freqDev) > 0.2 ? 'text-rose-600 dark:text-rose-400' : Math.abs(freqDev) > 0.05 ? 'text-amber-700 dark:text-amber-300' : headingClass
                 }`}
               >
                 {freqDev > 0 ? `+${freqDev.toFixed(3)}` : freqDev.toFixed(3)} Hz
               </span>
             </div>
             <input
+              id="slider-frequency"
               type="range"
               min="-1.0"
               max="1.0"
               step="0.01"
               value={freqDev}
+              aria-label="Grid Frequency Deviation in Hertz"
+              aria-valuemin={-1.0}
+              aria-valuemax={1.0}
+              aria-valuenow={freqDev}
+              aria-valuetext={`${freqDev > 0 ? '+' : ''}${freqDev.toFixed(3)} Hertz`}
               onChange={(e) => {
                 setFreqDev(parseFloat(e.target.value));
                 setActivePresetId('custom');
@@ -436,24 +469,24 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 <Atom className="w-3.5 h-3.5 text-violet-500" />
                 QUANTUM CIRCUIT ENCODING ANGLES (x ∈ [0, 2π])
               </span>
-              <span className="text-cyan-600 dark:text-cyan-400 text-[10px] font-bold">ZZFeatureMap</span>
+              <span className="text-cyan-800 dark:text-cyan-300 text-[10px] font-bold">ZZFeatureMap</span>
             </div>
             <div className="grid grid-cols-4 gap-2.5 text-center font-mono text-xs">
               <div className={`p-2.5 rounded-xl border ${innerCardClass}`}>
                 <div className={`text-[10px] ${textMutedClass}`}>q0: Demand</div>
-                <div className="text-cyan-600 dark:text-cyan-300 font-bold mt-0.5">{scaledVector[0]?.toFixed(3) || '0.000'} rad</div>
+                <div className="text-cyan-800 dark:text-cyan-300 font-bold mt-0.5">{scaledVector[0]?.toFixed(3) || '0.000'} rad</div>
               </div>
               <div className={`p-2.5 rounded-xl border ${innerCardClass}`}>
                 <div className={`text-[10px] ${textMutedClass}`}>q1: Solar</div>
-                <div className="text-amber-600 dark:text-amber-300 font-bold mt-0.5">{scaledVector[1]?.toFixed(3) || '0.000'} rad</div>
+                <div className="text-amber-800 dark:text-amber-300 font-bold mt-0.5">{scaledVector[1]?.toFixed(3) || '0.000'} rad</div>
               </div>
               <div className={`p-2.5 rounded-xl border ${innerCardClass}`}>
                 <div className={`text-[10px] ${textMutedClass}`}>q2: Voltage</div>
-                <div className="text-violet-600 dark:text-violet-300 font-bold mt-0.5">{scaledVector[2]?.toFixed(3) || '0.000'} rad</div>
+                <div className="text-violet-800 dark:text-violet-300 font-bold mt-0.5">{scaledVector[2]?.toFixed(3) || '0.000'} rad</div>
               </div>
               <div className={`p-2.5 rounded-xl border ${innerCardClass}`}>
                 <div className={`text-[10px] ${textMutedClass}`}>q3: Frequency</div>
-                <div className="text-emerald-600 dark:text-emerald-300 font-bold mt-0.5">{scaledVector[3]?.toFixed(3) || '0.000'} rad</div>
+                <div className="text-emerald-800 dark:text-emerald-300 font-bold mt-0.5">{scaledVector[3]?.toFixed(3) || '0.000'} rad</div>
               </div>
             </div>
           </div>
@@ -479,13 +512,13 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                   <div className={`text-[11px] ${textMutedClass}`}>Predicted State</div>
                   <div className="flex items-center gap-2 mt-0.5">
                     {classicalPred.label === 1 ? (
-                      <span className="text-base font-bold text-rose-500 flex items-center gap-1.5">
-                        <AlertTriangle className="w-4 h-4 text-rose-500" />
+                      <span className="text-base font-bold text-rose-700 dark:text-rose-400 flex items-center gap-1.5">
+                        <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
                         ABNORMAL FAULT
                       </span>
                     ) : (
-                      <span className="text-base font-bold text-emerald-500 flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      <span className="text-base font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         NORMAL EQUILIBRIUM
                       </span>
                     )}
@@ -511,12 +544,12 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           <div className={`p-5 rounded-2xl border transition-colors ${cardClass}`}>
             <div className={`flex items-center justify-between pb-2.5 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-700 dark:text-violet-300 flex items-center justify-center">
                   <Sparkles className="w-4 h-4" />
                 </div>
                 <span className={`text-xs font-bold ${headingClass}`}>QUANTUM QSVC (ZZFeatureMap)</span>
               </div>
-              <span className="text-[10px] font-mono text-violet-600 dark:text-violet-400 font-semibold">Fidelity Quantum Kernel</span>
+              <span className="text-[10px] font-mono text-violet-800 dark:text-violet-300 font-bold">Fidelity Quantum Kernel</span>
             </div>
 
             {quantumPred ? (
@@ -525,13 +558,13 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                   <div className={`text-[11px] ${textMutedClass}`}>Predicted State</div>
                   <div className="flex items-center gap-2 mt-0.5">
                     {quantumPred.label === 1 ? (
-                      <span className="text-base font-bold text-rose-500 flex items-center gap-1.5">
-                        <AlertTriangle className="w-4 h-4 text-rose-500" />
+                      <span className="text-base font-bold text-rose-700 dark:text-rose-400 flex items-center gap-1.5">
+                        <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
                         ABNORMAL FAULT
                       </span>
                     ) : (
-                      <span className="text-base font-bold text-emerald-500 flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      <span className="text-base font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         NORMAL EQUILIBRIUM
                       </span>
                     )}
@@ -557,14 +590,14 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           <div className={`p-5 rounded-2xl border space-y-3 transition-colors ${cardClass}`}>
             <div className="text-xs font-bold flex items-center justify-between">
               <span className={`flex items-center gap-2 ${headingClass}`}>
-                <ShieldCheck className="w-4 h-4 text-cyan-500" />
+                <ShieldCheck className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
                 PHYSICAL HEURISTIC DIAGNOSIS
               </span>
               <span
                 className={`text-[10px] font-mono px-2.5 py-0.5 rounded-md font-semibold ${
                   diagnosis.isEngineeringAbnormal
-                    ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400 border border-rose-300 dark:border-rose-800'
-                    : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800'
+                    ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-300 dark:border-rose-800'
+                    : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
                 }`}
               >
                 {diagnosis.isEngineeringAbnormal ? 'CRITICAL LIMIT BREACH' : 'ALL LIMITS OK'}
@@ -577,10 +610,10 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 <span
                   className={
                     diagnosis.voltageStatus === 'critical'
-                      ? 'text-rose-500 font-bold'
+                      ? 'text-rose-700 dark:text-rose-400 font-bold'
                       : diagnosis.voltageStatus === 'warning'
-                      ? 'text-amber-500 font-bold'
-                      : 'text-emerald-500 font-bold'
+                      ? 'text-amber-800 dark:text-amber-300 font-bold'
+                      : 'text-emerald-700 dark:text-emerald-400 font-bold'
                   }
                 >
                   {diagnosis.voltageStatus.toUpperCase()} (±3V band)
@@ -591,10 +624,10 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 <span
                   className={
                     diagnosis.frequencyStatus === 'critical'
-                      ? 'text-rose-500 font-bold'
+                      ? 'text-rose-700 dark:text-rose-400 font-bold'
                       : diagnosis.frequencyStatus === 'warning'
-                      ? 'text-amber-500 font-bold'
-                      : 'text-emerald-500 font-bold'
+                      ? 'text-amber-800 dark:text-amber-300 font-bold'
+                      : 'text-emerald-700 dark:text-emerald-400 font-bold'
                   }
                 >
                   {diagnosis.frequencyStatus.toUpperCase()} (±0.05Hz band)

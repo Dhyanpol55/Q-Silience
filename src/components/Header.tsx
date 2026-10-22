@@ -240,11 +240,11 @@ export const Header: React.FC<HeaderProps> = ({
                   >
                     Q-RESILIENCE AI
                   </span>
-                  <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono font-bold px-1.5 py-0.5 rounded-md bg-cyan-50 dark:bg-cyan-950/80 border border-cyan-200 dark:border-cyan-800">
+                  <span className="text-[10px] text-cyan-800 dark:text-cyan-300 font-mono font-bold px-1.5 py-0.5 rounded-md bg-cyan-100/90 dark:bg-cyan-950/90 border border-cyan-300 dark:border-cyan-700">
                     v1.3.0
                   </span>
                   {isTraining && (
-                    <span className="hidden sm:inline-flex items-center gap-1 text-[10px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 px-1.5 py-0.5 rounded-md animate-pulse font-mono font-medium">
+                    <span className="hidden sm:inline-flex items-center gap-1 text-[10px] bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/40 px-1.5 py-0.5 rounded-md animate-pulse font-mono font-semibold">
                       <Atom className="w-3 h-3 animate-spin" />
                       QML Fitting...
                     </span>
@@ -254,11 +254,11 @@ export const Header: React.FC<HeaderProps> = ({
                   <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>
                     VTU Qiskit Fall Fest 2026
                   </span>
-                  <span aria-hidden="true" className={isDark ? 'text-slate-700' : 'text-slate-300'}>
+                  <span aria-hidden="true" className={isDark ? 'text-slate-500' : 'text-slate-400'}>
                     ·
                   </span>
-                  <span className="text-cyan-600 dark:text-cyan-400 font-semibold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 inline text-cyan-500" />
+                  <span className="text-cyan-800 dark:text-cyan-300 font-bold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 inline text-cyan-600 dark:text-cyan-400" />
                     Quantum + AI/ML
                   </span>
                 </div>
