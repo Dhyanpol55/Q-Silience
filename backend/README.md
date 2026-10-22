@@ -1,6 +1,7 @@
 # Q-Resilience AI — Backend Service
+Autonomous Quantum-Enhanced Microgrid Anomaly Detection API built with **FastAPI**, **Qiskit 1.3+**, and **Scikit-learn**.
 
-Autonomous Quantum-Enhanced Microgrid Anomaly Detection API built with **FastAPI**, **Qiskit**, and **Scikit-learn**.
+VTU-Qiskit Fall Fest 2026 — Team Ctrl_AI (VTU-QFF-HC-0025)
 
 ---
 
@@ -22,28 +23,40 @@ pip install -r requirements.txt
 ```bash
 python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
-The API documentation is available interactively at:
+Interactive API documentation:
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
 - Health check: `http://localhost:8000/health`
 
 ---
 
-## 🧪 Running Tests
+## 🧪 Running Comprehensive Tests
 ```bash
-pytest
+pytest -v tests/test_api.py
 ```
+Validates:
+1. Health check & probe variations (`/health`, `/health.`, `HEAD /`, `/api/health`)
+2. Reproducible dataset generation with seed
+3. Sensor input validation & error boundaries
+4. Statevector normalization & Hilbert space kernel bounds
+5. Kernel Gram matrix symmetry
+6. Dual-model prediction (Classical SVC & Quantum QSVC)
+7. Confusion matrix shape and ordering
+8. Scenarios and Qiskit quantum circuit inspection endpoints
+9. Benchmark & evaluate schema conformity
 
 ---
 
-## 🐳 Docker Deployment
-```bash
-docker build -t q-resilience-backend .
-docker run -p 8000:8000 q-resilience-backend
-```
+## 🌐 Production Architecture & Deployment
 
----
+- **Python Backend (Render)**:
+  - Repository: `https://github.com/Dhyanpol55/Q-Silience`
+  - Root Directory: `backend`
+  - Build Command: `pip install -r requirements.txt`
+  - Start Command: `python -m uvicorn main:app --host 0.0.0.0 --port $PORT`
+  - Health Check: `/health`
+  - CORS: Configured for `https://qresilience.vercel.app` and `https://*.vercel.app`
 
-## 🌐 Cloud Deployment (Render & Vercel)
-- **Render**: Connect repository or root directory `backend`, start command: `python -m uvicorn main:app --host 0.0.0.0 --port $PORT`
-- **Vercel**: Configured in root `vercel.json` under `services.backend` with `root: "backend"` and `entrypoint: "main.py"`.
+- **Frontend (Vercel)**:
+  - Deployed as a pure React + Vite Single-Page Application (SPA) on Vercel.
+  - Connected to Render backend via `VITE_API_BASE_URL`.

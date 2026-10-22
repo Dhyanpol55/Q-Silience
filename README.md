@@ -1,8 +1,15 @@
 <div align="center">
 
-# Ctrl_AI
+# Q-Silience — Q-Resilience AI
+### Quantum-Enhanced Microgrid Anomaly Detection & Autonomous Protection
 
-**VTU-QFF-HC-0025** &nbsp;|&nbsp; Tier: **Both**
+**VTU-Qiskit Fall Fest 2026** &nbsp;|&nbsp; Team **Ctrl_AI** (`VTU-QFF-HC-0025`) &nbsp;|&nbsp; Tier: **Both**
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-qresilience.vercel.app-0ea5e9?style=flat&logo=vercel)](https://qresilience.vercel.app/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Dhyanpol55%2FQ--Silience-181717?style=flat&logo=github)](https://github.com/Dhyanpol55/Q-Silience)
+[![Qiskit](https://img.shields.io/badge/Qiskit-1.3%2B-6929C4?style=flat&logo=qiskit)](https://qiskit.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-19%20%2B%20TypeScript-61DAFB?style=flat&logo=react)](https://react.dev/)
 
 </div>
 
@@ -10,14 +17,14 @@
 
 <div align="center">
 
-| | |
+| Attribute | Details |
 | :--- | :--- |
-| **Team** | Ctrl_AI |
+| **Team Name** | Ctrl_AI |
 | **Team ID** | VTU-QFF-HC-0025 |
-| **Tier** | Both |
-| **Repository** | [vtu-hc-ctrl-ai](https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git) |
-| **Organisation** | [vtu-qiskit-fall-fest-2026](https://github.com/vtu-qiskit-fall-fest-2026) |
-| **Event** | VTU-QFF Hackathon — VTU-Qiskit Fall Fest 2026 |
+| **Tier** | Both (Online & In-Person) |
+| **Official Repository** | [Dhyanpol55/Q-Silience](https://github.com/Dhyanpol55/Q-Silience) |
+| **Live Application** | [https://qresilience.vercel.app/](https://qresilience.vercel.app/) |
+| **Hackathon Event** | VTU-QFF Hackathon — VTU-Qiskit Fall Fest 2026 |
 
 </div>
 
@@ -25,339 +32,209 @@
 
 ## 📌 Table of Contents
 
-- [Team Members](#-team-members-github-ids)
 - [Problem Statement](#-problem-statement)
 - [Proposed Solution](#-proposed-solution)
-- [Approach & Architecture](#-approach--architecture)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [How to Run](#-how-to-run)
-- [How to Push Code](#-how-to-push-code)
-- [Submission Checklist](#-submission-checklist)
-- [Resources](#-resources)
+- [Quantum Machine Learning Architecture](#-quantum-machine-learning-architecture)
+- [Scientific Methodology & Fair Benchmarking](#-scientific-methodology--fair-benchmarking)
+- [Hardware Execution & NISQ Disclosures](#-hardware-execution--nisq-disclosures)
+- [System Architecture & Endpoints](#-system-architecture--endpoints)
+- [Interactive Platform Modules](#-interactive-platform-modules)
+- [Deployment Guide](#-deployment-guide-render--vercel)
+- [Local Development & Tests](#-local-development--tests)
+- [Team Members](#-team-members)
 - [License](#-license)
-
----
-
-## 👥 Team Members (GitHub IDs)
-
-> Members are added to this repository as **collaborators** and must accept the
-> GitHub invitation before they can push. Add your GitHub username below.
-
-| # | Name | GitHub Username | Role |
-| :-- | :--- | :--- | :--- |
-| 1 | Dhyan Pol | `@dhyanpol99` | Team Lead & Quantum ML Engineer |
-| 2 | Team Ctrl_AI Member | `@ctrl-ai-dev` | Full-Stack & Systems Developer |
-| 3 | Team Ctrl_AI Member | `@vtu-qiskit-dev` | Data & Grid Simulation Engineer |
 
 ---
 
 ## ❓ Problem Statement
 
-**Problem:** Modern decentralized microgrids integrate intermittent renewable generation (solar PV), energy storage (BESS), and dynamic industrial loads, creating complex multi-variable operating regimes where non-linear fault events—such as voltage regulation violations, inverter trips, and frequency instabilities—are difficult to detect with traditional thresholding or classical linear classifiers in low-labeled-data scenarios.
+**Challenge:** Modern renewable microgrids integrate distributed photovoltaic (PV) arrays, Battery Energy Storage Systems (BESS), and dynamic industrial loads. Because of inverter-based generation, these systems exhibit **very low rotational inertia** compared to bulk power grids. Transients—such as sudden cloud cover dropping solar generation, industrial load surges, or feeder impedance step faults—manifest as rapid, cross-coupled deviations in both voltage and frequency.
 
-**Why it matters:** Fast, accurate anomaly detection prevents catastrophic microgrid islanding, equipment degradation, and cascading blackouts while enhancing grid resilience and autonomous self-healing.
+**Limitations of Classical Thresholding:** Traditional overcurrent and under-frequency relays (such as simple IEEE 1547 threshold boundaries) operate on single-variable thresholds. They struggle to detect subtle coupled transients early, often leading to either false trips (causing costly downtime) or delayed tripping (risking equipment degradation and cascading microgrid blackout).
 
-**Track / Category:** VTU-Qiskit Fall Fest 2026 · Tier: Both (Online & Offline) · Quantum Machine Learning & Clean Energy Resilience
+**Small-Data Bottleneck:** In emerging microgrids, historical labeled fault data is scarce. Classical deep neural networks or standard RBF support vector classifiers require large training datasets to learn high-dimensional decision boundaries accurately.
 
 ---
 
 ## 💡 Proposed Solution
 
-**Solution:** **Q-Resilience AI** is an end-to-end quantum-classical microgrid anomaly detection platform. It simulates 48-hour continuous smart grid telemetry, maps physical feature interactions into a 16-dimensional Hilbert space using Qiskit's parameterized `ZZFeatureMap`, calculates Fidelity Quantum Kernels, and trains a Quantum Support Vector Classifier (QSVC) that fairly benchmarks against classical scikit-learn Support Vector Classifiers on identical data splits.
-
-**Key idea:** Non-linear microgrid sensor interactions (load demand, solar generation, voltage deviation, and frequency stability) are mapped into higher-dimensional quantum state fidelity space where complex multi-fault boundaries become linearly separable with fewer labeled training samples.
-
-**Why this works:** The parameterized ZZFeatureMap captures pairwise feature correlations $\phi_{jk}(x) = 2(\pi - x_j)(\pi - x_k)$ via entangling two-qubit $CNOT - R_z - CNOT$ unitaries, creating a non-linear quantum feature space that outperforms classical RBF kernels in low-sample regimes while maintaining rigorous evaluation parity.
+**Q-Silience (Q-Resilience AI)** is an autonomous, end-to-end quantum-classical microgrid protection system. It features:
+1. **Physical Sensor Feature Mapping**: Maps 4 core microgrid physical telemetry variables ($P_{\text{demand}}$, $P_{\text{solar}}$, $\Delta V$, $\Delta f$) into quantum phase angles in $[0, 2\pi]$.
+2. **Qiskit ZZFeatureMap Fidelity Kernel**: Constructs an entangling 4-qubit quantum circuit ($d=2$ repetitions, linear entanglement topology) that encodes non-linear pairwise sensor correlations into a 16-dimensional Hilbert state space.
+3. **Dual-Model Classifier Parity**: Trains both a Quantum Support Vector Classifier (QSVC) and a classical Scikit-Learn Support Vector Classifier (RBF kernel) on identical, strictly isolated data splits.
+4. **Sample-Efficiency Advantage**: Demonstrates that the quantum fidelity kernel achieves superior boundary separation and higher $F_1$ scores in low-sample regimes (20–60 samples) where classical kernels underfit.
+5. **Decoupled Production Architecture**: High-performance React 19 + TypeScript + Vite frontend deployed on Vercel edge networks, connected via a resilient REST client to a Python 3.11 FastAPI microservice running genuine Qiskit on Render.
 
 ---
 
-## 🧩 Approach & Architecture
+## ⚛️ Quantum Machine Learning Architecture
+
+### 1. Quantum State Encoding: Qiskit `ZZFeatureMap`
+The telemetry vector $\mathbf{x} = [x_1, x_2, x_3, x_4]^T$ is normalized via Min-Max scaling to the interval $[0, 2\pi]$ and encoded into a 4-qubit quantum state:
+
+$$\mathcal{U}_{\Phi}(\mathbf{x}) = \left( U_{\Phi}(\mathbf{x}) H^{\otimes 4} \right)^2$$
+
+Where:
+- $H^{\otimes 4}$ applies a Hadamard transform across all 4 qubits to create an equal superposition:
+$$H^{\otimes 4} |0000\rangle = \frac{1}{4} \sum_{k=0}^{15} |k\rangle$$
+- Single-qubit phase rotations encode individual sensor variables:
+$$U_{\Phi}(\mathbf{x}) = \exp\left( i \sum_{i=1}^4 \phi_i(x_i) Z_i + i \sum_{i=1}^3 \phi_{i, i+1}(x_i, x_{i+1}) Z_i Z_{i+1} \right)$$
+- Single-qubit phase angles: $\phi_i(x_i) = x_i$
+- Two-qubit entangling phase angles (capturing cross-variable coupling between demand and solar, solar and voltage, voltage and frequency):
+$$\phi_{i,j}(x_i, x_j) = 2(\pi - x_i)(\pi - x_j)$$
+- Entanglement topology: Linear nearest-neighbor ($q_0 \leftrightarrow q_1 \leftrightarrow q_2 \leftrightarrow q_3$).
+
+### 2. Fidelity Quantum Kernel Matrix
+For any two telemetry samples $\mathbf{x}_i$ and $\mathbf{x}_j$, the quantum fidelity kernel $K(\mathbf{x}_i, \mathbf{x}_j)$ computes the transition probability (state overlap squared) in Hilbert space:
+
+$$K(\mathbf{x}_i, \mathbf{x}_j) = \left| \langle \psi(\mathbf{x}_i) | \psi(\mathbf{x}_j) \rangle \right|^2 = \left| \langle 0^{\otimes 4} | \mathcal{U}_{\Phi}^\dagger(\mathbf{x}_j) \mathcal{U}_{\Phi}(\mathbf{x}_i) | 0^{\otimes 4} \rangle \right|^2$$
+
+Properties verified in our test suite:
+- **Unit Self-Fidelity**: $K(\mathbf{x}_i, \mathbf{x}_i) = 1.0$
+- **Bounded Overlap**: $0.0 \le K(\mathbf{x}_i, \mathbf{x}_j) \le 1.0$
+- **Symmetric Gram Matrix**: $K_{ij} = K_{ji}$
+
+---
+
+## 🔬 Scientific Methodology & Fair Benchmarking
+
+To ensure absolute scientific honesty and avoid evaluation leakage:
+
+1. **Strictly Isolated Preprocessing**:
+   - `MinMaxScaler` is fit **exclusively** on the training partition ($75\%$).
+   - The test partition ($25\%$) is transformed using training parameters with zero lookahead leakage.
+2. **Stratified Split**:
+   - Preserves identical proportions of normal operation ($0$) and abnormal transient events ($1$) across train and test sets.
+3. **Binary Label Standard**:
+   - `0` = Normal grid operation within IEEE 1547 tolerances.
+   - `1` = Abnormal transient (Demand surge, PV trip, Voltage sag, Cascading fault).
+   - Confusion matrix standard:
+     $$\begin{pmatrix} \text{True Negatives (TN)} & \text{False Positives (FP)} \\ \text{False Negatives (FN)} & \text{True Positives (TP)} \end{pmatrix}$$
+4. **Sample-Efficiency Experiment**:
+   - Compares Classical RBF SVC vs Quantum Fidelity QSVC across training subsets ($25\%, 50\%, 75\%, 100\%$).
+   - Demonstrates that in the low-data regime, quantum kernel embedding captures multi-transient boundaries with fewer training examples.
+
+---
+
+## ⚠️ Hardware Execution & NISQ Disclosures
+
+In compliance with the VTU-Qiskit Fall Fest rubric:
+- **Execution Mode**: The production Render backend executes the ZZFeatureMap circuit via exact statevector simulation in Hilbert space ($\mathbb{C}^{16}$).
+- **Hardware Limitations**: In real physical NISQ (Noisy Intermediate-Scale Quantum) processors, quantum state fidelity is subject to gate infidelity, decoherence ($T_1, T_2$), and readout error. Physical execution requires error mitigation (e.g., Zero-Noise Extrapolation, Readout Twirling via Qiskit Runtime Primitives).
+- **No Unmeasured Claims**: We explicitly distinguish between exact statevector simulation and real physical quantum hardware. Statevector simulation guarantees reproducible mathematical fidelity for research and demonstration without claiming immediate quantum supremacy.
+
+---
+
+## 🌐 System Architecture & Endpoints
 
 ```mermaid
-flowchart LR
-    A[Microgrid Sensor Data<br/>Demand, Solar, Voltage, Freq] --> B[MinMax Angle Scaling<br/>0 to 2pi radians]
-    B --> C[Qiskit ZZFeatureMap<br/>4 Qubits, d=2 reps]
-    C --> D[Fidelity Quantum Kernel<br/>K_ij = |braket(phi_i, phi_j)|^2]
-    D --> E[QSVC Classifier<br/>& Classical SVC Benchmark]
-    E --> F[Grid Resilience Dashboard<br/>Live Stream & Scenario Lab]
+flowchart TD
+    Client[React 19 + TypeScript SPA<br/>Vercel Edge Network]
+    API[Python 3.11 FastAPI Service<br/>Render Cloud Service]
+    Qiskit[Qiskit 1.3+ ZZFeatureMap<br/>Fidelity Kernel Engine]
+    Classical[Scikit-Learn SVC<br/>RBF Kernel Baseline]
+
+    Client -- "POST /api/predict" --> API
+    Client -- "GET /api/benchmark" --> API
+    Client -- "GET /api/circuit" --> API
+    API --> Qiskit
+    API --> Classical
 ```
 
-1. **Input** — 5-channel physical telemetry: active demand ($P_d$ kW), solar PV generation ($P_{pv}$ kW), battery state-of-charge (SoC %), feeder voltage deviation ($\Delta V$), and bus frequency deviation ($\Delta f$).
-2. **Preprocessing** — Min-Max normalization onto $[0, 2\pi]$ radians for phase angle parameterization into quantum rotation gates.
-3. **Quantum core** — 4-qubit parameterized `ZZFeatureMap` with linear nearest-neighbor entanglement topology, 2 repetition cycles ($d=2$), and statevector fidelity calculation.
-4. **Post-processing** — Dual-model training (Quantum QSVC vs Classical SVC with RBF kernel), cross-validation, and metrics computation (Accuracy, Precision, Recall, F1 score, Confusion Matrix, Latency).
-5. **Output** — Real-time interactive dashboard on Vercel with live stream simulation, fault injection, scenario lab, and automated exportable audit reports.
+### Complete FastAPI REST API (8 Endpoints)
 
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/health` | Service health status, Qiskit version, model readiness, uptime (with `/health.` probe compatibility). |
+| `GET` | `/api/scenarios` | Preconfigured IEEE 1547.4 microgrid operational scenarios. |
+| `GET` | `/api/dataset` | Retrieves current microgrid telemetry dataset records. |
+| `POST` | `/api/dataset/generate` | Generates a reproducible synthetic dataset with custom seed and sample count. |
+| `POST` | `/api/dataset/upload` | Validates and trains models on custom user-provided CSV telemetry. |
+| `POST` | `/api/predict` | Real-time dual-model inference returning classical and quantum predictions, latencies, and IEEE 1547 diagnosis. |
+| `GET` | `/api/benchmark` | Full benchmark metrics, confusion matrices, and low-data experiment results. |
+| `POST` | `/api/evaluate` | Evaluates models on current dataset, returning complete `BenchmarkResponse`. |
+| `GET` | `/api/circuit` | Returns Qiskit ZZFeatureMap circuit parameters, depth, gate counts, and ASCII diagram. |
 
 ---
 
-## 🛠️ Tech Stack
+## 🖥️ Interactive Platform Modules
 
-| Layer | Technology |
-| :--- | :--- |
-| Language | Python 3.11+ |
-| Quantum SDK | Qiskit `>=1.0`, Qiskit Aer, Qiskit Runtime |
-| Optimisation | Qiskit Optimization / COBYLA / SPSA |
-| Simulation | AerSimulator (statevector / noisemodel) |
-| Environment | JupyterLab / VS Code, `venv` |
-| Version control | Git + GitHub |
-
----
-
-## 📁 Project Structure
-
-```text
-vtu-hc-ctrl-ai/
-├── README.md              # This file
-├── requirements.txt       # Python dependencies
-├── pyproject.toml         # Project metadata (optional)
-├── .gitignore
-├── notebooks/             # Jupyter notebooks for experiments
-│   └── exploration.ipynb
-├── src/
-│   ├── __init__.py
-│   ├── circuit.py         # Quantum circuit construction
-│   ├── optimizer.py       # Optimization loop
-│   └── main.py            # Entry point
-├── data/                  # Datasets (use Git LFS for large files)
-├── tests/                 # Unit tests
-│   └── test_circuit.py
-└── docs/                  # Notes, diagrams, reports
-```
+The frontend is organized into 6 focused interactive chapters:
+1. **Chapter 01 · Overview**: Executive system architecture, KPI cards, and end-to-end dataflow pipeline.
+2. **Chapter 02 · Scenario Laboratory**: Interactive microgrid slider controls, transient injection presets, and dual-model prediction comparison.
+3. **Chapter 03 · Anomaly Investigation**: Deep-dive diagnostic analysis with IEEE 1547 root-cause explanation and sensor feature contributions.
+4. **Chapter 04 · Live Simulation Stream**: Real-time rolling telemetry stream with dynamic fault injection, synchronized Digital Twin, and background FastAPI inference.
+5. **Chapter 05 · Quantum Lab**: Quantum circuit visualizer, parameter inspect, Bloch sphere projection, and statevector simulator vs physical hardware disclosures.
+6. **Chapter 06 · Benchmark & Evaluation**: Fair classical vs quantum performance comparison, low-data sample efficiency curve, and confusion matrices.
 
 ---
 
-## 🚀 How to Run
+## 🚀 Deployment Guide (Render + Vercel)
 
-### Prerequisites
-
-- Python 3.11 or newer
-- [Git](https://git-scm.com/downloads)
-- A GitHub account (you need collaborator access to this repo)
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git
-cd vtu-hc-ctrl-ai
-```
-
-### 2. Create a virtual environment
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate        # Linux / macOS
-# .venv\Scripts\activate         # Windows (PowerShell)
-```
-
-### 3. Install dependencies
-
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### 4. Run
-
-```bash
-python -m src.main
-```
-
-Or launch the notebook workflow:
-
-```bash
-jupyter lab
-```
-
-### 5. Run the tests
-
-```bash
-pytest -q
-```
-
----
-
-## 🚀 Cloud Deployment Guide (Vercel + Render)
-
-### 1. Backend Deployment on Render (FastAPI + Python 3.11)
-
-You can deploy the backend to [Render](https://render.com) using either **Render Blueprints (IaC)** or manually as a **Web Service**:
-
-#### Option A: One-Click via Render Blueprint
-1. Go to your Render Dashboard ➔ Click **New** ➔ **Blueprint**.
-2. Connect your GitHub repository `vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai`.
-3. Render will automatically read the `render.yaml` configuration in the repo root:
-   - **Environment:** Python 3.11.9
-   - **Root Directory:** `backend`
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `python -m uvicorn main:app --host 0.0.0.0 --port $PORT`
-   - **Health Check Path:** `/health`
-4. Click **Apply**. Once deployment succeeds, note down your live service URL (e.g., `https://q-resilience-backend.onrender.com`).
-
-#### Option B: Manual Web Service Setup
-1. Click **New +** ➔ **Web Service**.
-2. Select repository `vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai`.
+### Backend Deployment (Render)
+1. In the [Render Dashboard](https://dashboard.render.com), click **New +** ➔ **Web Service**.
+2. Connect repository `https://github.com/Dhyanpol55/Q-Silience`.
 3. Set configuration:
-   | Setting | Value |
-   | :--- | :--- |
-   | **Name** | `q-resilience-backend` |
-   | **Region** | Oregon (US West) or Frankfurt |
-   | **Branch** | `main` (or `feature/q-resilience-ai`) |
-   | **Root Directory** | `backend` |
-   | **Runtime** | `Python 3` |
-   | **Build Command** | `pip install -r requirements.txt` |
-   | **Start Command** | `python -m uvicorn main:app --host 0.0.0.0 --port $PORT` |
-   | **Plan** | Free |
-4. Under **Advanced** ➔ **Environment Variables**, add:
+   - **Root Directory**: `backend`
+   - **Runtime**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `python -m uvicorn main:app --host 0.0.0.0 --port $PORT`
+   - **Health Check Path**: `/health`
+4. Add Environment Variables:
    - `PYTHON_VERSION`: `3.11.9`
-   - `ALLOWED_ORIGINS`: `https://*.vercel.app,http://localhost:3000` (and your production Vercel domain)
-5. Under **Health Check Path**, enter `/health`.
-6. Click **Create Web Service**. Verify `https://<your-render-app>.onrender.com/health` returns `{"status":"healthy"}`.
+   - `ALLOWED_ORIGINS`: `https://qresilience.vercel.app,https://*.vercel.app,http://localhost:3000`
+
+### Frontend Deployment (Vercel)
+1. In the [Vercel Dashboard](https://vercel.com/new), import repository `Dhyanpol55/Q-Silience`.
+2. Set configuration:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: `./`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+3. Add Environment Variable:
+   - `VITE_API_BASE_URL`: `https://<your-render-service>.onrender.com`
+4. Deploy! `vercel.json` provides pure Single-Page Application (SPA) rewrites to `index.html`.
 
 ---
 
-### 2. Frontend Deployment on Vercel (React + Vite)
+## 🧪 Local Development & Tests
 
-1. Go to your [Vercel Dashboard](https://vercel.com/new).
-2. Click **Import** next to your GitHub repository `vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai`.
-3. Configure Project Settings:
-   | Setting | Value |
-   | :--- | :--- |
-   | **Framework Preset** | `Vite` |
-   | **Root Directory** | `./` (or `frontend` if using subfolder) |
-   | **Build Command** | `npm run build` |
-   | **Output Directory** | `dist` |
-4. Under **Environment Variables**, add:
-   | Key | Value | Description |
-   | :--- | :--- | :--- |
-   | `VITE_API_BASE_URL` | `https://<your-render-app>.onrender.com` | Your live Render backend URL |
-5. Click **Deploy**. Vercel will build the frontend and serve it globally on their edge network.
-6. The included `vercel.json` ensures that Single-Page Application (SPA) client-side routing rewrites work properly on deep links and page refreshes.
-
----
-
-### 3. Dynamic Backend URL Switching from the UI
-
-The Q-Silience dashboard includes built-in backend state tracking:
-- Click the **Backend: Checking / Live / Offline** status badge in the header.
-- A modal opens where you can:
-  1. View live ping latency to your Render service.
-  2. Inspect whether Qiskit C-extensions are loaded.
-  3. Override or test a custom backend URL dynamically (saved in browser `localStorage`), with no redeployment required.
-
----
-
-## 🔁 How to Push Code
-
-> Full walkthrough: **[Git & Collaboration Handbook](../vtu-hc-guide-git-and-collaboration)** — collaboration
-> workflow, branches, pull requests, reviews and conflict resolution.
-
-### Configure Git (first time only)
-
+### Backend
 ```bash
-git config --global user.name  "Your Name"
-git config --global user.email "you@example.com"
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python -m uvicorn main:app --reload --port 8000
+```
+Run comprehensive backend test suite:
+```bash
+pytest -v tests/test_api.py
 ```
 
-### Everyday workflow
-
+### Frontend
 ```bash
-# 1. Get the latest changes
-git checkout main
-git pull origin main
-
-# 2. Create a branch for your work
-git checkout -b feature/my-task
-
-# 3. Commit your work
-git add .
-git commit -m "feat: add variational circuit for the search problem"
-
-# 4. Push the branch
-git push -u origin feature/my-task
-
-# 5. Open a Pull Request on GitHub and request a review
-#    https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai/compare/main...feature/my-task
-
-# 6. After approval, merge into main
-git checkout main
-git pull origin main
-git branch -d feature/my-task
+npm install
+npm run dev
 ```
 
-### Commit message convention
-
-| Prefix | Meaning |
-| :--- | :--- |
-| `feat:` | New feature |
-| `fix:` | Bug fix |
-| `docs:` | Documentation only |
-| `test:` | Adding or fixing tests |
-| `refactor:` | Code restructure, no behaviour change |
-| `chore:` | Build/config/dependency changes |
-
-### Useful commands
-
+Build for production:
 ```bash
-git status              # what changed
-git log --oneline -10   # recent commits
-git diff                # review changes before committing
-git stash               # shelve changes temporarily
-git pull --rebase       # update your branch on top of main
+npm run build
 ```
-
-### Collaborating on the same repo
-
-- **Never push directly to `main`** — open a Pull Request.
-- **Pull before you push** to avoid rejected commits.
-- **Commit often** with clear messages.
-- **Resolve conflicts** locally: `git pull --rebase`, fix the files, then `git add` + `git rebase --continue`.
-- **Ask for a review** before merging — a second pair of eyes catches bugs fast.
 
 ---
 
-## ✅ Submission Checklist
+## 👥 Team Members
 
-- [ ] Repository created and **public**
-- [ ] All team members added as **collaborators** and invitations accepted
-- [ ] `README.md` updated with project details, problem statement and solution
-- [ ] Team members listed under [Team Members](#-team-members-github-ids)
-- [ ] `requirements.txt` committed and project runs from a clean clone
-- [ ] Code pushed to `main` and the latest `main` builds successfully
-- [ ] Notebooks committed with **cleared outputs** (or use `nbstrip`)
-- [ ] `README` includes a demo screenshot / video link
-- [ ] Short project summary submitted on the hackathon portal
-
----
-
-## 📚 Resources
-
-| Resource | Link |
-| :--- | :--- |
-| 🔁 Git & collaboration handbook | [Git & Collaboration Handbook](../vtu-hc-guide-git-and-collaboration) |
-| ❓ Problem statements, solutions & terms | [Problem Statements, Solutions & Terms](../vtu-hc-guide-problem-and-solution) |
-| 📄 README writing guide | [README Guide & Template](../vtu-hc-guide-readme-template) |
-| ⚛️ Qiskit documentation | https://docs.quantum.ibm.com/ |
-| ⚛️ Qiskit Runtime & primitives | https://quantum.cloud.ibm.com/docs/ |
-| 🧪 Qiskit Aer simulator | https://docs.quantum.ibm.com/guides/simulator |
-| 💻 IBM Quantum Platform | https://quantum.cloud.ibm.com/ |
-| 🎓 Qiskit textbook | https://qiskit.qotlabs.org/learning/ |
-| 📋 GitHub Docs | https://docs.github.com/ |
+| Name | Role | Responsibilities |
+| :--- | :--- | :--- |
+| **Dhyan Pol** | Team Lead & Quantum ML Engineer | Qiskit ZZFeatureMap circuit, fidelity kernel formulation, backend pipeline |
+| **Team Ctrl_AI** | Full-Stack Systems Engineer | React 19 + TypeScript dashboard, digital twin, Vercel/Render CI/CD |
+| **Team Ctrl_AI** | Power Systems & Domain Specialist | IEEE 1547.4 microgrid physics simulation, transient scenarios, telemetry modeling |
 
 ---
 
 ## 📄 License
 
-Released under the [MIT License](LICENSE). See `LICENSE` for details.
-
----
-
-<div align="center">
-
-**Ctrl_AI** · Team ID `VTU-QFF-HC-0025` · Tier `Both`
-· Built with ⚛️ Qiskit for the VTU-QFF Hackathon
-
-[⬆ Back to Top](#ctrl_ai)
-
-</div>
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details. Built for the **VTU-Qiskit Fall Fest 2026 Hackathon**.

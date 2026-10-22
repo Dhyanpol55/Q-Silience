@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ScalerModel } from '../types/microgrid';
 import { SVCTrainedModel, predictSample } from '../services/svmSolver';
 import { transformSample } from '../services/preprocessing';
+import { predictWithBackend, pingBackend, BackendHealth } from '../services/apiClient';
 import { MicrogridDigitalTwin } from './MicrogridDigitalTwin';
 import {
   Play,
@@ -19,6 +20,7 @@ import {
   BatteryCharging,
   Gauge,
   Sparkles,
+  Server,
 } from 'lucide-react';
 import {
   LineChart,
@@ -66,12 +68,22 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
   const [streamHistory, setStreamHistory] = useState<LiveStreamPoint[]>([]);
   const [currentTick, setCurrentTick] = useState<number>(1);
   const [anomalyInjection, setAnomalyInjection] = useState<string>('none');
+  const [backendConnected, setBackendConnected] = useState<boolean>(false);
+  const [lastInferenceSource, setLastInferenceSource] = useState<'backend' | 'local_demo'>('local_demo');
   const [recentAlerts, setRecentAlerts] = useState<
     { id: string; time: string; reason: string; cPred: string; qPred: string }[]
   >([]);
 
   const tickRef = useRef<number>(1);
   tickRef.current = currentTick;
+  const isCallingBackendRef = useRef<boolean>(false);
+
+  // Probe backend on mount
+  useEffect(() => {
+    pingBackend().then((res: BackendHealth) => {
+      setBackendConnected(res.status === 'healthy');
+    });
+  }, []);
 
   // Generate next telemetry tick
   const generateNextTelemetry = (tick: number, injection: string): LiveStreamPoint => {
@@ -119,7 +131,7 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
       frequency_dev_hz: Number(freqDev.toFixed(3)),
     };
 
-    // Transform and predict
+    // Client-side local inference baseline
     let cLabel: 'NORMAL' | 'ABNORMAL' = 'NORMAL';
     let qLabel: 'NORMAL' | 'ABNORMAL' = 'NORMAL';
 
@@ -137,6 +149,35 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
     }
 
     const isAnomaly = cLabel === 'ABNORMAL' || qLabel === 'ABNORMAL';
+
+    // Asynchronous backend inference (non-blocking, single in-flight request guard)
+    if (backendConnected && !isCallingBackendRef.current) {
+      isCallingBackendRef.current = true;
+      predictWithBackend(sensorVals)
+        .then((res) => {
+          setLastInferenceSource('backend');
+          setStreamHistory((prev) => {
+            if (prev.length === 0) return prev;
+            const updated = [...prev];
+            const idx = updated.findIndex((p) => p.tick === tick);
+            if (idx !== -1) {
+              updated[idx] = {
+                ...updated[idx],
+                classicalPred: res.classical_svc.prediction,
+                quantumPred: res.quantum_qsvc ? res.quantum_qsvc.prediction : updated[idx].quantumPred,
+                isAnomaly: res.classical_svc.prediction === 'ABNORMAL' || (res.quantum_qsvc?.prediction === 'ABNORMAL'),
+              };
+            }
+            return updated;
+          });
+        })
+        .catch(() => {
+          setLastInferenceSource('local_demo');
+        })
+        .finally(() => {
+          isCallingBackendRef.current = false;
+        });
+    }
 
     return {
       tick,
@@ -181,7 +222,7 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
     }, streamSpeedMs);
 
     return () => clearInterval(interval);
-  }, [isRunning, streamSpeedMs, anomalyInjection, classicalModel, quantumModel, scaler]);
+  }, [isRunning, streamSpeedMs, anomalyInjection, classicalModel, quantumModel, scaler, backendConnected]);
 
   // Initial seed
   useEffect(() => {
@@ -225,13 +266,24 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
               <Radio className={`w-5 h-5 ${isRunning ? 'animate-pulse' : 'text-slate-400'}`} />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
                   Live Microgrid Simulation Stream
                 </h1>
                 <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-cyan-950 text-cyan-400 border border-cyan-800 font-semibold">
                   SYNTHETIC TELEMETRY
                 </span>
+                {lastInferenceSource === 'backend' ? (
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 font-semibold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    FASTAPI INFERENCE
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-amber-950 text-amber-400 border border-amber-800 font-semibold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                    LOCAL DEMO INFERENCE
+                  </span>
+                )}
               </div>
               <p className={`mt-0.5 text-xs sm:text-sm ${textMutedClass}`}>
                 Continuous stream of synthetic microgrid sensor telemetry (IEEE 1547.4 physics model) evaluated in real-time by Classical SVC and Quantum QSVC.
