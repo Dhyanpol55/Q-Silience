@@ -199,6 +199,7 @@ export default function App() {
             quantumModel={quantumModel}
             classicalMetrics={classicalMetrics}
             quantumMetrics={quantumMetrics}
+            scaler={datasetSplit?.scaler || null}
             onNavigateToScenarioLab={() => setCurrentPage('scenario_lab')}
             onNavigateToQuantumLab={() => setCurrentPage('quantum_lab')}
             theme={theme}

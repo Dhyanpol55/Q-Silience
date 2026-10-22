@@ -196,3 +196,31 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Engineering & Laboratory Visual Enhancements                                */
+/* -------------------------------------------------------------------------- */
+.tech-grid {
+  background-size: 28px 28px;
+  background-image: 
+    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+}
+.dark .tech-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+
+.glow-cyan-sm {
+  box-shadow: 0 0 16px -2px rgba(6, 182, 212, 0.25);
+}
+.glow-violet-sm {
+  box-shadow: 0 0 16px -2px rgba(139, 92, 246, 0.25);
+}
+
+.glass-card {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+

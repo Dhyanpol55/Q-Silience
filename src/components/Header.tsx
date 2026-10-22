@@ -18,6 +18,7 @@ import {
   X,
   ExternalLink,
   Info,
+  Menu,
 } from 'lucide-react';
 import { pingBackend, getStoredBackendUrl, setStoredBackendUrl, BackendHealth } from '../services/apiClient';
 
@@ -47,6 +48,7 @@ export const Header: React.FC<HeaderProps> = ({
   // Backend connectivity tracking
   const [backendHealth, setBackendHealth] = useState<BackendHealth>({ status: 'checking' });
   const [backendModalOpen, setBackendModalOpen] = useState<boolean>(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [customBackendUrl, setCustomBackendUrl] = useState<string>(getStoredBackendUrl());
 
   const checkConnectivity = async () => {
@@ -241,9 +243,15 @@ export const Header: React.FC<HeaderProps> = ({
                   <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono font-bold px-1.5 py-0.5 rounded-md bg-cyan-50 dark:bg-cyan-950/80 border border-cyan-200 dark:border-cyan-800">
                     v1.3.0
                   </span>
+                  {isTraining && (
+                    <span className="hidden sm:inline-flex items-center gap-1 text-[10px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 px-1.5 py-0.5 rounded-md animate-pulse font-mono font-medium">
+                      <Atom className="w-3 h-3 animate-spin" />
+                      QML Fitting...
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 text-xs font-mono">
-                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>
+                  <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>
                     VTU Qiskit Fall Fest 2026
                   </span>
                   <span aria-hidden="true" className={isDark ? 'text-slate-700' : 'text-slate-300'}>
@@ -257,9 +265,9 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             </div>
 
-            {/* Navigation Segmented Control */}
+            {/* Navigation Segmented Control: Desktop horizontal scrollable container */}
             <nav
-              className={`hidden md:flex items-center gap-1 p-1 rounded-xl border transition-colors overflow-x-auto ${
+              className={`hidden xl:flex items-center gap-1 p-1 rounded-xl border transition-colors overflow-x-auto ${
                 isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-slate-100 border-slate-200'
               }`}
               aria-label="Primary Application Navigation"
@@ -287,13 +295,23 @@ export const Header: React.FC<HeaderProps> = ({
               })}
             </nav>
 
-            {/* Issue 6 Fix: Distinct Visual Grouping with Vertical Divider between Nav and Utility Controls */}
-            <div className="flex items-center gap-3 shrink-0">
+            {/* Utility Controls Cluster */}
+            <div className="flex items-center gap-2.5 shrink-0">
+              {/* Responsive Hamburger Toggle for viewports < xl */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="xl:hidden btn-secondary gap-1.5 px-2.5 h-9"
+                aria-label="Toggle navigation menu"
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                <span className="text-xs font-semibold hidden sm:inline">Sections</span>
+              </button>
+
               <div className="hidden lg:block h-6 w-px bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
 
-              {/* Utility Cluster Container */}
               <div className="flex items-center gap-2">
-                {/* Issue 9 Fix: Styled as informative status badge instead of confusing action button */}
+                {/* Status Badge */}
                 <div
                   className={`h-9 flex items-center gap-2 px-3 rounded-xl border text-xs select-none transition-colors ${
                     backendHealth.status === 'healthy'
@@ -326,7 +344,6 @@ export const Header: React.FC<HeaderProps> = ({
                       <>Local Quantum Engine</>
                     )}
                   </span>
-                  {/* Subtle info trigger for connection inspection */}
                   <button
                     onClick={() => setBackendModalOpen(true)}
                     title="Inspect Backend Connection Details"
@@ -365,31 +382,68 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Mobile Navigation Strip */}
-          <div className="flex md:hidden items-center space-x-1 py-2 overflow-x-auto border-t border-slate-200 dark:border-slate-800">
-            {navItems.map((item) => {
-              const isActive = currentPage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => onSelectPage(item.id)}
-                  className={`flex items-center space-x-1.5 px-2.5 py-1 text-xs font-medium rounded-lg shrink-0 ${
-                    isActive
-                      ? isDark
-                        ? 'bg-cyan-500 text-slate-950 font-bold'
-                        : 'bg-cyan-600 text-white font-bold'
-                      : isDark
-                      ? 'text-slate-400'
-                      : 'text-slate-600'
-                  }`}
-                >
-                  {item.icon(isActive)}
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          {/* Collapsible Mobile & Laptop Navigation Drawer (< xl viewports) */}
+          {mobileMenuOpen && (
+            <div className="xl:hidden py-3 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+              {navItems.map((item) => {
+                const isActive = currentPage === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onSelectPage(item.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center gap-2.5 p-2.5 rounded-xl border text-xs font-medium text-left transition-all cursor-pointer ${
+                      isActive
+                        ? isDark
+                          ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-300 font-bold'
+                          : 'bg-cyan-50 border-cyan-300 text-cyan-900 font-bold'
+                        : isDark
+                        ? 'bg-slate-900/60 border-slate-800 text-slate-300 hover:bg-slate-800/80 hover:text-white'
+                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                    }`}
+                  >
+                    {item.icon(isActive)}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Quick Horizontal Scroll Navigation Strip on mobile (< md viewports) */}
+          {!mobileMenuOpen && (
+            <div className="flex md:hidden items-center gap-1.5 py-2 overflow-x-auto border-t border-slate-200 dark:border-slate-800 scrollbar-none">
+              {navItems.map((item) => {
+                const isActive = currentPage === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onSelectPage(item.id)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg shrink-0 ${
+                      isActive
+                        ? isDark
+                          ? 'bg-cyan-500 text-slate-950 font-bold'
+                          : 'bg-cyan-600 text-white font-bold'
+                        : isDark
+                        ? 'text-slate-300 hover:text-white'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    {item.icon(isActive)}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
+
+        {/* Global Loading / Training Progress Line */}
+        {isTraining && (
+          <div className="h-0.5 w-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-amber-500 animate-pulse" />
+        )}
       </header>
 
       {/* Backend Diagnostics Modal */}
