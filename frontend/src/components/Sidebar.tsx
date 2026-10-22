@@ -43,7 +43,8 @@ export default function Sidebar({ activeSection, onSelectSection, className }: S
 
   return (
     <aside
-      className={`w-72 h-screen bg-slate-900 border-r border-slate-800 flex flex-col justify-between p-6 fixed left-0 top-0 z-50 text-slate-200 ${
+      style={{ backgroundColor: '#fdf3f3', width: '220px' }}
+      className={`h-screen border-r border-slate-300 dark:border-slate-800 flex flex-col justify-between p-5 fixed left-0 top-0 z-50 text-slate-800 ${
         className || ''
       }`}
     >

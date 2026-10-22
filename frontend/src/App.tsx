@@ -417,7 +417,7 @@ export default function App() {
       />
 
       {/* CONTINUOUS SCROLL CONTAINER: All Tabs rendered with High-Performance Scroll-Spy Sync */}
-      <main className="flex-1 space-y-20 pb-28 xl:pl-72">
+      <main className="flex-1 space-y-20 pb-28 xl:pl-[220px]">
         {/* TAB 01: OVERVIEW */}
         <div id="overview" className="relative -top-24 pointer-events-none" aria-hidden="true" />
         <section
@@ -738,7 +738,7 @@ export default function App() {
 
       {/* Global Footer */}
       <footer
-        className={`border-t py-8 sm:py-10 text-xs font-mono transition-colors xl:pl-72 ${
+        className={`border-t py-8 sm:py-10 text-xs font-mono transition-colors xl:pl-[220px] ${
           isDark ? 'border-slate-800/80 bg-slate-950 text-slate-300' : 'border-slate-300 bg-slate-50 text-slate-700'
         }`}
       >
