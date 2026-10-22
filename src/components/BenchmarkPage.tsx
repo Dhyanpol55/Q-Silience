@@ -106,8 +106,8 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
   const innerCardClass = isDark
     ? 'bg-slate-950 border-slate-800/80'
     : 'bg-slate-50 border-slate-200';
-  const headingClass = isDark ? 'text-white' : 'text-slate-900';
-  const textMutedClass = isDark ? 'text-slate-400' : 'text-slate-600';
+  const headingClass = isDark ? 'text-white' : 'text-slate-900 font-extrabold';
+  const textMutedClass = isDark ? 'text-slate-300' : 'text-slate-700 font-medium';
   const gridStroke = isDark ? '#1e293b' : '#e2e8f0';
 
   return (

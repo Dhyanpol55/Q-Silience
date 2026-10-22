@@ -482,7 +482,7 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1">FastAPI Backend Endpoint URL:</label>
+                <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>FastAPI Backend Endpoint URL:</label>
                 <input
                   type="text"
                   value={customBackendUrl}
@@ -494,17 +494,17 @@ export const Header: React.FC<HeaderProps> = ({
                       : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-500'
                   }`}
                 />
-                <p className="text-[10px] text-slate-400 mt-1">
+                <p className={`text-[10px] mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600 font-medium'}`}>
                   Default: https://q-resilience-api.onrender.com or local FastAPI uvicorn instance.
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl border border-slate-700/80 bg-slate-800/20 text-[11px] space-y-1">
-                <div className="font-bold text-cyan-400">Supported Backend Endpoints:</div>
-                <div>• <code className="text-slate-200">GET /health</code> — Qiskit & model readiness</div>
-                <div>• <code className="text-slate-200">POST /api/predict</code> — Classical SVC & Quantum QSVC</div>
-                <div>• <code className="text-slate-200">GET /api/benchmark</code> — Stratified benchmark metrics</div>
-                <div>• <code className="text-slate-200">GET /api/circuit</code> — Qiskit ZZFeatureMap ASCII diagram</div>
+              <div className={`p-3 rounded-xl border text-[11px] space-y-1 ${isDark ? 'border-slate-800 bg-slate-950/70 text-slate-300' : 'border-slate-200 bg-slate-50 text-slate-800'}`}>
+                <div className="font-bold text-cyan-600 dark:text-cyan-400">Supported Backend Endpoints:</div>
+                <div>• <code className={`font-mono font-bold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>GET /health</code> — Qiskit &amp; model readiness</div>
+                <div>• <code className={`font-mono font-bold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>POST /api/predict</code> — Classical SVC &amp; Quantum QSVC</div>
+                <div>• <code className={`font-mono font-bold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>GET /api/benchmark</code> — Stratified benchmark metrics</div>
+                <div>• <code className={`font-mono font-bold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>GET /api/circuit</code> — Qiskit ZZFeatureMap ASCII diagram</div>
               </div>
             </div>
 

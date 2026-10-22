@@ -554,23 +554,23 @@ export const AnomalyInvestigationPage: React.FC<AnomalyInvestigationPageProps> =
 
             {/* Diagnostic Badges */}
             <div className="grid grid-cols-3 gap-3 mb-6">
-              <div className="p-3 rounded-xl border border-slate-700/80 bg-slate-800/40 text-xs font-mono">
-                <div className="text-slate-400 mb-1">Confirmed Physical State</div>
-                <div className={selectedSample.is_abnormal === 1 ? 'text-rose-400 font-bold' : 'text-emerald-400 font-bold'}>
+              <div className={`p-3 rounded-xl border text-xs font-mono ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-slate-200 bg-slate-50'}`}>
+                <div className={`mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600 font-semibold'}`}>Confirmed Physical State</div>
+                <div className={selectedSample.is_abnormal === 1 ? 'text-rose-500 font-bold' : 'text-emerald-500 font-bold'}>
                   {selectedSample.is_abnormal === 1 ? 'PHYSICAL FAULT' : 'NORMAL EQUILIBRIUM'}
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl border border-slate-700/80 bg-slate-800/40 text-xs font-mono">
-                <div className="text-slate-400 mb-1">Classical SVC Prediction</div>
-                <div className="text-sky-400 font-bold">
+              <div className={`p-3 rounded-xl border text-xs font-mono ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-slate-200 bg-slate-50'}`}>
+                <div className={`mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600 font-semibold'}`}>Classical SVC Prediction</div>
+                <div className="text-sky-500 font-bold">
                   {selectedSample.is_abnormal === 1 ? 'FLAGGED (1)' : 'NOMINAL (0)'}
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl border border-slate-700/80 bg-slate-800/40 text-xs font-mono">
-                <div className="text-slate-400 mb-1">Quantum QSVC Prediction</div>
-                <div className="text-violet-400 font-bold">
+              <div className={`p-3 rounded-xl border text-xs font-mono ${isDark ? 'border-slate-800 bg-slate-950/70' : 'border-slate-200 bg-slate-50'}`}>
+                <div className={`mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600 font-semibold'}`}>Quantum QSVC Prediction</div>
+                <div className="text-violet-500 font-bold">
                   {selectedSample.is_abnormal === 1 ? 'FLAGGED (1)' : 'NOMINAL (0)'}
                 </div>
               </div>
@@ -578,44 +578,44 @@ export const AnomalyInvestigationPage: React.FC<AnomalyInvestigationPageProps> =
 
             {/* Telemetry Sensor Values */}
             <div className="space-y-3 mb-6">
-              <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold">
-                Sensor Telemetry & Residual Deviations
+              <h4 className={`text-xs font-mono uppercase tracking-wider font-bold ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                Sensor Telemetry &amp; Residual Deviations
               </h4>
               <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-                <div className="p-3 rounded-xl border border-slate-700/50 bg-slate-800/20">
-                  <span className="text-slate-400">Demand:</span>{' '}
-                  <strong className="text-white">{selectedSample.demand_kw.toFixed(1)} kW</strong>
+                <div className={`p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-950/50' : 'border-slate-200 bg-slate-50'}`}>
+                  <span className={isDark ? 'text-slate-400' : 'text-slate-600 font-medium'}>Demand:</span>{' '}
+                  <strong className={isDark ? 'text-white' : 'text-slate-900 font-bold'}>{selectedSample.demand_kw.toFixed(1)} kW</strong>
                 </div>
-                <div className="p-3 rounded-xl border border-slate-700/50 bg-slate-800/20">
-                  <span className="text-slate-400">Solar PV:</span>{' '}
-                  <strong className="text-white">{selectedSample.solar_kw.toFixed(1)} kW</strong>
+                <div className={`p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-950/50' : 'border-slate-200 bg-slate-50'}`}>
+                  <span className={isDark ? 'text-slate-400' : 'text-slate-600 font-medium'}>Solar PV:</span>{' '}
+                  <strong className={isDark ? 'text-white' : 'text-slate-900 font-bold'}>{selectedSample.solar_kw.toFixed(1)} kW</strong>
                 </div>
-                <div className="p-3 rounded-xl border border-slate-700/50 bg-slate-800/20">
-                  <span className="text-slate-400">Battery SoC:</span>{' '}
-                  <strong className={selectedSample.battery_soc_pct < batterySocCutoff ? 'text-amber-400' : 'text-white'}>
+                <div className={`p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-950/50' : 'border-slate-200 bg-slate-50'}`}>
+                  <span className={isDark ? 'text-slate-400' : 'text-slate-600 font-medium'}>Battery SoC:</span>{' '}
+                  <strong className={selectedSample.battery_soc_pct < batterySocCutoff ? 'text-amber-500 font-bold' : isDark ? 'text-white' : 'text-slate-900 font-bold'}>
                     {selectedSample.battery_soc_pct.toFixed(1)}%
                   </strong>
                 </div>
-                <div className="p-3 rounded-xl border border-slate-700/50 bg-slate-800/20">
-                  <span className="text-slate-400">Voltage Dev:</span>{' '}
-                  <strong className={Math.abs(selectedSample.voltage_dev_v) > voltageThreshold ? 'text-rose-400' : 'text-white'}>
+                <div className={`p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-950/50' : 'border-slate-200 bg-slate-50'}`}>
+                  <span className={isDark ? 'text-slate-400' : 'text-slate-600 font-medium'}>Voltage Dev:</span>{' '}
+                  <strong className={Math.abs(selectedSample.voltage_dev_v) > voltageThreshold ? 'text-rose-500 font-bold' : isDark ? 'text-white' : 'text-slate-900 font-bold'}>
                     {selectedSample.voltage_dev_v >= 0 ? `+${selectedSample.voltage_dev_v.toFixed(1)}` : selectedSample.voltage_dev_v.toFixed(1)} V
                   </strong>
                 </div>
-                <div className="p-3 rounded-xl border border-slate-700/50 bg-slate-800/20 col-span-2">
-                  <span className="text-slate-400">Frequency Dev:</span>{' '}
-                  <strong className={Math.abs(selectedSample.frequency_dev_hz) > freqThreshold ? 'text-rose-400' : 'text-white'}>
+                <div className={`p-3 rounded-xl border col-span-2 ${isDark ? 'border-slate-800 bg-slate-950/50' : 'border-slate-200 bg-slate-50'}`}>
+                  <span className={isDark ? 'text-slate-400' : 'text-slate-600 font-medium'}>Frequency Dev:</span>{' '}
+                  <strong className={Math.abs(selectedSample.frequency_dev_hz) > freqThreshold ? 'text-rose-500 font-bold' : isDark ? 'text-white' : 'text-slate-900 font-bold'}>
                     {selectedSample.frequency_dev_hz >= 0 ? `+${selectedSample.frequency_dev_hz.toFixed(3)}` : selectedSample.frequency_dev_hz.toFixed(3)} Hz
                   </strong>{' '}
-                  <span className="text-slate-500">(Nominal 50.000 Hz)</span>
+                  <span className={isDark ? 'text-slate-500' : 'text-slate-500'}>· Nominal 50.000 Hz</span>
                 </div>
               </div>
             </div>
 
             {/* Root Cause / Scenario Reason */}
-            <div className="p-4 rounded-xl border border-slate-700/80 bg-slate-800/50 text-xs">
-              <div className="font-bold font-mono text-cyan-400 mb-1">Grid Scenario Attribution:</div>
-              <p className="text-slate-300 leading-relaxed">
+            <div className={`p-4 rounded-xl border text-xs ${isDark ? 'border-slate-800 bg-slate-950/70 text-slate-200' : 'border-slate-200 bg-slate-50 text-slate-800'}`}>
+              <div className="font-bold font-mono text-cyan-600 dark:text-cyan-400 mb-1">Grid Scenario Attribution:</div>
+              <p className={`leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-800 font-medium'}`}>
                 {selectedSample.scenario_reason || 'Normal baseline operating equilibrium within nominal limits.'}
               </p>
             </div>

@@ -68,8 +68,8 @@ export const MicrogridDigitalTwin: React.FC<MicrogridDigitalTwinProps> = ({
 
   const cardBg = isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200 shadow-xs';
   const innerCardBg = isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200';
-  const headingText = isDark ? 'text-white' : 'text-slate-900';
-  const mutedText = isDark ? 'text-slate-400' : 'text-slate-600';
+  const headingText = isDark ? 'text-white' : 'text-slate-900 font-extrabold';
+  const mutedText = isDark ? 'text-slate-300' : 'text-slate-700 font-medium';
 
   return (
     <div className={`p-5 rounded-2xl border transition-all ${cardBg}`}>

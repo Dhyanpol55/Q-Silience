@@ -365,8 +365,8 @@ export const ReportPage: React.FC<ReportPageProps> = ({
   const innerCardClass = isDark
     ? 'bg-slate-950 border-slate-800/80'
     : 'bg-slate-50 border-slate-200';
-  const headingClass = isDark ? 'text-white' : 'text-slate-900';
-  const textMutedClass = isDark ? 'text-slate-400' : 'text-slate-600';
+  const headingClass = isDark ? 'text-white' : 'text-slate-900 font-extrabold';
+  const textMutedClass = isDark ? 'text-slate-300' : 'text-slate-700 font-medium';
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -644,21 +644,21 @@ export const ReportPage: React.FC<ReportPageProps> = ({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px]">
             <div className={`p-3 rounded-lg border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-              <div className="font-bold text-slate-200 mb-1">Step 1: Open Render Dashboard</div>
+              <div className={`font-bold mb-1 ${isDark ? 'text-slate-100' : 'text-slate-900 font-extrabold'}`}>Step 1: Open Render Dashboard</div>
               <p className={textMutedClass}>
-                Go to <a href="https://dashboard.render.com" target="_blank" rel="noopener noreferrer" className="text-cyan-500 underline">dashboard.render.com</a> &gt; Click <strong>New +</strong> &gt; Select <strong>Blueprint</strong>.
+                Go to <a href="https://dashboard.render.com" target="_blank" rel="noopener noreferrer" className="text-cyan-500 underline font-semibold">dashboard.render.com</a> &gt; Click <strong>New +</strong> &gt; Select <strong>Blueprint</strong>.
               </p>
             </div>
             <div className={`p-3 rounded-lg border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-              <div className="font-bold text-slate-200 mb-1">Step 2: Connect GitHub Repo</div>
+              <div className={`font-bold mb-1 ${isDark ? 'text-slate-100' : 'text-slate-900 font-extrabold'}`}>Step 2: Connect GitHub Repo</div>
               <p className={textMutedClass}>
-                Select <code className="text-cyan-400 font-bold">Dhyanpol55/Q-Silience</code>. Render automatically reads root <code className="text-slate-300">render.yaml</code> and builds the backend.
+                Select <code className="text-cyan-600 dark:text-cyan-400 font-bold">Dhyanpol55/Q-Silience</code>. Render automatically reads root <code className="text-slate-700 dark:text-slate-300 font-mono">render.yaml</code> and builds the backend.
               </p>
             </div>
             <div className={`p-3 rounded-lg border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-              <div className="font-bold text-slate-200 mb-1">Step 3: Paste URL &amp; Connect</div>
+              <div className={`font-bold mb-1 ${isDark ? 'text-slate-100' : 'text-slate-900 font-extrabold'}`}>Step 3: Paste URL &amp; Connect</div>
               <p className={textMutedClass}>
-                Copy your Render web service URL (e.g. <code className="text-cyan-400">https://q-resilience-backend.onrender.com</code>) below and click Execute.
+                Copy your Render web service URL (e.g. <code className="text-cyan-600 dark:text-cyan-400 font-mono">https://q-resilience-backend.onrender.com</code>) below and click Execute.
               </p>
             </div>
           </div>

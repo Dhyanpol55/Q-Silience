@@ -43,8 +43,8 @@ export default function Sidebar({ activeSection, onSelectSection, className }: S
 
   return (
     <aside
-      style={{ backgroundColor: '#fdf3f3', width: '220px' }}
-      className={`h-screen border-r border-slate-300 dark:border-slate-800 flex flex-col justify-between p-5 fixed left-0 top-0 z-50 text-slate-800 ${
+      style={{ width: '220px' }}
+      className={`h-screen border-r border-slate-200 dark:border-slate-800/80 bg-slate-50/95 dark:bg-[#070b14]/95 backdrop-blur-md flex flex-col justify-between p-5 fixed left-0 top-0 z-50 text-slate-900 dark:text-slate-100 transition-colors duration-200 ${
         className || ''
       }`}
     >
@@ -52,14 +52,18 @@ export default function Sidebar({ activeSection, onSelectSection, className }: S
       <div>
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="font-bold tracking-wider text-sky-400 text-sm">Q-RESILIENCE AI</h1>
-            <p className="text-xs text-slate-400">VTU Qiskit Fall Fest 2026</p>
+            <h1 className="font-extrabold tracking-wider text-cyan-600 dark:text-cyan-400 text-sm">Q-RESILIENCE AI</h1>
+            <p className="text-[11px] font-medium text-slate-600 dark:text-slate-400">VTU Qiskit Fall Fest 2026</p>
           </div>
-          <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded border border-slate-700">v1.4.0</span>
+          <span className="text-[10px] font-mono font-semibold bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700">
+            v1.4.0
+          </span>
         </div>
 
         {/* Navigation Links */}
-        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Core Modules</div>
+        <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+          Core Modules
+        </div>
         <nav className="flex flex-col gap-1.5" aria-label="Sidebar Navigation">
           {navItems.map((item) => {
             const isActive = isItemActive(item.id);
@@ -68,19 +72,21 @@ export default function Sidebar({ activeSection, onSelectSection, className }: S
                 key={item.id}
                 href={`#${item.id}`}
                 onClick={(e) => handleItemClick(e, item.id)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                   isActive
-                    ? 'bg-sky-600 text-white shadow-lg shadow-sky-900/20'
-                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'
+                    ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-sm shadow-cyan-500/30'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200/80 dark:hover:bg-slate-800/80 hover:text-slate-950 dark:hover:text-white'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <span>{item.icon}</span>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-sm">{item.icon}</span>
                   <span>{item.label}</span>
                 </div>
                 <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded ${
-                    isActive ? 'bg-sky-700 text-sky-100' : 'bg-slate-800 text-slate-500'
+                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                    isActive
+                      ? 'bg-cyan-600 text-white font-bold'
+                      : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium'
                   }`}
                 >
                   {item.number}
@@ -92,15 +98,15 @@ export default function Sidebar({ activeSection, onSelectSection, className }: S
       </div>
 
       {/* Footer Info / Status */}
-      <div className="pt-4 border-t border-slate-800 text-xs text-slate-500 flex flex-col gap-2">
-        <div className="flex items-center justify-between">
+      <div className="pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex flex-col gap-2">
+        <div className="flex items-center justify-between text-[11px] font-medium">
           <span>Local Engine</span>
           <span className="flex h-2 w-2 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
         </div>
-        <p className="text-[10px] text-slate-600">IEEE 1547.4 & EN 50160 Compliant</p>
+        <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">IEEE 1547.4 & EN 50160</p>
       </div>
     </aside>
   );

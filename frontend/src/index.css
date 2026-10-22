@@ -1,26 +1,75 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 @layer base {
   html {
     scroll-behavior: smooth;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     overflow-x: hidden;
     background-color: #ffffff;
-    color: #0f172a;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    color: #020617; /* Slate 950 deep ink black for maximum legibility */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   .dark body, body.dark, html.dark body, html.dark {
-    background-color: #090d16;
+    background-color: #070a12;
     color: #f8fafc;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #020617;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
+
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    color: #ffffff;
+  }
+
+  p {
+    color: #0f172a;
+  }
+
+  .dark p {
+    color: #cbd5e1;
+  }
+
+  .dark code, .dark pre {
+    color: #e2e8f0;
   }
 
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
+}
+
+/* Ensure high visibility and contrast for data tables and inputs in dark mode */
+.dark table th {
+  color: #94a3b8;
+}
+
+.dark table td {
+  color: #f1f5f9;
+}
+
+.dark input[type="text"],
+.dark input[type="number"],
+.dark select {
+  color: #ffffff;
+}
+
+.dark input::placeholder {
+  color: #64748b;
 }
 
 /* -------------------------------------------------------------------------- */

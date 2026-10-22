@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 @layer base {
   html {
     scroll-behavior: smooth;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
@@ -38,9 +44,32 @@
     color: #cbd5e1;
   }
 
+  .dark code, .dark pre {
+    color: #e2e8f0;
+  }
+
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
+}
+
+/* Ensure high visibility and contrast for data tables and inputs in dark mode */
+.dark table th {
+  color: #94a3b8;
+}
+
+.dark table td {
+  color: #f1f5f9;
+}
+
+.dark input[type="text"],
+.dark input[type="number"],
+.dark select {
+  color: #ffffff;
+}
+
+.dark input::placeholder {
+  color: #64748b;
 }
 
 /* -------------------------------------------------------------------------- */
