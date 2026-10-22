@@ -251,7 +251,7 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                 </div>
                 <div className="flex items-center gap-2 text-xs font-mono">
-                  <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>
+                  <span className={isDark ? 'text-slate-300' : 'text-slate-900 font-semibold'}>
                     VTU Qiskit Fall Fest 2026
                   </span>
                   <span aria-hidden="true" className={isDark ? 'text-slate-500' : 'text-slate-400'}>
@@ -270,12 +270,12 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Responsive Hamburger Toggle for viewports < lg */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden btn-secondary gap-1.5 px-2.5 h-9"
+                className="lg:hidden btn-secondary gap-1.5 px-2.5 h-9 text-slate-900 dark:text-slate-100 font-bold"
                 aria-label="Toggle navigation menu"
                 aria-expanded={mobileMenuOpen}
               >
                 {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-                <span className="text-xs font-semibold">Sections</span>
+                <span className="text-xs font-bold">Sections</span>
               </button>
 
               <div className="hidden lg:block h-6 w-px bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
@@ -287,10 +287,10 @@ export const Header: React.FC<HeaderProps> = ({
                     backendHealth.status === 'healthy'
                       ? isDark
                         ? 'bg-emerald-950/40 border-emerald-800/50 text-emerald-300'
-                        : 'bg-emerald-50/80 border-emerald-200 text-emerald-800'
+                        : 'bg-emerald-50 border-emerald-300 text-emerald-950 font-semibold'
                       : isDark
                       ? 'bg-slate-900/60 border-slate-800 text-slate-300'
-                      : 'bg-slate-100/80 border-slate-200 text-slate-700'
+                      : 'bg-slate-100 border-slate-300 text-slate-950 font-semibold'
                   }`}
                   role="status"
                   aria-live="polite"

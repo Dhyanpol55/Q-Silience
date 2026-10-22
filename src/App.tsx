@@ -204,66 +204,50 @@ export default function App() {
     }, 850);
   }, []);
 
-  // Real-time scroll spy and depth percentage tracker
+  // High-performance RAF scroll tracker & scroll spy (zero lag, 60fps/120fps sync)
   useEffect(() => {
+    let rafId: number | null = null;
+    let lastPercent = -1;
+
     const handleScroll = () => {
-      // Calculate scroll progress percentage (0 - 100)
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (docHeight > 0) {
-        const pct = Math.min(100, Math.max(0, (window.scrollY / docHeight) * 100));
-        setScrollPercent(Math.round(pct));
-      }
-
-      if (isManualScrolling.current) return;
-
-      const headerOffset = 180;
-      const scrollY = window.scrollY;
-
-      for (let i = tabSequence.length - 1; i >= 0; i--) {
-        const item = tabSequence[i];
-        const el = document.getElementById(`section-${item.id}`);
-        if (el) {
-          const top = el.offsetTop - headerOffset;
-          if (scrollY >= top - 20) {
-            setCurrentPage((prev) => (prev !== item.id ? item.id : prev));
-            break;
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (docHeight > 0) {
+          const pct = Math.round(Math.min(100, Math.max(0, (window.scrollY / docHeight) * 100)));
+          if (Math.abs(pct - lastPercent) >= 1) {
+            lastPercent = pct;
+            setScrollPercent(pct);
           }
         }
-      }
+
+        if (isManualScrolling.current) return;
+
+        const headerOffset = 180;
+        const scrollY = window.scrollY;
+
+        for (let i = tabSequence.length - 1; i >= 0; i--) {
+          const item = tabSequence[i];
+          const el = document.getElementById(`section-${item.id}`);
+          if (el) {
+            const top = el.offsetTop - headerOffset;
+            if (scrollY >= top - 20) {
+              setCurrentPage((prev) => (prev !== item.id ? item.id : prev));
+              break;
+            }
+          }
+        }
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, [tabSequence]);
-
-  // Entrance scroll animation observer for each tab section
-  useEffect(() => {
-    // Immediately ensure top overview is marked visible
-    const overviewEl = document.getElementById('section-overview');
-    if (overviewEl) {
-      overviewEl.classList.add('section-visible');
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('section-visible');
-          }
-        });
-      },
-      {
-        threshold: 0.08,
-        rootMargin: '0px 0px -40px 0px',
-      }
-    );
-
-    const sections = document.querySelectorAll('.tab-section');
-    sections.forEach((sec) => observer.observe(sec));
-
-    return () => observer.disconnect();
-  }, [samples.length]);
 
   // Next / Previous tab navigation helpers
   const currentIndex = tabSequence.findIndex((t) => t.id === currentPage);
@@ -300,7 +284,7 @@ export default function App() {
 
   const isDark = theme === 'dark';
 
-  // Left-side vertical navigation items with icons, full names, and status badges
+  // Left-side vertical navigation items with icons, full names, and deep ink fonts
   const leftVerticalNavItems = useMemo(
     () => [
       {
@@ -309,9 +293,9 @@ export default function App() {
         number: '01',
         subtitle: 'Executive Telemetry & KPI Matrix',
         icon: <Activity className="w-4 h-4 stroke-[2.2]" />,
-        activeClass: 'bg-cyan-500 text-slate-950 font-bold ring-2 ring-cyan-400/50 shadow-md shadow-cyan-500/30',
-        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
-        badgeColor: 'text-cyan-700 dark:text-cyan-300 bg-cyan-500/10 border-cyan-500/25',
+        activeClass: 'bg-cyan-500 text-slate-950 font-extrabold ring-2 ring-cyan-400/50 shadow-md shadow-cyan-500/30',
+        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
+        badgeColor: 'text-slate-950 dark:text-cyan-300 bg-slate-200/90 dark:bg-cyan-500/20 border-slate-300 dark:border-cyan-500/30 font-bold',
       },
       {
         id: 'scenario_lab' as PageId,
@@ -319,9 +303,9 @@ export default function App() {
         number: '02',
         subtitle: 'Multi-Modal Physics Transient Injector',
         icon: <Zap className="w-4 h-4 stroke-[2.2]" />,
-        activeClass: 'bg-amber-500 text-slate-950 font-bold ring-2 ring-amber-400/50 shadow-md shadow-amber-500/30',
-        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
-        badgeColor: 'text-amber-700 dark:text-amber-300 bg-amber-500/10 border-amber-500/25',
+        activeClass: 'bg-amber-500 text-slate-950 font-extrabold ring-2 ring-amber-400/50 shadow-md shadow-amber-500/30',
+        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
+        badgeColor: 'text-slate-950 dark:text-amber-300 bg-slate-200/90 dark:bg-amber-500/20 border-slate-300 dark:border-amber-500/30 font-bold',
       },
       {
         id: 'investigation' as PageId,
@@ -329,9 +313,9 @@ export default function App() {
         number: '03',
         subtitle: '4D State-Space Anomaly Forensics',
         icon: <Eye className="w-4 h-4 stroke-[2.2]" />,
-        activeClass: 'bg-cyan-600 text-white font-bold ring-2 ring-cyan-500/50 shadow-md shadow-cyan-600/30',
-        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
-        badgeColor: 'text-cyan-700 dark:text-cyan-300 bg-cyan-500/10 border-cyan-500/25',
+        activeClass: 'bg-cyan-600 text-white font-extrabold ring-2 ring-cyan-500/50 shadow-md shadow-cyan-600/30',
+        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
+        badgeColor: 'text-slate-950 dark:text-cyan-300 bg-slate-200/90 dark:bg-cyan-500/20 border-slate-300 dark:border-cyan-500/30 font-bold',
       },
       {
         id: 'live_stream' as PageId,
@@ -344,9 +328,9 @@ export default function App() {
             <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rose-500 animate-ping" />
           </div>
         ),
-        activeClass: 'bg-rose-500 text-white font-bold ring-2 ring-rose-400/50 shadow-md shadow-rose-500/30',
-        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
-        badgeColor: 'text-rose-700 dark:text-rose-300 bg-rose-500/10 border-rose-500/25',
+        activeClass: 'bg-rose-500 text-white font-extrabold ring-2 ring-rose-400/50 shadow-md shadow-rose-500/30',
+        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
+        badgeColor: 'text-slate-950 dark:text-rose-300 bg-slate-200/90 dark:bg-rose-500/20 border-slate-300 dark:border-rose-500/30 font-bold',
       },
       {
         id: 'quantum_lab' as PageId,
@@ -354,9 +338,9 @@ export default function App() {
         number: '05',
         subtitle: 'Qiskit ZZFeatureMap Hilbert Space',
         icon: <Atom className="w-4 h-4 stroke-[2]" />,
-        activeClass: 'bg-violet-600 text-white font-bold ring-2 ring-violet-400/50 shadow-md shadow-violet-600/30',
-        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
-        badgeColor: 'text-violet-700 dark:text-violet-300 bg-violet-500/10 border-violet-500/25',
+        activeClass: 'bg-violet-600 text-white font-extrabold ring-2 ring-violet-400/50 shadow-md shadow-violet-600/30',
+        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
+        badgeColor: 'text-slate-950 dark:text-violet-300 bg-slate-200/90 dark:bg-violet-500/20 border-slate-300 dark:border-violet-500/30 font-bold',
       },
       {
         id: 'benchmark' as PageId,
@@ -364,9 +348,9 @@ export default function App() {
         number: '06',
         subtitle: 'Classical vs Quantum Empirical Regimes',
         icon: <BarChart3 className="w-4 h-4 stroke-[2]" />,
-        activeClass: 'bg-sky-600 text-white font-bold ring-2 ring-sky-400/50 shadow-md shadow-sky-600/30',
-        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
-        badgeColor: 'text-sky-700 dark:text-sky-300 bg-sky-500/10 border-sky-500/25',
+        activeClass: 'bg-sky-600 text-white font-extrabold ring-2 ring-sky-400/50 shadow-md shadow-sky-600/30',
+        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
+        badgeColor: 'text-slate-950 dark:text-sky-300 bg-slate-200/90 dark:bg-sky-500/20 border-slate-300 dark:border-sky-500/30 font-bold',
       },
       {
         id: 'report' as PageId,
@@ -374,9 +358,9 @@ export default function App() {
         number: '07',
         subtitle: 'VTU Dossier, Source Audit & CSV Export',
         icon: <FileText className="w-4 h-4 stroke-[2]" />,
-        activeClass: 'bg-indigo-600 text-white font-bold ring-2 ring-indigo-400/50 shadow-md shadow-indigo-600/30',
-        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
-        badgeColor: 'text-indigo-700 dark:text-indigo-300 bg-indigo-500/10 border-indigo-500/25',
+        activeClass: 'bg-indigo-600 text-white font-extrabold ring-2 ring-indigo-400/50 shadow-md shadow-indigo-600/30',
+        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
+        badgeColor: 'text-slate-950 dark:text-indigo-300 bg-slate-200/90 dark:bg-indigo-500/20 border-slate-300 dark:border-indigo-500/30 font-bold',
       },
     ],
     []
@@ -409,31 +393,32 @@ export default function App() {
       {/* LEFT-SIDE VERTICAL NAVIGATION: Displays icons WITH full names for Overview, Scenario Lab, Investigation, Live Stream */}
       <aside
         aria-label="Vertical navigation sidebar"
-        className={`fixed left-2 sm:left-3 lg:left-4 top-20 bottom-6 w-14 lg:w-60 z-30 hidden md:flex flex-col justify-between p-2 lg:p-3 rounded-2xl backdrop-blur-xl border transition-all duration-200 shadow-2xl overflow-y-auto ${
+        style={{ width: '190px', height: '500px' }}
+        className={`fixed left-2 sm:left-3 lg:left-4 top-20 z-30 hidden md:flex flex-col justify-between p-2 lg:p-3 rounded-2xl backdrop-blur-xl border transition-all duration-200 shadow-2xl overflow-y-auto w-[190px] h-[500px] ${
           isDark
-            ? 'bg-slate-950/90 border-slate-800 text-slate-300 shadow-cyan-950/40'
-            : 'bg-white/95 border-slate-200/90 text-slate-700 shadow-slate-200/80'
+            ? 'bg-slate-950/95 border-slate-800 text-slate-100 shadow-cyan-950/50'
+            : 'bg-white border-slate-300 text-slate-950 shadow-slate-300/60'
         }`}
       >
         <div className="flex flex-col gap-1.5">
           {/* Header Title in Sidebar */}
           <div className="pb-2 mb-1 border-b border-slate-200 dark:border-slate-800">
             <div className="hidden lg:flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">
                 Navigation
               </span>
-              <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+              <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/25">
                 v1.4.0
               </span>
             </div>
-            <div className="lg:hidden text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 text-center">
+            <div className="lg:hidden text-[9px] font-mono font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 text-center">
               Nav
             </div>
           </div>
 
           {/* Primary 4 sections requested: Overview, Scenario Lab, Investigation, Live Stream */}
           <div className="space-y-1">
-            <div className="hidden lg:block text-[9px] font-mono font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2 py-0.5">
+            <div className="hidden lg:block text-[9px] font-mono font-bold uppercase tracking-wider text-slate-900 dark:text-slate-300 px-2 py-0.5">
               Core Modules
             </div>
             {leftVerticalNavItems.slice(0, 4).map((item) => {
@@ -454,7 +439,7 @@ export default function App() {
                     {item.icon}
                   </span>
                   <span className="hidden lg:flex flex-1 items-center justify-between min-w-0">
-                    <span className="text-xs font-bold truncate">{item.label}</span>
+                    <span className="text-xs font-bold truncate text-slate-950 dark:text-white">{item.label}</span>
                     <span
                       className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${
                         isActive
@@ -475,7 +460,7 @@ export default function App() {
 
           {/* Secondary chapters: Quantum Circuit, Benchmark, Report */}
           <div className="space-y-1">
-            <div className="hidden lg:block text-[9px] font-mono font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2 py-0.5">
+            <div className="hidden lg:block text-[9px] font-mono font-bold uppercase tracking-wider text-slate-900 dark:text-slate-300 px-2 py-0.5">
               Deep Analysis
             </div>
             {leftVerticalNavItems.slice(4).map((item) => {
@@ -496,7 +481,7 @@ export default function App() {
                     {item.icon}
                   </span>
                   <span className="hidden lg:flex flex-1 items-center justify-between min-w-0">
-                    <span className="text-xs font-medium truncate">{item.label}</span>
+                    <span className="text-xs font-semibold truncate text-slate-950 dark:text-white">{item.label}</span>
                     <span
                       className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${
                         isActive
@@ -516,9 +501,9 @@ export default function App() {
         {/* Scroll Progress depth meter at the bottom of the sidebar */}
         <div className="pt-2 mt-2 border-t border-slate-200 dark:border-slate-800">
           <div className="hidden lg:flex flex-col gap-1.5">
-            <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 dark:text-slate-400">
+            <div className="flex items-center justify-between text-[10px] font-mono text-slate-900 dark:text-slate-200 font-bold">
               <span>Scroll Depth</span>
-              <span className="font-bold text-cyan-600 dark:text-cyan-400">{scrollPercent}%</span>
+              <span className="font-extrabold text-cyan-700 dark:text-cyan-400">{scrollPercent}%</span>
             </div>
             <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
               <div
@@ -527,13 +512,13 @@ export default function App() {
               />
             </div>
           </div>
-          <div className="lg:hidden text-center font-mono text-[9px] font-bold text-cyan-600 dark:text-cyan-400">
+          <div className="lg:hidden text-center font-mono text-[9px] font-bold text-cyan-700 dark:text-cyan-400">
             {scrollPercent}%
           </div>
         </div>
       </aside>
 
-      {/* CONTINUOUS SCROLL CONTAINER: All Tabs rendered with Scroll Animation & Scroll-Spy Sync */}
+      {/* CONTINUOUS SCROLL CONTAINER: All Tabs rendered with High-Performance Scroll-Spy Sync */}
       <main className="flex-1 space-y-20 pb-28 md:pl-16 lg:pl-64">
         {/* TAB 01: OVERVIEW */}
         <section
@@ -560,24 +545,24 @@ export default function App() {
           data-tab="scenario_lab"
           className={`tab-section ${currentPage === 'scenario_lab' ? 'section-active' : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <div className="text-xs font-mono font-semibold tracking-wider text-amber-600 dark:text-amber-400 uppercase flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
+              <div className="text-xs font-mono font-bold tracking-wider text-amber-700 dark:text-amber-400 uppercase flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
                 <span>Chapter 02</span>
                 <span aria-hidden="true" className="text-slate-400">·</span>
                 <span>Physics-Calibrated Testbench</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-900 dark:text-white">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-950 dark:text-white">
                 Microgrid Scenario Laboratory
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+              <p className="text-xs sm:text-sm text-slate-900 dark:text-slate-200 mt-1 max-w-2xl font-medium">
                 Inject multi-modal power grid transients, inverter trip faults, and battery cutoffs to evaluate IEEE 1547 and EN 50160 tolerance envelope compliance.
               </p>
             </div>
             <button
               onClick={() => handleSelectPage('overview')}
-              className="btn-ghost text-xs font-mono text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white shrink-0 self-start sm:self-auto"
+              className="btn-ghost text-xs font-mono text-slate-800 hover:text-black dark:text-slate-200 dark:hover:text-white shrink-0 self-start sm:self-auto font-semibold"
             >
               <ArrowUp className="w-3.5 h-3.5 mr-1" /> Back to Top
             </button>
@@ -596,24 +581,24 @@ export default function App() {
           data-tab="investigation"
           className={`tab-section ${currentPage === 'investigation' ? 'section-active' : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <div className="text-xs font-mono font-semibold tracking-wider text-cyan-600 dark:text-cyan-400 uppercase flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 inline-block" />
+              <div className="text-xs font-mono font-bold tracking-wider text-cyan-700 dark:text-cyan-400 uppercase flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-cyan-500 inline-block" />
                 <span>Chapter 03</span>
                 <span aria-hidden="true" className="text-slate-400">·</span>
                 <span>State Space Analysis</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-900 dark:text-white">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-950 dark:text-white">
                 Multi-Modal Anomaly Investigation
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+              <p className="text-xs sm:text-sm text-slate-900 dark:text-slate-200 mt-1 max-w-2xl font-medium">
                 Explore individual sensor samples across the 4D parameter space and drill into specific fault triggers, angle mappings, and decision boundaries.
               </p>
             </div>
             <button
               onClick={() => handleSelectPage('overview')}
-              className="btn-ghost text-xs font-mono text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white shrink-0 self-start sm:self-auto"
+              className="btn-ghost text-xs font-mono text-slate-800 hover:text-black dark:text-slate-200 dark:hover:text-white shrink-0 self-start sm:self-auto font-semibold"
             >
               <ArrowUp className="w-3.5 h-3.5 mr-1" /> Back to Top
             </button>
@@ -633,24 +618,24 @@ export default function App() {
           data-tab="live_stream"
           className={`tab-section ${currentPage === 'live_stream' ? 'section-active' : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <div className="text-xs font-mono font-semibold tracking-wider text-rose-600 dark:text-rose-400 uppercase flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping inline-block" />
+              <div className="text-xs font-mono font-bold tracking-wider text-rose-700 dark:text-rose-400 uppercase flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping inline-block" />
                 <span>Chapter 04</span>
                 <span aria-hidden="true" className="text-slate-400">·</span>
                 <span>Real-Time Ingestion</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-900 dark:text-white">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-950 dark:text-white">
                 Continuous Telemetry Stream
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+              <p className="text-xs sm:text-sm text-slate-900 dark:text-slate-200 mt-1 max-w-2xl font-medium">
                 Simulated real-time sensor stream executing concurrent Classical SVC and Qiskit quantum kernel classification with sub-second response times.
               </p>
             </div>
             <button
               onClick={() => handleSelectPage('overview')}
-              className="btn-ghost text-xs font-mono text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white shrink-0 self-start sm:self-auto"
+              className="btn-ghost text-xs font-mono text-slate-800 hover:text-black dark:text-slate-200 dark:hover:text-white shrink-0 self-start sm:self-auto font-semibold"
             >
               <ArrowUp className="w-3.5 h-3.5 mr-1" /> Back to Top
             </button>
@@ -669,24 +654,24 @@ export default function App() {
           data-tab="quantum_lab"
           className={`tab-section ${currentPage === 'quantum_lab' ? 'section-active' : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <div className="text-xs font-mono font-semibold tracking-wider text-violet-600 dark:text-violet-400 uppercase flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-500 inline-block" />
+              <div className="text-xs font-mono font-bold tracking-wider text-violet-700 dark:text-violet-400 uppercase flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-violet-500 inline-block" />
                 <span>Chapter 05</span>
                 <span aria-hidden="true" className="text-slate-400">·</span>
                 <span>Hilbert Space Feature Encoding</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-900 dark:text-white">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-950 dark:text-white">
                 Qiskit ZZFeatureMap Quantum Circuit
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+              <p className="text-xs sm:text-sm text-slate-900 dark:text-slate-200 mt-1 max-w-2xl font-medium">
                 Direct visual inspection of Hadamard gates, parameterized Rz phase rotations, and CNOT entanglement layers mapping 4D inputs into 16D Hilbert space.
               </p>
             </div>
             <button
               onClick={() => handleSelectPage('overview')}
-              className="btn-ghost text-xs font-mono text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white shrink-0 self-start sm:self-auto"
+              className="btn-ghost text-xs font-mono text-slate-800 hover:text-black dark:text-slate-200 dark:hover:text-white shrink-0 self-start sm:self-auto font-semibold"
             >
               <ArrowUp className="w-3.5 h-3.5 mr-1" /> Back to Top
             </button>
@@ -700,24 +685,24 @@ export default function App() {
           data-tab="benchmark"
           className={`tab-section ${currentPage === 'benchmark' ? 'section-active' : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <div className="text-xs font-mono font-semibold tracking-wider text-sky-600 dark:text-sky-400 uppercase flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-sky-500 inline-block" />
+              <div className="text-xs font-mono font-bold tracking-wider text-sky-700 dark:text-sky-400 uppercase flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-sky-500 inline-block" />
                 <span>Chapter 06</span>
                 <span aria-hidden="true" className="text-slate-400">·</span>
                 <span>Empirical Performance &amp; Low-Data Regimes</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-900 dark:text-white">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-950 dark:text-white">
                 Model Evaluation &amp; Sample Efficiency
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+              <p className="text-xs sm:text-sm text-slate-900 dark:text-slate-200 mt-1 max-w-2xl font-medium">
                 Held-out test set accuracy, precision, recall, F1, and confusion matrix comparisons with honest documentation of the NISQ optimization gap.
               </p>
             </div>
             <button
               onClick={() => handleSelectPage('overview')}
-              className="btn-ghost text-xs font-mono text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white shrink-0 self-start sm:self-auto"
+              className="btn-ghost text-xs font-mono text-slate-800 hover:text-black dark:text-slate-200 dark:hover:text-white shrink-0 self-start sm:self-auto font-semibold"
             >
               <ArrowUp className="w-3.5 h-3.5 mr-1" /> Back to Top
             </button>
@@ -738,24 +723,24 @@ export default function App() {
           data-tab="report"
           className={`tab-section ${currentPage === 'report' ? 'section-active' : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <div className="text-xs font-mono font-semibold tracking-wider text-indigo-600 dark:text-indigo-400 uppercase flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block" />
+              <div className="text-xs font-mono font-bold tracking-wider text-indigo-700 dark:text-indigo-400 uppercase flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-indigo-500 inline-block" />
                 <span>Chapter 07</span>
                 <span aria-hidden="true" className="text-slate-400">·</span>
                 <span>Audit &amp; Deployment</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-900 dark:text-white">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-950 dark:text-white">
                 Hackathon Dossier &amp; Source Control
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+              <p className="text-xs sm:text-sm text-slate-900 dark:text-slate-200 mt-1 max-w-2xl font-medium">
                 VTU-Qiskit Fall Fest 2026 rubric compliance checklist, repository branch status, and reproducible JSON/CSV export.
               </p>
             </div>
             <button
               onClick={() => handleSelectPage('overview')}
-              className="btn-ghost text-xs font-mono text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white shrink-0 self-start sm:self-auto"
+              className="btn-ghost text-xs font-mono text-slate-800 hover:text-black dark:text-slate-200 dark:hover:text-white shrink-0 self-start sm:self-auto font-semibold"
             >
               <ArrowUp className="w-3.5 h-3.5 mr-1" /> Back to Top
             </button>

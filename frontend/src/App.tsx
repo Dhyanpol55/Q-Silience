@@ -409,7 +409,8 @@ export default function App() {
       {/* LEFT-SIDE VERTICAL NAVIGATION: Displays icons WITH full names for Overview, Scenario Lab, Investigation, Live Stream */}
       <aside
         aria-label="Vertical navigation sidebar"
-        className={`fixed left-2 sm:left-3 lg:left-4 top-20 bottom-6 w-14 lg:w-60 z-30 hidden md:flex flex-col justify-between p-2 lg:p-3 rounded-2xl backdrop-blur-xl border transition-all duration-200 shadow-2xl overflow-y-auto ${
+        style={{ width: '190px', height: '500px' }}
+        className={`fixed left-2 sm:left-3 lg:left-4 top-20 z-30 hidden md:flex flex-col justify-between p-2 lg:p-3 rounded-2xl backdrop-blur-xl border transition-all duration-200 shadow-2xl overflow-y-auto w-[190px] h-[500px] ${
           isDark
             ? 'bg-slate-950/90 border-slate-800 text-slate-300 shadow-cyan-950/40'
             : 'bg-white/95 border-slate-200/90 text-slate-700 shadow-slate-200/80'
