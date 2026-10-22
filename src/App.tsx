@@ -13,7 +13,20 @@ import { AnomalyInvestigationPage } from './components/AnomalyInvestigationPage'
 import { QuantumLabPage } from './components/QuantumLabPage';
 import { BenchmarkPage } from './components/BenchmarkPage';
 import { ReportPage } from './components/ReportPage';
-import { ChevronUp, ChevronDown, ArrowUp, Sparkles, Layers } from 'lucide-react';
+import {
+  ChevronUp,
+  ChevronDown,
+  ArrowUp,
+  Sparkles,
+  Layers,
+  Activity,
+  Zap,
+  Eye,
+  Radio,
+  Atom,
+  BarChart3,
+  FileText,
+} from 'lucide-react';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageId>('overview');
@@ -287,6 +300,88 @@ export default function App() {
 
   const isDark = theme === 'dark';
 
+  // Left-side vertical navigation items with icons, full names, and status badges
+  const leftVerticalNavItems = useMemo(
+    () => [
+      {
+        id: 'overview' as PageId,
+        label: 'Overview',
+        number: '01',
+        subtitle: 'Executive Telemetry & KPI Matrix',
+        icon: <Activity className="w-4 h-4 stroke-[2.2]" />,
+        activeClass: 'bg-cyan-500 text-slate-950 font-bold ring-2 ring-cyan-400/50 shadow-md shadow-cyan-500/30',
+        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
+        badgeColor: 'text-cyan-700 dark:text-cyan-300 bg-cyan-500/10 border-cyan-500/25',
+      },
+      {
+        id: 'scenario_lab' as PageId,
+        label: 'Scenario Lab',
+        number: '02',
+        subtitle: 'Multi-Modal Physics Transient Injector',
+        icon: <Zap className="w-4 h-4 stroke-[2.2]" />,
+        activeClass: 'bg-amber-500 text-slate-950 font-bold ring-2 ring-amber-400/50 shadow-md shadow-amber-500/30',
+        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
+        badgeColor: 'text-amber-700 dark:text-amber-300 bg-amber-500/10 border-amber-500/25',
+      },
+      {
+        id: 'investigation' as PageId,
+        label: 'Investigation',
+        number: '03',
+        subtitle: '4D State-Space Anomaly Forensics',
+        icon: <Eye className="w-4 h-4 stroke-[2.2]" />,
+        activeClass: 'bg-cyan-600 text-white font-bold ring-2 ring-cyan-500/50 shadow-md shadow-cyan-600/30',
+        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
+        badgeColor: 'text-cyan-700 dark:text-cyan-300 bg-cyan-500/10 border-cyan-500/25',
+      },
+      {
+        id: 'live_stream' as PageId,
+        label: 'Live Stream',
+        number: '04',
+        subtitle: 'Continuous Telemetry & Dual ML Stream',
+        icon: (
+          <div className="relative flex items-center justify-center">
+            <Radio className="w-4 h-4 stroke-[2.2]" />
+            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+          </div>
+        ),
+        activeClass: 'bg-rose-500 text-white font-bold ring-2 ring-rose-400/50 shadow-md shadow-rose-500/30',
+        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
+        badgeColor: 'text-rose-700 dark:text-rose-300 bg-rose-500/10 border-rose-500/25',
+      },
+      {
+        id: 'quantum_lab' as PageId,
+        label: 'Quantum Circuit',
+        number: '05',
+        subtitle: 'Qiskit ZZFeatureMap Hilbert Space',
+        icon: <Atom className="w-4 h-4 stroke-[2]" />,
+        activeClass: 'bg-violet-600 text-white font-bold ring-2 ring-violet-400/50 shadow-md shadow-violet-600/30',
+        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
+        badgeColor: 'text-violet-700 dark:text-violet-300 bg-violet-500/10 border-violet-500/25',
+      },
+      {
+        id: 'benchmark' as PageId,
+        label: 'Benchmark',
+        number: '06',
+        subtitle: 'Classical vs Quantum Empirical Regimes',
+        icon: <BarChart3 className="w-4 h-4 stroke-[2]" />,
+        activeClass: 'bg-sky-600 text-white font-bold ring-2 ring-sky-400/50 shadow-md shadow-sky-600/30',
+        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
+        badgeColor: 'text-sky-700 dark:text-sky-300 bg-sky-500/10 border-sky-500/25',
+      },
+      {
+        id: 'report' as PageId,
+        label: 'Report & Git',
+        number: '07',
+        subtitle: 'VTU Dossier, Source Audit & CSV Export',
+        icon: <FileText className="w-4 h-4 stroke-[2]" />,
+        activeClass: 'bg-indigo-600 text-white font-bold ring-2 ring-indigo-400/50 shadow-md shadow-indigo-600/30',
+        inactiveClass: 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-900/90',
+        badgeColor: 'text-indigo-700 dark:text-indigo-300 bg-indigo-500/10 border-indigo-500/25',
+      },
+    ],
+    []
+  );
+
   return (
     <div
       className={`min-h-screen flex flex-col font-sans transition-colors duration-200 ${
@@ -303,8 +398,143 @@ export default function App() {
         onToggleTheme={toggleTheme}
       />
 
+      {/* TELEMETRY SCROLL PROGRESS LINE (0 - 100%) */}
+      <div className="fixed top-[68px] sm:top-[72px] left-0 right-0 z-40 h-[2.5px] bg-slate-200/40 dark:bg-slate-800/40 pointer-events-none">
+        <div
+          className="h-full scroll-progress-line transition-all duration-150 ease-out"
+          style={{ width: `${scrollPercent}%` }}
+        />
+      </div>
+
+      {/* LEFT-SIDE VERTICAL NAVIGATION: Displays icons WITH full names for Overview, Scenario Lab, Investigation, Live Stream */}
+      <aside
+        aria-label="Vertical navigation sidebar"
+        className={`fixed left-2 sm:left-3 lg:left-4 top-20 bottom-6 w-14 lg:w-60 z-30 hidden md:flex flex-col justify-between p-2 lg:p-3 rounded-2xl backdrop-blur-xl border transition-all duration-200 shadow-2xl overflow-y-auto ${
+          isDark
+            ? 'bg-slate-950/90 border-slate-800 text-slate-300 shadow-cyan-950/40'
+            : 'bg-white/95 border-slate-200/90 text-slate-700 shadow-slate-200/80'
+        }`}
+      >
+        <div className="flex flex-col gap-1.5">
+          {/* Header Title in Sidebar */}
+          <div className="pb-2 mb-1 border-b border-slate-200 dark:border-slate-800">
+            <div className="hidden lg:flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Navigation
+              </span>
+              <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                v1.4.0
+              </span>
+            </div>
+            <div className="lg:hidden text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 text-center">
+              Nav
+            </div>
+          </div>
+
+          {/* Primary 4 sections requested: Overview, Scenario Lab, Investigation, Live Stream */}
+          <div className="space-y-1">
+            <div className="hidden lg:block text-[9px] font-mono font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2 py-0.5">
+              Core Modules
+            </div>
+            {leftVerticalNavItems.slice(0, 4).map((item) => {
+              const isActive = currentPage === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleSelectPage(item.id)}
+                  aria-label={`Navigate to ${item.label}`}
+                  title={`${item.number}. ${item.label} — ${item.subtitle}`}
+                  className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all duration-150 cursor-pointer text-left ${
+                    isActive
+                      ? item.activeClass
+                      : item.inactiveClass
+                  }`}
+                >
+                  <span className="shrink-0 flex items-center justify-center">
+                    {item.icon}
+                  </span>
+                  <span className="hidden lg:flex flex-1 items-center justify-between min-w-0">
+                    <span className="text-xs font-bold truncate">{item.label}</span>
+                    <span
+                      className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${
+                        isActive
+                          ? 'bg-black/20 text-inherit border-black/30'
+                          : item.badgeColor
+                      }`}
+                    >
+                      {item.number}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Subtle Divider */}
+          <div className="my-1.5 border-t border-slate-200 dark:border-slate-800" />
+
+          {/* Secondary chapters: Quantum Circuit, Benchmark, Report */}
+          <div className="space-y-1">
+            <div className="hidden lg:block text-[9px] font-mono font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2 py-0.5">
+              Deep Analysis
+            </div>
+            {leftVerticalNavItems.slice(4).map((item) => {
+              const isActive = currentPage === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleSelectPage(item.id)}
+                  aria-label={`Navigate to ${item.label}`}
+                  title={`${item.number}. ${item.label} — ${item.subtitle}`}
+                  className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl transition-all duration-150 cursor-pointer text-left ${
+                    isActive
+                      ? item.activeClass
+                      : item.inactiveClass
+                  }`}
+                >
+                  <span className="shrink-0 flex items-center justify-center">
+                    {item.icon}
+                  </span>
+                  <span className="hidden lg:flex flex-1 items-center justify-between min-w-0">
+                    <span className="text-xs font-medium truncate">{item.label}</span>
+                    <span
+                      className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${
+                        isActive
+                          ? 'bg-black/20 text-inherit border-black/30'
+                          : item.badgeColor
+                      }`}
+                    >
+                      {item.number}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Scroll Progress depth meter at the bottom of the sidebar */}
+        <div className="pt-2 mt-2 border-t border-slate-200 dark:border-slate-800">
+          <div className="hidden lg:flex flex-col gap-1.5">
+            <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 dark:text-slate-400">
+              <span>Scroll Depth</span>
+              <span className="font-bold text-cyan-600 dark:text-cyan-400">{scrollPercent}%</span>
+            </div>
+            <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-cyan-500 to-indigo-500 transition-all duration-150"
+                style={{ width: `${scrollPercent}%` }}
+              />
+            </div>
+          </div>
+          <div className="lg:hidden text-center font-mono text-[9px] font-bold text-cyan-600 dark:text-cyan-400">
+            {scrollPercent}%
+          </div>
+        </div>
+      </aside>
+
       {/* CONTINUOUS SCROLL CONTAINER: All Tabs rendered with Scroll Animation & Scroll-Spy Sync */}
-      <main className="flex-1 space-y-20 pb-28">
+      <main className="flex-1 space-y-20 pb-28 md:pl-16 lg:pl-64">
         {/* TAB 01: OVERVIEW */}
         <section
           id="section-overview"

@@ -265,47 +265,17 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             </div>
 
-            {/* Navigation Segmented Control: Desktop horizontal scrollable container */}
-            <nav
-              className={`hidden xl:flex items-center gap-1 p-1 rounded-xl border transition-colors overflow-x-auto ${
-                isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-slate-100 border-slate-200'
-              }`}
-              aria-label="Primary Application Navigation"
-            >
-              {navItems.map((item) => {
-                const isActive = currentPage === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => onSelectPage(item.id)}
-                    className={`group flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150 cursor-pointer shrink-0 ${
-                      isActive
-                        ? isDark
-                          ? 'bg-cyan-500 text-slate-950 font-semibold shadow-xs'
-                          : 'bg-white text-cyan-800 font-semibold shadow-xs border border-slate-200/90'
-                        : isDark
-                        ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-                    }`}
-                  >
-                    {item.icon(isActive)}
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-
             {/* Utility Controls Cluster */}
             <div className="flex items-center gap-2.5 shrink-0">
-              {/* Responsive Hamburger Toggle for viewports < xl */}
+              {/* Responsive Hamburger Toggle for viewports < lg */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="xl:hidden btn-secondary gap-1.5 px-2.5 h-9"
+                className="lg:hidden btn-secondary gap-1.5 px-2.5 h-9"
                 aria-label="Toggle navigation menu"
                 aria-expanded={mobileMenuOpen}
               >
                 {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-                <span className="text-xs font-semibold hidden sm:inline">Sections</span>
+                <span className="text-xs font-semibold">Sections</span>
               </button>
 
               <div className="hidden lg:block h-6 w-px bg-slate-200 dark:bg-slate-800" aria-hidden="true" />

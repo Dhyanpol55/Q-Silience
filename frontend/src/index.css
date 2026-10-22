@@ -298,6 +298,19 @@
   transform: translateX(0);
 }
 
+/* Left Side Vertical Navigation Rail Tooltip */
+.left-nav-tooltip {
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.left-nav-item:hover .left-nav-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 /* Power Flow Bus Wire Animations */
 @keyframes flowRight {
   from {
