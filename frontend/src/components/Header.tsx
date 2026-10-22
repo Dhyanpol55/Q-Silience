@@ -17,6 +17,8 @@ import {
   AlertTriangle,
   X,
   ExternalLink,
+  Info,
+  Menu,
 } from 'lucide-react';
 import { pingBackend, getStoredBackendUrl, setStoredBackendUrl, BackendHealth } from '../services/apiClient';
 
@@ -46,6 +48,7 @@ export const Header: React.FC<HeaderProps> = ({
   // Backend connectivity tracking
   const [backendHealth, setBackendHealth] = useState<BackendHealth>({ status: 'checking' });
   const [backendModalOpen, setBackendModalOpen] = useState<boolean>(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [customBackendUrl, setCustomBackendUrl] = useState<string>(getStoredBackendUrl());
 
   const checkConnectivity = async () => {
@@ -237,30 +240,37 @@ export const Header: React.FC<HeaderProps> = ({
                   >
                     Q-RESILIENCE AI
                   </span>
-                  <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono font-bold px-1.5 py-0.5 rounded-md bg-cyan-50 dark:bg-cyan-950/80 border border-cyan-200 dark:border-cyan-800">
-                    v1.3.0
+                  <span className="text-[10px] text-cyan-800 dark:text-cyan-300 font-mono font-bold px-1.5 py-0.5 rounded-md bg-cyan-100/90 dark:bg-cyan-950/90 border border-cyan-300 dark:border-cyan-700">
+                    v1.4.0
                   </span>
+                  {isTraining && (
+                    <span className="hidden sm:inline-flex items-center gap-1 text-[10px] bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/40 px-1.5 py-0.5 rounded-md animate-pulse font-mono font-semibold">
+                      <Atom className="w-3 h-3 animate-spin" />
+                      QML Fitting...
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 text-xs font-mono">
-                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>
+                  <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>
                     VTU Qiskit Fall Fest 2026
                   </span>
-                  <span aria-hidden="true" className={isDark ? 'text-slate-700' : 'text-slate-300'}>
+                  <span aria-hidden="true" className={isDark ? 'text-slate-500' : 'text-slate-400'}>
                     ·
                   </span>
-                  <span className="text-cyan-600 dark:text-cyan-400 font-semibold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 inline text-cyan-500" />
+                  <span className="text-cyan-800 dark:text-cyan-300 font-bold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 inline text-cyan-600 dark:text-cyan-400" />
                     Quantum + AI/ML
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Navigation Segmented Control */}
+            {/* Navigation Segmented Control: Desktop horizontal scrollable container */}
             <nav
-              className={`hidden md:flex items-center space-x-1 p-1 rounded-xl border transition-colors overflow-x-auto ${
+              className={`hidden xl:flex items-center gap-1 p-1 rounded-xl border transition-colors overflow-x-auto ${
                 isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-slate-100 border-slate-200'
               }`}
+              aria-label="Primary Application Navigation"
             >
               {navItems.map((item) => {
                 const isActive = currentPage === item.id;
@@ -268,7 +278,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <button
                     key={item.id}
                     onClick={() => onSelectPage(item.id)}
-                    className={`group flex items-center space-x-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150 cursor-pointer shrink-0 ${
+                    className={`group flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-150 cursor-pointer shrink-0 ${
                       isActive
                         ? isDark
                           ? 'bg-cyan-500 text-slate-950 font-semibold shadow-xs'
@@ -285,107 +295,155 @@ export const Header: React.FC<HeaderProps> = ({
               })}
             </nav>
 
-            {/* Status Bar, Backend Indicator & Theme Switcher */}
-            <div className="flex items-center space-x-2 sm:space-x-3 text-xs font-mono">
-              {/* Backend Status Pill */}
+            {/* Utility Controls Cluster */}
+            <div className="flex items-center gap-2.5 shrink-0">
+              {/* Responsive Hamburger Toggle for viewports < xl */}
               <button
-                onClick={() => setBackendModalOpen(true)}
-                title="Inspect FastAPI Backend Status & Endpoints"
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer text-[11px] ${
-                  backendHealth.status === 'healthy'
-                    ? isDark
-                      ? 'bg-emerald-950/60 border-emerald-800/80 text-emerald-300'
-                      : 'bg-emerald-50 border-emerald-300 text-emerald-800'
-                    : isDark
-                    ? 'bg-slate-900 border-slate-800 text-slate-400'
-                    : 'bg-slate-100 border-slate-300 text-slate-600'
-                }`}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="xl:hidden btn-secondary gap-1.5 px-2.5 h-9"
+                aria-label="Toggle navigation menu"
+                aria-expanded={mobileMenuOpen}
               >
-                <Server className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline font-sans">
-                  {backendHealth.status === 'healthy' ? (
-                    <>FastAPI: {backendHealth.latencyMs}ms</>
-                  ) : backendHealth.status === 'checking' ? (
-                    <>Checking API...</>
-                  ) : (
-                    <>Local Quantum Engine</>
-                  )}
-                </span>
-                <span
-                  className={`w-2 h-2 rounded-full ${
+                {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                <span className="text-xs font-semibold hidden sm:inline">Sections</span>
+              </button>
+
+              <div className="hidden lg:block h-6 w-px bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
+
+              <div className="flex items-center gap-2">
+                {/* Status Badge */}
+                <div
+                  className={`h-9 flex items-center gap-2 px-3 rounded-xl border text-xs select-none transition-colors ${
                     backendHealth.status === 'healthy'
-                      ? 'bg-emerald-500'
-                      : backendHealth.status === 'checking'
-                      ? 'bg-amber-400 animate-ping'
-                      : 'bg-cyan-500'
+                      ? isDark
+                        ? 'bg-emerald-950/40 border-emerald-800/50 text-emerald-300'
+                        : 'bg-emerald-50/80 border-emerald-200 text-emerald-800'
+                      : isDark
+                      ? 'bg-slate-900/60 border-slate-800 text-slate-300'
+                      : 'bg-slate-100/80 border-slate-200 text-slate-700'
                   }`}
-                />
-              </button>
-
-              {/* Theme Toggle (Light / White vs Dark) */}
-              <button
-                onClick={onToggleTheme}
-                title={isDark ? 'Switch to Pure White Background' : 'Switch to Dark Mode'}
-                className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer shadow-2xs ${
-                  isDark
-                    ? 'bg-slate-900 border-slate-800 text-amber-300 hover:bg-slate-800'
-                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900'
-                }`}
-              >
-                <span
-                  className={`w-6 h-6 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110 ${
-                    isDark
-                      ? 'bg-amber-950/80 text-amber-400 border border-amber-800/50'
-                      : 'bg-amber-50 text-amber-600 border border-amber-200/80'
-                  }`}
+                  role="status"
+                  aria-live="polite"
                 >
-                  {isDark ? <Sun className="w-3.5 h-3.5 stroke-[2.2]" /> : <Moon className="w-3.5 h-3.5 stroke-[2.2]" />}
-                </span>
-                <span className="hidden lg:inline font-sans font-medium text-[11px]">
-                  {isDark ? 'White' : 'Dark'}
-                </span>
-              </button>
+                  <span
+                    className={`w-2 h-2 rounded-full shrink-0 ${
+                      backendHealth.status === 'healthy'
+                        ? 'bg-emerald-500'
+                        : backendHealth.status === 'checking'
+                        ? 'bg-amber-400 animate-ping'
+                        : 'bg-cyan-500'
+                    }`}
+                    aria-hidden="true"
+                  />
+                  <span className="hidden sm:inline font-sans text-xs font-medium">
+                    {backendHealth.status === 'healthy' ? (
+                      <>FastAPI: {backendHealth.latencyMs}ms</>
+                    ) : backendHealth.status === 'checking' ? (
+                      <>Checking API...</>
+                    ) : (
+                      <>Local Quantum Engine</>
+                    )}
+                  </span>
+                  <button
+                    onClick={() => setBackendModalOpen(true)}
+                    title="Inspect Backend Connection Details"
+                    className="ml-0.5 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
+                    aria-label="Inspect backend connection details"
+                  >
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </div>
 
-              {/* Reset Data Button */}
-              <button
-                onClick={onResetData}
-                title="Reset dataset with new random seed"
-                className={`group p-2 rounded-xl border transition-colors cursor-pointer shadow-2xs ${
-                  isDark
-                    ? 'border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 bg-slate-900'
-                    : 'border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-white'
-                }`}
-              >
-                <RefreshCw className="w-3.5 h-3.5 stroke-[2.2] group-hover:rotate-180 transition-transform duration-500" />
-              </button>
+                {/* Theme Toggle Button */}
+                <button
+                  onClick={onToggleTheme}
+                  title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                  className="btn-secondary"
+                  aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                >
+                  <span className={isDark ? 'text-amber-400' : 'text-slate-600'}>
+                    {isDark ? <Sun className="w-4 h-4 stroke-[2]" /> : <Moon className="w-4 h-4 stroke-[2]" />}
+                  </span>
+                  <span className="hidden lg:inline font-sans text-xs font-medium">
+                    {isDark ? 'Light' : 'Dark'}
+                  </span>
+                </button>
+
+                {/* Reset Data Button */}
+                <button
+                  onClick={onResetData}
+                  title="Reset dataset with new random seed"
+                  className="btn-icon"
+                  aria-label="Reset dataset with new random seed"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 stroke-[2] hover:rotate-180 transition-transform duration-500" />
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Mobile Navigation Strip */}
-          <div className="flex md:hidden items-center space-x-1 py-2 overflow-x-auto border-t border-slate-200 dark:border-slate-800">
-            {navItems.map((item) => {
-              const isActive = currentPage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => onSelectPage(item.id)}
-                  className={`flex items-center space-x-1.5 px-2.5 py-1 text-xs font-medium rounded-lg shrink-0 ${
-                    isActive
-                      ? isDark
-                        ? 'bg-cyan-500 text-slate-950 font-bold'
-                        : 'bg-cyan-600 text-white font-bold'
-                      : isDark
-                      ? 'text-slate-400'
-                      : 'text-slate-600'
-                  }`}
-                >
-                  {item.icon(isActive)}
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          {/* Collapsible Mobile & Laptop Navigation Drawer (< xl viewports) */}
+          {mobileMenuOpen && (
+            <div className="xl:hidden py-3 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+              {navItems.map((item) => {
+                const isActive = currentPage === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onSelectPage(item.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center gap-2.5 p-2.5 rounded-xl border text-xs font-medium text-left transition-all cursor-pointer ${
+                      isActive
+                        ? isDark
+                          ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-300 font-bold'
+                          : 'bg-cyan-50 border-cyan-300 text-cyan-900 font-bold'
+                        : isDark
+                        ? 'bg-slate-900/60 border-slate-800 text-slate-300 hover:bg-slate-800/80 hover:text-white'
+                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                    }`}
+                  >
+                    {item.icon(isActive)}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Quick Horizontal Scroll Navigation Strip on mobile (< md viewports) */}
+          {!mobileMenuOpen && (
+            <div className="flex md:hidden items-center gap-1.5 py-2 overflow-x-auto border-t border-slate-200 dark:border-slate-800 scrollbar-none">
+              {navItems.map((item) => {
+                const isActive = currentPage === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onSelectPage(item.id)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg shrink-0 ${
+                      isActive
+                        ? isDark
+                          ? 'bg-cyan-500 text-slate-950 font-bold'
+                          : 'bg-cyan-600 text-white font-bold'
+                        : isDark
+                        ? 'text-slate-300 hover:text-white'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    {item.icon(isActive)}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
+
+        {/* Global Loading / Training Progress Line */}
+        {isTraining && (
+          <div className="h-0.5 w-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-amber-500 animate-pulse" />
+        )}
       </header>
 
       {/* Backend Diagnostics Modal */}

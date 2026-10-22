@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     overflow-x: hidden;
     background-color: #ffffff;
     color: #0f172a;
@@ -17,6 +21,161 @@
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Scroll Reveal & Smooth Transition Animations                                */
+/* -------------------------------------------------------------------------- */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays for child items */
+.delay-100 { transition-delay: 100ms; }
+.delay-150 { transition-delay: 150ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+
+/* Prefers-reduced-motion compliance */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  .scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Standardized Button System (Max 4-5 cohesive styles)                        */
+/* -------------------------------------------------------------------------- */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 0.75rem;
+  background-color: #06b6d4;
+  color: #020617;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 2px 0 rgba(6, 182, 212, 0.25);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-primary:hover {
+  background-color: #22d3ee;
+}
+.btn-primary:active {
+  background-color: #0891b2;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #1e293b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-secondary:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+.dark .btn-secondary {
+  border-color: #1e293b;
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+.dark .btn-secondary:hover {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  height: 2rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  border-radius: 0.5rem;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-ghost:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+.dark .btn-ghost {
+  color: #94a3b8;
+}
+.dark .btn-ghost:hover {
+  background-color: rgba(30, 41, 59, 0.8);
+  color: #f8fafc;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.btn-icon:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+.dark .btn-icon {
+  border-color: #1e293b;
+  background-color: #0f172a;
+  color: #94a3b8;
+}
+.dark .btn-icon:hover {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
 }
 
 /* Custom subtle scrollbar */
@@ -37,3 +196,131 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Engineering & Laboratory Visual Enhancements                                */
+/* -------------------------------------------------------------------------- */
+.tech-grid {
+  background-size: 28px 28px;
+  background-image: 
+    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+}
+.dark .tech-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+
+.glow-cyan-sm {
+  box-shadow: 0 0 16px -2px rgba(6, 182, 212, 0.25);
+}
+.glow-violet-sm {
+  box-shadow: 0 0 16px -2px rgba(139, 92, 246, 0.25);
+}
+
+.glass-card {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Tab Section Scroll Animations & Scroll Spy Styling                          */
+/* -------------------------------------------------------------------------- */
+.tab-section {
+  scroll-margin-top: 5.5rem;
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.tab-section.section-visible,
+.tab-section.section-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered entrance for section children */
+.tab-section .section-header-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
+}
+
+.tab-section .section-content-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+}
+
+.tab-section.section-visible .section-header-reveal,
+.tab-section.section-active .section-header-reveal,
+.tab-section.section-visible .section-content-reveal,
+.tab-section.section-active .section-content-reveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Subtle arrival pulse on targeted section */
+@keyframes sectionArrivalPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4);
+  }
+  40% {
+    box-shadow: 0 0 0 8px rgba(6, 182, 212, 0.15);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0);
+  }
+}
+
+.section-targeted {
+  animation: sectionArrivalPulse 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Scroll progress bar */
+.scroll-progress-line {
+  background: linear-gradient(90deg, #06b6d4 0%, #38bdf8 45%, #818cf8 80%, #a855f7 100%);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+}
+
+/* Quick Nav Rail Tooltip */
+.quick-nav-tooltip {
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.quick-nav-item:hover .quick-nav-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Power Flow Bus Wire Animations */
+@keyframes flowRight {
+  from {
+    stroke-dashoffset: 28;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes flowLeft {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 28;
+  }
+}
+.animate-flow-right {
+  animation: flowRight 1.2s linear infinite;
+}
+.animate-flow-left {
+  animation: flowLeft 1.2s linear infinite;
+}
+
+
+
