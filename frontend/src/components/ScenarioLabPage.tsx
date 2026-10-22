@@ -220,6 +220,8 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 onClick={() => handleApplyPreset(preset)}
                 aria-pressed={isSelected}
                 aria-label={`Select scenario preset ${preset.name}: ${preset.badge}`}
+                aria-description={preset.description}
+                title={`${preset.name} (${preset.badge}): ${preset.description}`}
                 className={`p-3 rounded-xl text-left transition-all border cursor-pointer ${
                   isSelected
                     ? isDark
@@ -238,9 +240,6 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 </div>
                 <div className="text-[10px] text-cyan-800 dark:text-cyan-300 font-mono font-semibold truncate">
                   {preset.badge}
-                </div>
-                <div className={`mt-1 text-[10px] line-clamp-2 leading-tight ${textMutedClass}`}>
-                  {preset.description}
                 </div>
               </button>
             );

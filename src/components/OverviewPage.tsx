@@ -196,7 +196,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
 
           {/* Interactive Tooltips on complex terminology for onboarding non-expert reviewers */}
           <p className={`mt-3.5 text-sm sm:text-base leading-relaxed ${textBodyClass}`}>
-            Investigating whether quantum feature mapping in a{' '}
+            This platform evaluates the effectiveness of quantum feature mapping in a{' '}
             <TechnicalTooltip
               term="Hilbert State Space"
               definition="A 16-dimensional complex projective Hilbert space (2^4 qubits) where classical 4-parameter sensor vectors are encoded via parameterized unitary quantum rotations."
@@ -214,7 +214,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
             >
               Qiskit ZZFeatureMap
             </TechnicalTooltip>{' '}
-            can effectively classify anomalous operating conditions in multi-modal renewable microgrids compared to classical{' '}
+            for classifying anomalous operating conditions in multi-modal renewable microgrids compared to classical{' '}
             <TechnicalTooltip
               term="Support Vector Classifiers (SVC)"
               definition="A supervised machine learning model that finds the maximum-margin hyperplane separating normal grid operation from anomalous faults."
@@ -610,7 +610,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
                   {cAcc.toFixed(1)}% (Perfect baseline)
                 </td>
                 <td className="py-3 px-3 font-bold text-violet-600 dark:text-violet-400">
-                  {qAcc.toFixed(1)}% (Measured honest gap)
+                  {qAcc.toFixed(1)}% (Measured performance gap)
                 </td>
                 <td className="py-3 px-3 font-sans text-slate-500 dark:text-slate-400">RBF easily separates threshold faults; QSVC requires kernel alignment.</td>
               </tr>

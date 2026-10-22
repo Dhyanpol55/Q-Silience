@@ -301,7 +301,7 @@ export const Header: React.FC<HeaderProps> = ({
                         ? 'bg-emerald-500'
                         : backendHealth.status === 'checking'
                         ? 'bg-amber-400 animate-ping'
-                        : 'bg-cyan-500'
+                        : 'bg-amber-500'
                     }`}
                     aria-hidden="true"
                   />
@@ -311,14 +311,15 @@ export const Header: React.FC<HeaderProps> = ({
                     ) : backendHealth.status === 'checking' ? (
                       <>Checking API...</>
                     ) : (
-                      <>Local Quantum Engine</>
+                      <>Local Quantum Engine: Disconnected</>
                     )}
                   </span>
                   <button
                     onClick={() => setBackendModalOpen(true)}
-                    title="Inspect Backend Connection Details"
+                    title="API connection offline — click to configure backend endpoint or reconnect"
                     className="ml-0.5 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
-                    aria-label="Inspect backend connection details"
+                    aria-label="API disconnected: inspect details and configure connection"
+                    aria-haspopup="dialog"
                   >
                     <Info className="w-3.5 h-3.5" />
                   </button>

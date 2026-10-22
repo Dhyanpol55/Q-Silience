@@ -756,11 +756,11 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
         </div>
       </div>
 
-      {/* Honest Scientific Analysis & Limitations */}
+      {/* Scientific Analysis & Limitations */}
       <div className={`p-5 rounded-xl border space-y-4 transition-colors ${cardClass}`}>
         <h2 className={`text-sm font-semibold flex items-center gap-2 ${headingClass}`}>
           <Info className="w-4 h-4 text-cyan-500" />
-          <span>Honest Scientific Analysis & Computational Scaling</span>
+          <span>Scientific Analysis & Computational Scaling</span>
         </h2>
 
         <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 text-xs leading-relaxed ${textMutedClass}`}>
