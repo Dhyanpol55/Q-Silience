@@ -384,6 +384,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
             </div>
           </div>
 
+          {/* Issue 5 Fix: Explicit text-xs (12px) font size */}
           <div
             className={`mt-4 pt-3 border-t text-xs flex items-center gap-2 ${
               isDark ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-500'
@@ -392,7 +393,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
             <span className="w-4 h-4 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
               <Info className="w-3 h-3" />
             </span>
-            <span>Deterministic seed ensures 100% reproducible experiments.</span>
+            <span className="text-xs font-medium">Deterministic seed ensures 100% reproducible experiments.</span>
           </div>
         </div>
       </div>
@@ -462,16 +463,16 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
         </div>
       </div>
 
-      {/* Scientific Integrity Disclaimer (Scroll Reveal) */}
+      {/* Scientific Integrity Disclaimer (Scroll Reveal) — Issue 10 Fix: Max width constrained to 70-75ch */}
       <div
-        className={`scroll-reveal delay-300 p-4 rounded-xl border text-xs flex items-start gap-3 transition-colors ${
+        className={`scroll-reveal delay-300 p-5 rounded-2xl border text-xs flex items-start gap-3.5 transition-colors ${
           isDark ? 'bg-slate-900/60 border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
         }`}
       >
-        <span className="w-5 h-5 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 mt-0.5">
+        <span className="w-6 h-6 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 mt-0.5">
           <Info className="w-3.5 h-3.5" />
         </span>
-        <div>
+        <div className="max-w-3xl leading-relaxed">
           <span className={`font-semibold ${headingClass}`}>Scientific & Technical Rigor Note: </span>
           This experimental benchmark operates on reproducible simulated microgrid telemetry calibrated against IEEE 1547 and EN 50160 power quality standards. Quantum feature mapping is evaluated via local noiseless statevector simulation. Simulated dataset performance does not establish production grid reliability guarantees, and no unverified quantum speedup is claimed.
         </div>

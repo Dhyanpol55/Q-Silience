@@ -259,20 +259,22 @@ export default function App() {
         )}
       </main>
 
-      {/* Global Footer */}
+      {/* Global Footer — Issue 8 Fix: Generous padding matching main card layout margins */}
       <footer
-        className={`border-t py-4 text-center text-xs font-mono transition-colors ${
-          isDark ? 'border-slate-900 bg-slate-950 text-slate-500' : 'border-slate-200 bg-white text-slate-500'
+        className={`border-t py-8 sm:py-10 text-xs font-mono transition-colors ${
+          isDark ? 'border-slate-800/80 bg-slate-950 text-slate-400' : 'border-slate-200 bg-slate-50/60 text-slate-600'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div>
-            <span>Q-RESILIENCE AI · VTU Qiskit Fall Fest 2026</span>
-            <span aria-hidden="true" className="mx-2 text-slate-400 dark:text-slate-700">|</span>
-            <span>Quantum + AI & ML Track</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2 text-center sm:text-left">
+            <span className="font-semibold text-slate-800 dark:text-slate-200">Q-RESILIENCE AI</span>
+            <span aria-hidden="true" className="text-slate-300 dark:text-slate-700">·</span>
+            <span>VTU Qiskit Fall Fest 2026</span>
+            <span aria-hidden="true" className="text-slate-300 dark:text-slate-700">·</span>
+            <span className="text-cyan-600 dark:text-cyan-400">Quantum + AI/ML Track</span>
           </div>
-          <div className="text-[11px] text-slate-500">
-            Powered by Qiskit Quantum Feature Maps & Scikit-learn Baselines
+          <div className="text-xs text-slate-500 text-center sm:text-right">
+            Powered by Qiskit Quantum Feature Maps &amp; Scikit-learn Baselines
           </div>
         </div>
       </footer>

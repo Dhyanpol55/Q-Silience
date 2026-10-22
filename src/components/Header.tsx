@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   X,
   ExternalLink,
+  Info,
 } from 'lucide-react';
 import { pingBackend, getStoredBackendUrl, setStoredBackendUrl, BackendHealth } from '../services/apiClient';
 
@@ -261,6 +262,7 @@ export const Header: React.FC<HeaderProps> = ({
               className={`hidden md:flex items-center gap-1 p-1 rounded-xl border transition-colors overflow-x-auto ${
                 isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-slate-100 border-slate-200'
               }`}
+              aria-label="Primary Application Navigation"
             >
               {navItems.map((item) => {
                 const isActive = currentPage === item.id;
@@ -285,73 +287,81 @@ export const Header: React.FC<HeaderProps> = ({
               })}
             </nav>
 
-            {/* Utility Action Controls: Perfectly vertically centered with unified 36px height & 12px text */}
-            <div className="flex items-center gap-2.5 ml-4 shrink-0">
-              {/* Backend Status Button (Unified h-9 height, >=12px text) */}
-              <button
-                onClick={() => setBackendModalOpen(true)}
-                title="Inspect FastAPI Backend Status & Endpoints"
-                className={`h-9 flex items-center gap-2 px-3 rounded-xl border text-xs font-medium transition-all cursor-pointer shrink-0 ${
-                  backendHealth.status === 'healthy'
-                    ? isDark
-                      ? 'bg-emerald-950/60 border-emerald-800/80 text-emerald-300'
-                      : 'bg-emerald-50 border-emerald-300 text-emerald-800'
-                    : isDark
-                    ? 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800'
-                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs'
-                }`}
-              >
-                <Server className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden sm:inline font-sans text-xs font-medium">
-                  {backendHealth.status === 'healthy' ? (
-                    <>FastAPI: {backendHealth.latencyMs}ms</>
-                  ) : backendHealth.status === 'checking' ? (
-                    <>Checking API...</>
-                  ) : (
-                    <>Local Quantum Engine</>
-                  )}
-                </span>
-                <span
-                  className={`w-2 h-2 rounded-full shrink-0 ${
+            {/* Issue 6 Fix: Distinct Visual Grouping with Vertical Divider between Nav and Utility Controls */}
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="hidden lg:block h-6 w-px bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
+
+              {/* Utility Cluster Container */}
+              <div className="flex items-center gap-2">
+                {/* Issue 9 Fix: Styled as informative status badge instead of confusing action button */}
+                <div
+                  className={`h-9 flex items-center gap-2 px-3 rounded-xl border text-xs select-none transition-colors ${
                     backendHealth.status === 'healthy'
-                      ? 'bg-emerald-500'
-                      : backendHealth.status === 'checking'
-                      ? 'bg-amber-400 animate-ping'
-                      : 'bg-cyan-500'
+                      ? isDark
+                        ? 'bg-emerald-950/40 border-emerald-800/50 text-emerald-300'
+                        : 'bg-emerald-50/80 border-emerald-200 text-emerald-800'
+                      : isDark
+                      ? 'bg-slate-900/60 border-slate-800 text-slate-300'
+                      : 'bg-slate-100/80 border-slate-200 text-slate-700'
                   }`}
-                />
-              </button>
+                  role="status"
+                  aria-live="polite"
+                >
+                  <span
+                    className={`w-2 h-2 rounded-full shrink-0 ${
+                      backendHealth.status === 'healthy'
+                        ? 'bg-emerald-500'
+                        : backendHealth.status === 'checking'
+                        ? 'bg-amber-400 animate-ping'
+                        : 'bg-cyan-500'
+                    }`}
+                    aria-hidden="true"
+                  />
+                  <span className="hidden sm:inline font-sans text-xs font-medium">
+                    {backendHealth.status === 'healthy' ? (
+                      <>FastAPI: {backendHealth.latencyMs}ms</>
+                    ) : backendHealth.status === 'checking' ? (
+                      <>Checking API...</>
+                    ) : (
+                      <>Local Quantum Engine</>
+                    )}
+                  </span>
+                  {/* Subtle info trigger for connection inspection */}
+                  <button
+                    onClick={() => setBackendModalOpen(true)}
+                    title="Inspect Backend Connection Details"
+                    className="ml-0.5 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
+                    aria-label="Inspect backend connection details"
+                  >
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </div>
 
-              {/* Theme Toggle Button (Unified h-9 height, >=12px text) */}
-              <button
-                onClick={onToggleTheme}
-                title={isDark ? 'Switch to Pure White Background' : 'Switch to Dark Mode'}
-                className={`h-9 flex items-center gap-2 px-3 rounded-xl border text-xs font-medium transition-all cursor-pointer shadow-2xs shrink-0 ${
-                  isDark
-                    ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800'
-                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900'
-                }`}
-              >
-                <span className={isDark ? 'text-amber-400' : 'text-slate-600'}>
-                  {isDark ? <Sun className="w-4 h-4 stroke-[2]" /> : <Moon className="w-4 h-4 stroke-[2]" />}
-                </span>
-                <span className="hidden lg:inline font-sans text-xs font-medium">
-                  {isDark ? 'Light' : 'Dark'}
-                </span>
-              </button>
+                {/* Theme Toggle Button */}
+                <button
+                  onClick={onToggleTheme}
+                  title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                  className="btn-secondary"
+                  aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                >
+                  <span className={isDark ? 'text-amber-400' : 'text-slate-600'}>
+                    {isDark ? <Sun className="w-4 h-4 stroke-[2]" /> : <Moon className="w-4 h-4 stroke-[2]" />}
+                  </span>
+                  <span className="hidden lg:inline font-sans text-xs font-medium">
+                    {isDark ? 'Light' : 'Dark'}
+                  </span>
+                </button>
 
-              {/* Reset Data Button (Unified h-9 height, standardized icon button) */}
-              <button
-                onClick={onResetData}
-                title="Reset dataset with new random seed"
-                className={`h-9 w-9 flex items-center justify-center rounded-xl border transition-all cursor-pointer shadow-2xs shrink-0 ${
-                  isDark
-                    ? 'border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 bg-slate-900'
-                    : 'border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 bg-white'
-                }`}
-              >
-                <RefreshCw className="w-3.5 h-3.5 stroke-[2] hover:rotate-180 transition-transform duration-500" />
-              </button>
+                {/* Reset Data Button */}
+                <button
+                  onClick={onResetData}
+                  title="Reset dataset with new random seed"
+                  className="btn-icon"
+                  aria-label="Reset dataset with new random seed"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 stroke-[2] hover:rotate-180 transition-transform duration-500" />
+                </button>
+              </div>
             </div>
           </div>
 
