@@ -178,6 +178,76 @@ pytest -q
 
 ---
 
+## 🚀 Cloud Deployment Guide (Vercel + Render)
+
+### 1. Backend Deployment on Render (FastAPI + Python 3.11)
+
+You can deploy the backend to [Render](https://render.com) using either **Render Blueprints (IaC)** or manually as a **Web Service**:
+
+#### Option A: One-Click via Render Blueprint
+1. Go to your Render Dashboard ➔ Click **New** ➔ **Blueprint**.
+2. Connect your GitHub repository `vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai`.
+3. Render will automatically read the `render.yaml` configuration in the repo root:
+   - **Environment:** Python 3.11.9
+   - **Root Directory:** `backend`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `python -m uvicorn main:app --host 0.0.0.0 --port $PORT`
+   - **Health Check Path:** `/health`
+4. Click **Apply**. Once deployment succeeds, note down your live service URL (e.g., `https://q-resilience-backend.onrender.com`).
+
+#### Option B: Manual Web Service Setup
+1. Click **New +** ➔ **Web Service**.
+2. Select repository `vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai`.
+3. Set configuration:
+   | Setting | Value |
+   | :--- | :--- |
+   | **Name** | `q-resilience-backend` |
+   | **Region** | Oregon (US West) or Frankfurt |
+   | **Branch** | `main` (or `feature/q-resilience-ai`) |
+   | **Root Directory** | `backend` |
+   | **Runtime** | `Python 3` |
+   | **Build Command** | `pip install -r requirements.txt` |
+   | **Start Command** | `python -m uvicorn main:app --host 0.0.0.0 --port $PORT` |
+   | **Plan** | Free |
+4. Under **Advanced** ➔ **Environment Variables**, add:
+   - `PYTHON_VERSION`: `3.11.9`
+   - `ALLOWED_ORIGINS`: `https://*.vercel.app,http://localhost:3000` (and your production Vercel domain)
+5. Under **Health Check Path**, enter `/health`.
+6. Click **Create Web Service**. Verify `https://<your-render-app>.onrender.com/health` returns `{"status":"healthy"}`.
+
+---
+
+### 2. Frontend Deployment on Vercel (React + Vite)
+
+1. Go to your [Vercel Dashboard](https://vercel.com/new).
+2. Click **Import** next to your GitHub repository `vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai`.
+3. Configure Project Settings:
+   | Setting | Value |
+   | :--- | :--- |
+   | **Framework Preset** | `Vite` |
+   | **Root Directory** | `./` (or `frontend` if using subfolder) |
+   | **Build Command** | `npm run build` |
+   | **Output Directory** | `dist` |
+4. Under **Environment Variables**, add:
+   | Key | Value | Description |
+   | :--- | :--- | :--- |
+   | `VITE_API_BASE_URL` | `https://<your-render-app>.onrender.com` | Your live Render backend URL |
+5. Click **Deploy**. Vercel will build the frontend and serve it globally on their edge network.
+6. The included `vercel.json` ensures that Single-Page Application (SPA) client-side routing rewrites work properly on deep links and page refreshes.
+
+---
+
+### 3. Dynamic Backend URL Switching from the UI
+
+The Q-Silience dashboard includes built-in backend state tracking:
+- Click the **Backend: Checking / Live / Offline** status badge in the header.
+- A modal opens where you can:
+  1. View live ping latency to your Render service.
+  2. Inspect whether Qiskit C-extensions are loaded.
+  3. Override or test a custom backend URL dynamically (saved in browser `localStorage`), with no redeployment required.
+
+---
+
 ## 🔁 How to Push Code
 
 > Full walkthrough: **[Git & Collaboration Handbook](../vtu-hc-guide-git-and-collaboration)** — collaboration
