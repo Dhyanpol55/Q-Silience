@@ -241,7 +241,7 @@ export const Header: React.FC<HeaderProps> = ({
                     Q-RESILIENCE AI
                   </span>
                   <span className="text-[10px] text-cyan-800 dark:text-cyan-300 font-mono font-bold px-1.5 py-0.5 rounded-md bg-cyan-100/90 dark:bg-cyan-950/90 border border-cyan-300 dark:border-cyan-700">
-                    v1.3.0
+                    v1.4.0
                   </span>
                   {isTraining && (
                     <span className="hidden sm:inline-flex items-center gap-1 text-[10px] bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/40 px-1.5 py-0.5 rounded-md animate-pulse font-mono font-semibold">
