@@ -84,6 +84,8 @@ else:
         allow_headers=["*"],
     )
 
+BOOT_TIME = time.time()
+
 # -----------------------------------------------------------------------------
 # Resilient Health & Port Probe Middleware (Handles Render /health. and HEAD /)
 # -----------------------------------------------------------------------------
@@ -92,14 +94,23 @@ async def render_health_probe_middleware(request: Request, call_next):
     raw_path = request.url.path.strip()
     norm_path = raw_path.rstrip("./").rstrip(".")
     
-    # Render port scan probes HEAD /
-    if request.method == "HEAD" and norm_path in ["", "/"]:
-        return Response(status_code=200)
-
-    # Intercept any health path variant (/health, /health., /health/, /api/health.)
-    if norm_path in ["/health", "/api/health"]:
+    # Render port scan probes HEAD / or GET /
+    if norm_path in ["", "/"]:
         if request.method == "HEAD":
-            return Response(status_code=200)
+            return Response(status_code=200, media_type="text/plain")
+        if request.method in ["GET", "OPTIONS"]:
+            return JSONResponse({
+                "service": "Q-Resilience AI API",
+                "status": "healthy",
+                "description": "Quantum-Enhanced Microgrid Anomaly Detection (VTU Qiskit Fall Fest 2026)",
+                "docs_url": "/docs",
+                "health_url": "/health",
+            })
+
+    # Intercept any health path variant (/health, /health., /health/, /api/health, /api/health., etc.)
+    if norm_path in ["/health", "/api/health"] or "health" in raw_path.lower():
+        if request.method == "HEAD":
+            return Response(status_code=200, media_type="application/json")
         return JSONResponse({
             "status": "healthy",
             "service": "Q-RESILIENCE AI Backend",
@@ -108,10 +119,28 @@ async def render_health_probe_middleware(request: Request, call_next):
             "qml_available": QML_AVAILABLE,
             "quantum_kernel_type": "Qiskit ZZFeatureMap Fidelity Kernel (4 qubits, reps=2)",
             "models_ready": True,
-            "uptime_seconds": round(time.time() - state.boot_time, 1) if "state" in globals() else 0.0,
+            "uptime_seconds": round(time.time() - BOOT_TIME, 1),
         })
 
+    # Safeguard: Any HEAD probe on any path returns 200 instead of 405
+    if request.method == "HEAD":
+        return Response(status_code=200, media_type="text/plain")
+
     return await call_next(request)
+
+# Catch-all exception handler for 404 to gracefully respond to probe variations
+@app.exception_handler(404)
+async def custom_404_handler(request: Request, exc):
+    path = request.url.path.strip()
+    if "health" in path.lower() or path.rstrip("./").rstrip(".") in ["", "/"]:
+        if request.method == "HEAD":
+            return Response(status_code=200)
+        return JSONResponse({
+            "status": "healthy",
+            "service": "Q-RESILIENCE AI Backend",
+            "message": "Health probe acknowledged"
+        })
+    return JSONResponse(status_code=404, content={"detail": "Not Found"})
 
 # -----------------------------------------------------------------------------
 # Pydantic Schemas
