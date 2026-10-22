@@ -313,8 +313,69 @@ export const MicrogridDigitalTwin: React.FC<MicrogridDigitalTwinProps> = ({
           </div>
         </div>
 
-        {/* Animated Power Flow SVG Connector */}
-        <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-slate-400 gap-2">
+        {/* Animated Power Flow SVG Busbar Schematic */}
+        <div className="relative py-3 my-2 hidden sm:block">
+          <svg className="w-full h-8 overflow-visible" viewBox="0 0 800 32" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="solarBusGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.9" />
+              </linearGradient>
+              <linearGradient id="bessBusGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.9" />
+              </linearGradient>
+              <linearGradient id="loadBusGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#6366f1" stopOpacity="0.9" />
+              </linearGradient>
+            </defs>
+            
+            {/* Base static bus tracks */}
+            <path d="M 100 16 L 500 16" stroke="#1e293b" strokeWidth="3" />
+            <path d="M 300 16 L 500 16" stroke="#1e293b" strokeWidth="3" />
+            <path d="M 500 16 L 700 16" stroke="#1e293b" strokeWidth="3" />
+            
+            {/* Solar PV to Bus line */}
+            {isSolarGenerating && (
+              <path
+                d="M 100 16 L 500 16"
+                stroke="url(#solarBusGrad)"
+                strokeWidth="2.5"
+                strokeDasharray="6 8"
+                className="animate-flow-right"
+              />
+            )}
+            
+            {/* BESS to Bus bidirectional line */}
+            <path
+              d="M 300 16 L 500 16"
+              stroke="url(#bessBusGrad)"
+              strokeWidth="2.5"
+              strokeDasharray="6 8"
+              className={isCharging ? "animate-flow-left" : "animate-flow-right"}
+            />
+
+            {/* Bus to Industrial Load line */}
+            <path
+              d="M 500 16 L 700 16"
+              stroke="url(#loadBusGrad)"
+              strokeWidth="2.5"
+              strokeDasharray="6 8"
+              className="animate-flow-right"
+            />
+            
+            {/* Bus junction hubs */}
+            <circle cx="100" cy="16" r="4.5" fill="#f59e0b" />
+            <circle cx="300" cy="16" r="4.5" fill="#06b6d4" />
+            <circle cx="500" cy="16" r="6" fill="#8b5cf6" className="animate-pulse" />
+            <circle cx="500" cy="16" r="10" fill="none" stroke="#8b5cf6" strokeWidth="1" strokeOpacity="0.5" />
+            <circle cx="700" cy="16" r="4.5" fill="#6366f1" />
+          </svg>
+        </div>
+
+        {/* Animated Power Flow Telemetry Dispatch Bar */}
+        <div className="mt-3 pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-slate-400 gap-2">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
             <span>

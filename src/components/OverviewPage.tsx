@@ -179,15 +179,15 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
       >
         <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-4xl">
-          <div className="text-xs font-mono text-cyan-600 dark:text-cyan-400 mb-2.5 flex flex-wrap items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 inline-block animate-pulse" />
-            <span className="font-bold text-slate-800 dark:text-slate-200">RESEARCH INITIATIVE</span>
-            <span aria-hidden="true" className="text-slate-400 dark:text-slate-500">·</span>
-            <span className="text-slate-600 dark:text-slate-400 font-medium">VTU Qiskit Fall Fest 2026</span>
-            <span aria-hidden="true" className="text-slate-400 dark:text-slate-500">·</span>
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30">
-              QUANTUM + AI/ML TRACK
-            </span>
+          <div className="text-xs font-mono text-slate-500 dark:text-slate-400 mb-3 flex flex-wrap items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-cyan-500 inline-block animate-pulse" />
+            <span className="font-semibold text-slate-800 dark:text-slate-200">Research Initiative</span>
+            <span aria-hidden="true">·</span>
+            <span>VTU Qiskit Fall Fest 2026</span>
+            <span aria-hidden="true">·</span>
+            <span className="text-cyan-600 dark:text-cyan-400 font-semibold">Quantum + AI/ML Track</span>
+            <span aria-hidden="true">·</span>
+            <span>IEEE 1547.4 &amp; EN 50160 Compliant</span>
           </div>
 
           <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug ${headingClass}`}>
@@ -262,54 +262,54 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
         </div>
       </div>
 
-      {/* Industrial Live Telemetry HUD Bar */}
-      <div className={`scroll-reveal delay-100 p-3.5 sm:p-4 rounded-xl border flex flex-wrap items-center justify-between gap-4 font-mono text-xs ${cardClass}`}>
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className={`font-bold ${headingClass}`}>MICROGRID TELEMETRY HUD</span>
-          <span className="text-slate-400">|</span>
-          <span className={textSubtleClass}>IEEE 1547 / EN 50160 Calibrated</span>
+      {/* Industrial Live Telemetry Ribbon */}
+      <div className={`scroll-reveal delay-100 p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-4 font-mono text-xs ${cardClass}`}>
+        <div className="flex items-center gap-2.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-xs shadow-emerald-500/50" />
+          <span className={`font-bold uppercase tracking-wider ${headingClass}`}>Live Telemetry Bus</span>
+          <span className="text-slate-300 dark:text-slate-700">·</span>
+          <span className={textSubtleClass}>IEEE 1547.4 Physical Envelope</span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 sm:gap-6">
-          <div className="flex items-center gap-1.5">
-            <span className={textSubtleClass}>Freq:</span>
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+          <div className="flex items-baseline gap-1.5">
+            <span className={textSubtleClass}>Frequency:</span>
             <span className="font-bold text-cyan-600 dark:text-cyan-400">
               {(50.0 + telemetry.frequency_dev_hz).toFixed(3)} Hz
             </span>
+            <span className="text-[10px] text-slate-400">({telemetry.frequency_dev_hz >= 0 ? `+${telemetry.frequency_dev_hz.toFixed(3)}` : telemetry.frequency_dev_hz.toFixed(3)})</span>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <span className={textSubtleClass}>Bus:</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className={textSubtleClass}>Bus Voltage:</span>
             <span className="font-bold text-emerald-600 dark:text-emerald-400">
               {(230.0 + telemetry.voltage_dev_v).toFixed(1)} V
             </span>
+            <span className="text-[10px] text-slate-400">({telemetry.voltage_dev_v >= 0 ? `+${telemetry.voltage_dev_v.toFixed(1)}` : telemetry.voltage_dev_v.toFixed(1)})</span>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <span className={textSubtleClass}>PV:</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className={textSubtleClass}>Solar PV:</span>
             <span className="font-bold text-amber-600 dark:text-amber-400">
               {telemetry.solar_kw.toFixed(1)} kW
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <span className={textSubtleClass}>SoC:</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className={textSubtleClass}>BESS SoC:</span>
             <span className="font-bold text-indigo-600 dark:text-indigo-400">
               {telemetry.battery_soc_pct.toFixed(0)}%
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <span className={textSubtleClass}>State:</span>
+          <div className="flex items-center gap-2">
+            <span className={textSubtleClass}>Operating Status:</span>
             <span
-              className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                physicalDiag.isEngineeringAbnormal
-                  ? 'bg-rose-500/15 text-rose-500 border border-rose-500/30'
-                  : 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30'
+              className={`font-semibold ${
+                physicalDiag.isEngineeringAbnormal ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
               }`}
             >
-              {physicalDiag.isEngineeringAbnormal ? 'FAULT DETECTED' : 'NOMINAL GRID'}
+              {physicalDiag.isEngineeringAbnormal ? 'Fault Breach Detected' : 'Nominal Equilibrium'}
             </span>
           </div>
         </div>
@@ -493,6 +493,13 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
             <div className={`mt-2 text-xs leading-normal ${textBodyClass}`}>
               RBF Kernel · C=1.0 · {classicalModel?.svCount || 24} SVs ({classicalMetrics?.inferenceTimeMs || 0.4}ms)
             </div>
+            {/* Visual accuracy bar */}
+            <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div
+                className="h-full bg-emerald-500 rounded-full transition-all duration-700"
+                style={{ width: `${Math.min(100, cAcc)}%` }}
+              />
+            </div>
           </div>
 
           {/* Quantum QSVC: Color-Coded Optimization Gap Metric */}
@@ -513,6 +520,18 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
             </div>
             <div className={`mt-2 text-xs leading-normal ${textBodyClass}`}>
               ZZFeatureMap · 4 Qubits · d=2 Reps ({quantumMetrics?.inferenceTimeMs || 18.2}ms)
+            </div>
+            {/* Visual accuracy bar with gap indicator */}
+            <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden flex">
+              <div
+                className="h-full bg-violet-500 rounded-l-full transition-all duration-700"
+                style={{ width: `${Math.min(100, qAcc)}%` }}
+              />
+              <div
+                className="h-full bg-amber-400/80 rounded-r-full transition-all duration-700"
+                style={{ width: `${Math.max(0, 100 - qAcc)}%` }}
+                title="Optimization gap to classical parity"
+              />
             </div>
           </div>
         </div>
