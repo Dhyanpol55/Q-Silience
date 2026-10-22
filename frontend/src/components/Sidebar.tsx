@@ -14,7 +14,6 @@ export default function Sidebar({ activeSection, onSelectSection, className }: S
     { id: 'live-stream', label: 'Live Stream', number: '04', icon: '📡' },
     { id: 'quantum-circuit', label: 'Quantum Circuit', number: '05', icon: '⚛️' },
     { id: 'benchmark', label: 'Benchmark', number: '06', icon: '📈' },
-    { id: 'reports', label: 'Report & Git', number: '07', icon: '📁' },
   ];
 
   const isItemActive = (itemId: string) => {
@@ -22,7 +21,6 @@ export default function Sidebar({ activeSection, onSelectSection, className }: S
     if (itemId === 'scenario-lab' && activeSection === 'scenario_lab') return true;
     if (itemId === 'live-stream' && activeSection === 'live_stream') return true;
     if (itemId === 'quantum-circuit' && (activeSection === 'quantum_lab' || activeSection === 'quantum-circuit')) return true;
-    if (itemId === 'reports' && (activeSection === 'report' || activeSection === 'reports')) return true;
     return false;
   };
 

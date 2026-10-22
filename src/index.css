@@ -73,17 +73,16 @@
 }
 
 /* -------------------------------------------------------------------------- */
-/* High Performance Scroll Reveal (No GPU Layer Bloat / Zero Scroll Lag)     */
+/* Content Visibility Guaranteed (Zero Missing / Hidden Content)             */
 /* -------------------------------------------------------------------------- */
 .scroll-reveal {
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 1;
+  transform: none;
 }
 
 .scroll-reveal.visible {
   opacity: 1;
-  transform: none; /* Releasing GPU compositing layer avoids scroll stutter */
+  transform: none;
 }
 
 /* Stagger delays for child items */

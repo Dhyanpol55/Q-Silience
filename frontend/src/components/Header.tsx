@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { pingBackend, getStoredBackendUrl, setStoredBackendUrl, BackendHealth } from '../services/apiClient';
 
-export type PageId = 'overview' | 'live_stream' | 'scenario_lab' | 'investigation' | 'quantum_lab' | 'benchmark' | 'report';
+export type PageId = 'overview' | 'scenario_lab' | 'investigation' | 'live_stream' | 'quantum_lab' | 'benchmark';
 
 interface HeaderProps {
   currentPage: PageId;
@@ -182,25 +182,6 @@ export const Header: React.FC<HeaderProps> = ({
           }`}
         >
           <BarChart3 className="w-3.5 h-3.5 stroke-[2.2]" />
-        </span>
-      ),
-    },
-    {
-      id: 'report',
-      label: 'Report & Git',
-      icon: (active) => (
-        <span
-          className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
-            active
-              ? isDark
-                ? 'bg-indigo-500 text-white shadow-xs shadow-indigo-500/50'
-                : 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30'
-              : isDark
-              ? 'bg-slate-800/80 text-indigo-400 border border-slate-700/60 group-hover:bg-slate-700/80'
-              : 'bg-indigo-50 text-indigo-700 border border-indigo-200/60 group-hover:bg-indigo-100'
-          }`}
-        >
-          <FileText className="w-3.5 h-3.5 stroke-[2.2]" />
         </span>
       ),
     },

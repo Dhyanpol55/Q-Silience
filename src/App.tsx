@@ -13,7 +13,7 @@ import { ScenarioLabPage } from './components/ScenarioLabPage';
 import { AnomalyInvestigationPage } from './components/AnomalyInvestigationPage';
 import { QuantumLabPage } from './components/QuantumLabPage';
 import { BenchmarkPage } from './components/BenchmarkPage';
-import { ReportPage } from './components/ReportPage';
+
 import {
   ChevronUp,
   ChevronDown,
@@ -170,7 +170,6 @@ export default function App() {
       { id: 'live_stream' as PageId, label: 'Live Stream', number: '04', subtitle: 'Continuous Telemetry & Dual ML Stream', accent: 'rose' },
       { id: 'quantum_lab' as PageId, label: 'Quantum Circuit', number: '05', subtitle: 'Qiskit ZZFeatureMap Hilbert Space', accent: 'violet' },
       { id: 'benchmark' as PageId, label: 'Benchmark', number: '06', subtitle: 'Empirical Scikit-Learn vs QSVC Comparison', accent: 'sky' },
-      { id: 'report' as PageId, label: 'Report & Git', number: '07', subtitle: 'VTU Dossier, Source Audit & CSV Export', accent: 'indigo' },
     ],
     []
   );
@@ -353,16 +352,6 @@ export default function App() {
         inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
         badgeColor: 'text-slate-950 dark:text-sky-300 bg-slate-200/90 dark:bg-sky-500/20 border-slate-300 dark:border-sky-500/30 font-bold',
       },
-      {
-        id: 'report' as PageId,
-        label: 'Report & Git',
-        number: '07',
-        subtitle: 'VTU Dossier, Source Audit & CSV Export',
-        icon: <FileText className="w-4 h-4 stroke-[2]" />,
-        activeClass: 'bg-indigo-600 text-white font-extrabold ring-2 ring-indigo-400/50 shadow-md shadow-indigo-600/30',
-        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
-        badgeColor: 'text-slate-950 dark:text-indigo-300 bg-slate-200/90 dark:bg-indigo-500/20 border-slate-300 dark:border-indigo-500/30 font-bold',
-      },
     ],
     []
   );
@@ -385,15 +374,7 @@ export default function App() {
         />
       </div>
 
-      {/* TELEMETRY SCROLL PROGRESS LINE (0 - 100%) */}
-      <div className="fixed top-[68px] sm:top-[72px] left-0 right-0 z-40 h-[2.5px] bg-slate-200/40 dark:bg-slate-800/40 pointer-events-none">
-        <div
-          className="h-full scroll-progress-line transition-all duration-150 ease-out"
-          style={{ width: `${scrollPercent}%` }}
-        />
-      </div>
-
-      {/* DEDICATED 7-SECTION VERTICAL SIDEBAR */}
+      {/* DEDICATED 6-SECTION VERTICAL SIDEBAR */}
       <Sidebar
         activeSection={currentPage}
         onSelectSection={(id) => {
@@ -407,8 +388,6 @@ export default function App() {
             'quantum-circuit': 'quantum_lab',
             'quantum_lab': 'quantum_lab',
             'benchmark': 'benchmark',
-            'reports': 'report',
-            'report': 'report',
           };
           const target = pageIdMap[id] || (id as PageId);
           handleSelectPage(target);
@@ -445,7 +424,7 @@ export default function App() {
           data-tab="scenario_lab"
           className={`tab-section ${currentPage === 'scenario_lab' ? 'section-active' : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <div className="text-xs font-mono font-bold tracking-wider text-amber-700 dark:text-amber-400 uppercase flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
@@ -482,7 +461,7 @@ export default function App() {
           data-tab="investigation"
           className={`tab-section ${currentPage === 'investigation' ? 'section-active' : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <div className="text-xs font-mono font-bold tracking-wider text-cyan-700 dark:text-cyan-400 uppercase flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-cyan-500 inline-block" />
@@ -520,7 +499,7 @@ export default function App() {
           data-tab="live_stream"
           className={`tab-section ${currentPage === 'live_stream' ? 'section-active' : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <div className="text-xs font-mono font-bold tracking-wider text-rose-700 dark:text-rose-400 uppercase flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping inline-block" />
@@ -557,7 +536,7 @@ export default function App() {
           data-tab="quantum_lab"
           className={`tab-section ${currentPage === 'quantum_lab' ? 'section-active' : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <div className="text-xs font-mono font-bold tracking-wider text-violet-700 dark:text-violet-400 uppercase flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-violet-500 inline-block" />
@@ -595,7 +574,7 @@ export default function App() {
           data-tab="benchmark"
           className={`tab-section ${currentPage === 'benchmark' ? 'section-active' : ''}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <div className="text-xs font-mono font-bold tracking-wider text-sky-700 dark:text-sky-400 uppercase flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-sky-500 inline-block" />
@@ -627,43 +606,7 @@ export default function App() {
           />
         </section>
 
-        {/* CHAPTER 07: REPORT */}
-        <div id="reports" className="relative -top-24 pointer-events-none" aria-hidden="true" />
-        <section
-          id="section-report"
-          data-tab="report"
-          className={`tab-section ${currentPage === 'report' ? 'section-active' : ''}`}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <div className="text-xs font-mono font-bold tracking-wider text-indigo-700 dark:text-indigo-400 uppercase flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-indigo-500 inline-block" />
-                <span>Chapter 07</span>
-                <span aria-hidden="true" className="text-slate-400">·</span>
-                <span>Audit &amp; Deployment</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-slate-950 dark:text-white">
-                Hackathon Dossier &amp; Source Control
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-900 dark:text-slate-200 mt-1 max-w-2xl font-medium">
-                VTU-Qiskit Fall Fest 2026 rubric compliance checklist, repository branch status, and reproducible JSON/CSV export.
-              </p>
-            </div>
-            <button
-              onClick={() => handleSelectPage('overview')}
-              className="btn-ghost text-xs font-mono text-slate-800 hover:text-black dark:text-slate-200 dark:hover:text-white shrink-0 self-start sm:self-auto font-semibold"
-            >
-              <ArrowUp className="w-3.5 h-3.5 mr-1" /> Back to Top
-            </button>
-          </div>
-          <ReportPage
-            report={report}
-            samples={samples}
-            onUploadCustomData={handleUploadCustomData}
-            randomSeed={randomSeed}
-            theme={theme}
-          />
-        </section>
+
       </main>
 
       {/* FLOATING WORKSTATION CONTROLLER */}
