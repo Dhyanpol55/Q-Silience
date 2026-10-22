@@ -66,10 +66,15 @@ app = FastAPI(
 # -----------------------------------------------------------------------------
 allowed_origins_env = os.environ.get("ALLOWED_ORIGINS", "").strip()
 if allowed_origins_env:
-    origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
+    raw_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
+    # Separate exact origins from wildcard domains
+    origins = [o for o in raw_origins if "*" not in o]
+    if "https://qresilience.vercel.app" not in origins:
+        origins.append("https://qresilience.vercel.app")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
+        allow_origin_regex=r"^https://.*\.vercel\.app$",
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -79,6 +84,7 @@ else:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
+        allow_origin_regex=r"^https://.*\.vercel\.app$",
         allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],

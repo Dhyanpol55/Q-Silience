@@ -188,11 +188,11 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
       const backendRes = await predictWithBackend(currentValues, getStoredBackendUrl());
       setBackendPrediction(backendRes);
       const elapsed = Math.round(performance.now() - t0);
-      setExecutionMessage(`Execution complete in ${elapsed}ms via FastAPI backend (Render).`);
-    } catch {
-      // Gracefully use verified client-side quantum & classical simulation
+      setExecutionMessage(`Execution complete in ${elapsed}ms via FastAPI backend.`);
+    } catch (err: any) {
+      setBackendPrediction(null);
       const elapsed = Math.round(performance.now() - t0);
-      setExecutionMessage(`Execution complete in ${Math.max(4, elapsed)}ms via local high-fidelity quantum kernel engine.`);
+      setExecutionMessage(`Backend offline (${err.message || 'unreachable'}). Evaluated in ${Math.max(4, elapsed)}ms via local demo simulation mode.`);
     } finally {
       setIsExecuting(false);
     }

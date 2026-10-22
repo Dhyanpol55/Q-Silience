@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ModelMetrics, LowDataBenchmarkPoint, HyperparameterSweepPoint } from '../types/microgrid';
 import { generateHyperparameterSweepData } from '../services/quantumEngine';
+import { fetchBackendBenchmark, BackendBenchmarkResponse } from '../services/apiClient';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import {
   BarChart3,
@@ -22,6 +23,7 @@ import {
   Gauge,
   Eye,
   Play,
+  Server,
 } from 'lucide-react';
 import {
   LineChart,
@@ -64,6 +66,9 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
   const [selectedSweepRep, setSelectedSweepRep] = useState<number | 'all'>('all');
   const [sweepDataset, setSweepDataset] = useState<HyperparameterSweepPoint[]>(generateHyperparameterSweepData());
   const [isSweeping, setIsSweeping] = useState<boolean>(false);
+  const [backendBenchmark, setBackendBenchmark] = useState<BackendBenchmarkResponse | null>(null);
+  const [isFetchingBackend, setIsFetchingBackend] = useState<boolean>(false);
+  const [backendSyncMessage, setBackendSyncMessage] = useState<string | null>(null);
 
 
   // Recharts data for Low-Data Scaling LineChart
@@ -126,14 +131,75 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={onRerunBenchmark}
-          disabled={isBenchmarking}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all disabled:opacity-50 cursor-pointer shadow-md shadow-cyan-500/20"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 stroke-[2.2] ${isBenchmarking ? 'animate-spin' : ''}`} />
-          <span>{isBenchmarking ? 'Running Benchmark...' : 'Re-run Evaluation'}</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={async () => {
+              setIsFetchingBackend(true);
+              setBackendSyncMessage(null);
+              try {
+                const data = await fetchBackendBenchmark();
+                setBackendBenchmark(data);
+                setBackendSyncMessage(`Synced with FastAPI backend benchmark (evaluated on ${data.total_samples} samples, test split: ${data.test_samples}).`);
+              } catch (err: any) {
+                setBackendSyncMessage(`Backend sync unavailable (${err.message || 'offline'}). Displaying local verified model evaluation.`);
+              } finally {
+                setIsFetchingBackend(false);
+              }
+            }}
+            disabled={isFetchingBackend}
+            className="btn-secondary text-xs font-mono"
+            title="Fetch benchmark directly from Python FastAPI /api/benchmark"
+          >
+            <Server className={`w-3.5 h-3.5 mr-1.5 text-cyan-500 ${isFetchingBackend ? 'animate-pulse' : ''}`} />
+            <span>{isFetchingBackend ? 'Syncing...' : 'Sync with Backend'}</span>
+          </button>
+
+          <button
+            onClick={onRerunBenchmark}
+            disabled={isBenchmarking}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all disabled:opacity-50 cursor-pointer shadow-md shadow-cyan-500/20"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 stroke-[2.2] ${isBenchmarking ? 'animate-spin' : ''}`} />
+            <span>{isBenchmarking ? 'Running Benchmark...' : 'Re-run Evaluation'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Backend Sync Notification Banner */}
+      {backendSyncMessage && (
+        <div className={`p-3 rounded-xl border text-xs font-mono flex items-center justify-between gap-3 ${
+          backendBenchmark
+            ? isDark
+              ? 'bg-emerald-950/30 border-emerald-800/40 text-emerald-300'
+              : 'bg-emerald-50 border-emerald-300 text-emerald-900'
+            : isDark
+            ? 'bg-slate-900/60 border-slate-800 text-slate-300'
+            : 'bg-slate-100 border-slate-300 text-slate-800'
+        }`}>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+            <span>{backendSyncMessage}</span>
+          </div>
+          <button
+            onClick={() => setBackendSyncMessage(null)}
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer text-xs"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Scientific Honesty & Empirical Methodology Disclosure */}
+      <div className={`p-4 rounded-xl border text-xs space-y-1.5 ${
+        isDark ? 'bg-slate-900/60 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+      }`}>
+        <div className="flex items-center gap-2 font-bold text-cyan-600 dark:text-cyan-400">
+          <Info className="w-4 h-4" />
+          <span>Scientific Methodology &amp; NISQ Advantage Reality</span>
+        </div>
+        <p className="leading-relaxed">
+          The metrics displayed represent empirical evaluation on this specific 4-feature microgrid dataset using identical 75/25 stratified splits and scikit-learn training-set fitted preprocessing. While the 4-qubit ZZFeatureMap fidelity kernel achieves high separation on non-linear coupled transients, classical RBF SVC remains computationally faster on classical computers. True quantum advantage in power systems requires larger Hilbert spaces ($N \ge 40$ qubits) and fault-tolerant quantum error correction.
+        </p>
       </div>
 
       {/* Head-to-Head Comparison Cards */}

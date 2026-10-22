@@ -4,7 +4,6 @@ import {
   Zap,
   Activity,
   BarChart3,
-  FileText,
   RefreshCw,
   Sun,
   Moon,
@@ -12,15 +11,19 @@ import {
   Sparkles,
   Atom,
   Eye,
+  X,
+  Menu,
   Server,
   CheckCircle2,
   AlertTriangle,
-  X,
-  ExternalLink,
   Info,
-  Menu,
 } from 'lucide-react';
-import { pingBackend, getStoredBackendUrl, setStoredBackendUrl, BackendHealth } from '../services/apiClient';
+import {
+  pingBackend,
+  getStoredBackendUrl,
+  setStoredBackendUrl,
+  BackendHealth,
+} from '../services/apiClient';
 
 export type PageId = 'overview' | 'scenario_lab' | 'investigation' | 'live_stream' | 'quantum_lab' | 'benchmark';
 
@@ -44,28 +47,24 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleTheme,
 }) => {
   const isDark = theme === 'dark';
-
-  // Backend connectivity tracking
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [backendHealth, setBackendHealth] = useState<BackendHealth>({ status: 'checking' });
   const [backendModalOpen, setBackendModalOpen] = useState<boolean>(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
-  const [customBackendUrl, setCustomBackendUrl] = useState<string>(getStoredBackendUrl());
+  const [backendUrlInput, setBackendUrlInput] = useState<string>(getStoredBackendUrl());
 
-  const checkConnectivity = async () => {
+  const checkConnectivity = async (testUrl?: string) => {
     setBackendHealth({ status: 'checking' });
-    const health = await pingBackend();
+    const health = await pingBackend(testUrl !== undefined ? testUrl : getStoredBackendUrl());
     setBackendHealth(health);
   };
 
   useEffect(() => {
     checkConnectivity();
-    const interval = setInterval(checkConnectivity, 30000);
-    return () => clearInterval(interval);
   }, []);
 
-  const handleSaveBackendUrl = () => {
-    setStoredBackendUrl(customBackendUrl);
-    checkConnectivity();
+  const handleSaveBackendUrl = async () => {
+    setStoredBackendUrl(backendUrlInput);
+    await checkConnectivity(backendUrlInput);
     setBackendModalOpen(false);
   };
 
@@ -190,52 +189,31 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header
-        className={`border-b sticky top-0 z-40 backdrop-blur-md transition-colors ${
+        className={`sticky top-0 z-40 border-b backdrop-blur-md transition-colors duration-200 ${
           isDark
-            ? 'border-slate-800/80 bg-slate-950/90 shadow-md'
-            : 'border-slate-200/90 bg-white/95 shadow-xs'
+            ? 'bg-[#070a12]/90 border-slate-800/80 text-slate-100 shadow-sm shadow-black/20'
+            : 'bg-white/95 border-slate-200 text-slate-900 shadow-xs'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo & Brand Identity */}
-            <div className="flex items-center space-x-3">
-              <div
-                className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md ${
-                  isDark
-                    ? 'bg-gradient-to-br from-cyan-950 via-slate-900 to-indigo-950 border-cyan-500/40 shadow-cyan-950/60 ring-1 ring-cyan-500/20'
-                    : 'bg-gradient-to-br from-cyan-500 to-indigo-600 border-transparent shadow-cyan-500/25 text-white'
-                }`}
-              >
-                <div className="relative flex items-center justify-center">
-                  <Atom className={`w-5 h-5 ${isDark ? 'text-cyan-400' : 'text-white'} stroke-[2.2]`} />
-                  <Zap className="w-2.5 h-2.5 text-amber-300 absolute fill-amber-300 drop-shadow-xs" />
-                </div>
+          <div className="flex items-center justify-between h-16 sm:h-[72px] gap-4">
+            {/* Branding / App Identifier */}
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 shadow-sm shadow-cyan-500/30">
+                <Atom className="w-6 h-6 stroke-[2.2]" />
               </div>
-              <div>
+              <div className="leading-tight">
                 <div className="flex items-center gap-2">
-                  <span
-                    className={`font-extrabold text-base tracking-tight ${
-                      isDark ? 'text-white' : 'text-slate-900'
-                    }`}
-                  >
+                  <h1 className="text-base sm:text-lg font-extrabold tracking-tight">
                     Q-RESILIENCE AI
+                  </h1>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded font-bold bg-cyan-100 text-cyan-900 dark:bg-cyan-500/20 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/30">
+                    QISKIT
                   </span>
-                  <span className="text-[10px] text-cyan-950 dark:text-cyan-200 font-mono font-bold px-1.5 py-0.5 rounded-md bg-cyan-100 dark:bg-cyan-950 border border-cyan-400 dark:border-cyan-700">
-                    v1.4.0
-                  </span>
-                  {isTraining && (
-                    <span className="hidden sm:inline-flex items-center gap-1 text-[10px] bg-cyan-500/15 text-cyan-900 dark:text-cyan-200 border border-cyan-500/40 px-1.5 py-0.5 rounded-md animate-pulse font-mono font-semibold">
-                      <Atom className="w-3 h-3 animate-spin" />
-                      QML Fitting...
-                    </span>
-                  )}
                 </div>
-                <div className="flex items-center gap-2 text-xs font-mono">
-                  <span className={isDark ? 'text-slate-300' : 'text-slate-900 font-semibold'}>
-                    VTU Qiskit Fall Fest 2026
-                  </span>
-                  <span aria-hidden="true" className={isDark ? 'text-slate-400' : 'text-slate-600'}>
+                <div className="text-[11px] text-slate-600 dark:text-slate-400 font-medium hidden sm:flex items-center gap-1.5">
+                  <span>Quantum Microgrid Resilience</span>
+                  <span aria-hidden="true" className="text-slate-400">
                     ·
                   </span>
                   <span className="text-cyan-900 dark:text-cyan-200 font-bold flex items-center gap-1">
@@ -262,49 +240,43 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="hidden lg:block h-6 w-px bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
 
               <div className="flex items-center gap-2">
-                {/* Status Badge */}
-                <div
-                  className={`h-9 flex items-center gap-2 px-3 rounded-xl border text-xs select-none transition-colors ${
+                {/* Backend Connectivity Status Badge */}
+                <button
+                  onClick={() => setBackendModalOpen(true)}
+                  className={`h-9 flex items-center gap-2 px-3 rounded-xl border text-xs select-none transition-colors cursor-pointer ${
                     backendHealth.status === 'healthy'
                       ? isDark
-                        ? 'bg-emerald-950/40 border-emerald-800/50 text-emerald-300'
-                        : 'bg-emerald-50 border-emerald-300 text-emerald-950 font-semibold'
+                        ? 'bg-emerald-950/40 border-emerald-800/50 text-emerald-300 hover:bg-emerald-900/50'
+                        : 'bg-emerald-50 border-emerald-300 text-emerald-950 font-semibold hover:bg-emerald-100'
+                      : backendHealth.status === 'checking'
+                      ? isDark
+                        ? 'bg-slate-900/60 border-slate-800 text-slate-300'
+                        : 'bg-slate-100 border-slate-300 text-slate-700'
                       : isDark
-                      ? 'bg-slate-900/60 border-slate-800 text-slate-300'
-                      : 'bg-slate-100 border-slate-300 text-slate-950 font-semibold'
+                      ? 'bg-amber-950/30 border-amber-800/40 text-amber-300 hover:bg-amber-900/40'
+                      : 'bg-amber-50 border-amber-300 text-amber-950 font-semibold hover:bg-amber-100'
                   }`}
-                  role="status"
-                  aria-live="polite"
+                  title="Backend API Status — Click to configure API endpoint"
+                  aria-label="Backend API Status"
                 >
                   <span
                     className={`w-2 h-2 rounded-full shrink-0 ${
                       backendHealth.status === 'healthy'
                         ? 'bg-emerald-500'
                         : backendHealth.status === 'checking'
-                        ? 'bg-amber-400 animate-ping'
+                        ? 'bg-slate-400 animate-pulse'
                         : 'bg-amber-500'
                     }`}
-                    aria-hidden="true"
                   />
-                  <span className="hidden sm:inline font-sans text-xs font-medium">
-                    {backendHealth.status === 'healthy' ? (
-                      <>FastAPI: {backendHealth.latencyMs}ms</>
-                    ) : backendHealth.status === 'checking' ? (
-                      <>Checking API...</>
-                    ) : (
-                      <>Local Quantum Engine: Disconnected</>
-                    )}
+                  <span className="hidden sm:inline font-sans text-xs">
+                    {backendHealth.status === 'healthy'
+                      ? `FastAPI: ${backendHealth.latencyMs}ms`
+                      : backendHealth.status === 'checking'
+                      ? 'Checking API...'
+                      : 'Local Demo Mode'}
                   </span>
-                  <button
-                    onClick={() => setBackendModalOpen(true)}
-                    title="API connection offline — click to configure backend endpoint or reconnect"
-                    className="ml-0.5 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition-colors"
-                    aria-label="API disconnected: inspect details and configure connection"
-                    aria-haspopup="dialog"
-                  >
-                    <Info className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                  <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" />
+                </button>
 
                 {/* Theme Toggle Button */}
                 <button
@@ -398,7 +370,7 @@ export const Header: React.FC<HeaderProps> = ({
         )}
       </header>
 
-      {/* Backend Diagnostics Modal */}
+      {/* Backend API Configuration & Status Modal */}
       {backendModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
           <div
@@ -409,31 +381,32 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => setBackendModalOpen(false)}
               className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-200 cursor-pointer"
+              aria-label="Close modal"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center border border-cyan-500/30">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center border border-cyan-500/30">
                 <Server className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold">FastAPI & Quantum Backend Status</h3>
-                <p className="text-xs font-mono text-slate-400">Render Production & Local Server Gateway</p>
+                <h3 className="text-base font-bold">FastAPI Backend Status & Gateway</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Python Qiskit ML Service Integration</p>
               </div>
             </div>
 
-            <div className="space-y-4 text-xs font-mono">
-              <div className="p-3 rounded-xl border border-slate-700/80 bg-slate-800/40 space-y-2">
+            <div className="space-y-4 text-xs">
+              <div className={`p-3.5 rounded-xl border space-y-2.5 font-mono ${isDark ? 'bg-slate-800/50 border-slate-700/80' : 'bg-slate-50 border-slate-200'}`}>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">Connection Status:</span>
+                  <span className="text-slate-500 dark:text-slate-400">API Status:</span>
                   <span
-                    className={`font-bold flex items-center gap-1 ${
+                    className={`font-bold flex items-center gap-1.5 ${
                       backendHealth.status === 'healthy'
-                        ? 'text-emerald-400'
+                        ? 'text-emerald-500'
                         : backendHealth.status === 'checking'
-                        ? 'text-amber-400'
-                        : 'text-cyan-400'
+                        ? 'text-cyan-500'
+                        : 'text-amber-500'
                     }`}
                   >
                     {backendHealth.status === 'healthy' ? (
@@ -443,65 +416,68 @@ export const Header: React.FC<HeaderProps> = ({
                     ) : backendHealth.status === 'checking' ? (
                       'Pinging server...'
                     ) : (
-                      'Client-Side High-Fidelity Simulator Active'
+                      'Offline (Local Demo Simulation Active)'
                     )}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">Active Inference Engine:</span>
-                  <span className="font-bold text-white">
-                    {backendHealth.status === 'healthy' ? 'Remote Python Qiskit 1.3+' : 'In-Browser JS/Wasm Quantum Kernel'}
+                  <span className="text-slate-500 dark:text-slate-400">Inference Engine:</span>
+                  <span className="font-bold">
+                    {backendHealth.status === 'healthy'
+                      ? 'Remote Python Qiskit QSVC'
+                      : 'In-Browser Quantum Kernel Engine'}
                   </span>
                 </div>
 
-                {backendHealth.error && (
-                  <div className="text-[11px] text-slate-400 pt-1 border-t border-slate-700/60">
-                    Notice: Remote server response ({backendHealth.error}). Falling back seamlessly to local in-browser quantum engine with zero interruption.
+                {backendHealth.status !== 'healthy' && (
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-700/60 font-sans">
+                    Notice: Backend not reachable ({backendHealth.error || 'Connection refused'}). Running in client-side local demo mode with verified Hilbert space statevector math.
                   </div>
                 )}
               </div>
 
               <div>
-                <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>FastAPI Backend Endpoint URL:</label>
+                <label className="block text-xs font-semibold mb-1">Backend Base URL (Render / Local):</label>
                 <input
                   type="text"
-                  value={customBackendUrl}
-                  onChange={(e) => setCustomBackendUrl(e.target.value)}
-                  placeholder="https://q-resilience-api.onrender.com or http://localhost:8000"
+                  value={backendUrlInput}
+                  onChange={(e) => setBackendUrlInput(e.target.value)}
+                  placeholder="e.g. http://localhost:8000 or your Render backend URL"
                   className={`w-full p-2.5 rounded-xl border font-mono text-xs ${
                     isDark
                       ? 'bg-slate-950 border-slate-700 text-white focus:border-cyan-500'
-                      : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-500'
+                      : 'bg-white border-slate-300 text-slate-900 focus:border-cyan-500'
                   }`}
                 />
-                <p className={`text-[10px] mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600 font-medium'}`}>
-                  Default: https://q-resilience-api.onrender.com or local FastAPI uvicorn instance.
+                <p className="text-[10px] mt-1 text-slate-500 dark:text-slate-400">
+                  Configures VITE_API_BASE_URL. Leave blank for relative proxy rewrites (/api and /health).
                 </p>
               </div>
 
               <div className={`p-3 rounded-xl border text-[11px] space-y-1 ${isDark ? 'border-slate-800 bg-slate-950/70 text-slate-300' : 'border-slate-200 bg-slate-50 text-slate-800'}`}>
-                <div className="font-bold text-cyan-600 dark:text-cyan-400">Supported Backend Endpoints:</div>
-                <div>• <code className={`font-mono font-bold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>GET /health</code> — Qiskit &amp; model readiness</div>
-                <div>• <code className={`font-mono font-bold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>POST /api/predict</code> — Classical SVC &amp; Quantum QSVC</div>
-                <div>• <code className={`font-mono font-bold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>GET /api/benchmark</code> — Stratified benchmark metrics</div>
-                <div>• <code className={`font-mono font-bold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>GET /api/circuit</code> — Qiskit ZZFeatureMap ASCII diagram</div>
+                <div className="font-bold text-cyan-600 dark:text-cyan-400">Supported Endpoints:</div>
+                <div>• <code className="font-mono">GET /health</code> — Qiskit &amp; backend readiness</div>
+                <div>• <code className="font-mono">POST /api/predict</code> — Dual Classical SVC &amp; QSVC</div>
+                <div>• <code className="font-mono">GET /api/scenarios</code> — IEEE standard grid presets</div>
+                <div>• <code className="font-mono">GET /api/benchmark</code> — Stratified test evaluation</div>
+                <div>• <code className="font-mono">GET /api/circuit</code> — Qiskit ZZFeatureMap circuit</div>
               </div>
             </div>
 
             <div className="mt-5 flex items-center justify-between">
               <button
-                onClick={checkConnectivity}
-                className="px-3 py-1.5 rounded-lg border border-slate-700 text-xs font-mono hover:bg-slate-800 cursor-pointer"
+                onClick={() => checkConnectivity(backendUrlInput)}
+                className="btn-secondary text-xs font-mono"
               >
-                Re-Test Ping
+                Test Ping
               </button>
 
               <button
                 onClick={handleSaveBackendUrl}
-                className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-xs font-mono cursor-pointer"
+                className="btn-primary text-xs font-mono"
               >
-                Save & Connect
+                Save &amp; Connect
               </button>
             </div>
           </div>

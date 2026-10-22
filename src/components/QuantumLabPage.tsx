@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   buildZZFeatureMapCircuit,
   computeZZFeatureMapStatevector,
@@ -8,6 +8,7 @@ import {
 } from '../services/quantumEngine';
 import { NISQNoiseConfig, ScalerModel } from '../types/microgrid';
 import { SVCTrainedModel } from '../services/svmSolver';
+import { fetchBackendCircuit, BackendCircuitInfo } from '../services/apiClient';
 import {
   Cpu,
   Layers,
@@ -26,6 +27,8 @@ import {
   ArrowRight,
   Maximize2,
   CheckCircle2,
+  X,
+  FileCode,
 } from 'lucide-react';
 
 interface QuantumLabPageProps {
@@ -47,10 +50,18 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({
   const [reps, setReps] = useState<number>(2);
   const [selectedGate, setSelectedGate] = useState<any | null>(null);
   const [testAngles] = useState<number[]>([1.57, 0.85, 3.14, 2.2]);
+  const [backendCircuit, setBackendCircuit] = useState<BackendCircuitInfo | null>(null);
+  const [showAsciiModal, setShowAsciiModal] = useState<boolean>(false);
   const [noiseConfig, setNoiseConfig] = useState<NISQNoiseConfig>({
     ...DEFAULT_NISQ_NOISE,
     enabled: false,
   });
+
+  useEffect(() => {
+    fetchBackendCircuit()
+      .then((info) => setBackendCircuit(info))
+      .catch(() => setBackendCircuit(null));
+  }, []);
 
   const numQubits = 4;
   const featureNames = ['q0: Demand', 'q1: Solar PV', 'q2: Voltage Dev', 'q3: Freq Dev'];
@@ -271,6 +282,35 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Hardware Execution & Simulation Status Notice */}
+      <div className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs ${
+        isDark ? 'bg-slate-900/60 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+      }`}>
+        <div className="flex items-center gap-2.5">
+          <Info className="w-4 h-4 text-cyan-500 shrink-0" />
+          <div>
+            <span className="font-semibold text-slate-900 dark:text-slate-100">Execution Mode: </span>
+            {backendCircuit ? (
+              <span>Qiskit 1.3+ ZZFeatureMap decomposition verified via backend. Exact statevector calculation in 16D Hilbert space.</span>
+            ) : (
+              <span>Client-side exact statevector mathematical simulation with modeled NISQ depolarizing noise.</span>
+            )}
+            <span className="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              Physical Quantum Hardware (IBM Quantum): <span className="font-semibold text-amber-600 dark:text-amber-400">Unavailable (Simulator Mode)</span>.
+            </span>
+          </div>
+        </div>
+        {backendCircuit?.ascii_diagram && (
+          <button
+            onClick={() => setShowAsciiModal(true)}
+            className="btn-secondary text-xs shrink-0 font-mono"
+          >
+            <FileCode className="w-3.5 h-3.5 mr-1 text-cyan-500" />
+            View Qiskit ASCII
+          </button>
+        )}
       </div>
 
       {/* Circuit Metrics Overview */}
@@ -1111,6 +1151,53 @@ q_3: ┤ H ├┤ Rz(2.0*x[3]) ├───────────────�
           </div>
         </div>
       </div>
+
+      {/* Backend Qiskit ASCII Circuit Modal */}
+      {showAsciiModal && backendCircuit && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div
+            className={`w-full max-w-3xl rounded-2xl border p-6 shadow-2xl relative max-h-[85vh] flex flex-col ${
+              isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'
+            }`}
+          >
+            <button
+              onClick={() => setShowAsciiModal(false)}
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-200 cursor-pointer"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-500 flex items-center justify-center border border-violet-500/30">
+                <FileCode className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold">Qiskit ZZFeatureMap Decomposed Circuit</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+                  {backendCircuit.num_qubits} Qubits · Depth {backendCircuit.depth} · {backendCircuit.total_gates} Total Gates
+                </p>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-auto p-4 rounded-xl border bg-slate-950 text-emerald-400 font-mono text-xs leading-relaxed whitespace-pre">
+              {backendCircuit.ascii_diagram || 'ASCII circuit diagram unavailable.'}
+            </div>
+
+            <div className="mt-4 flex items-center justify-between text-xs font-mono text-slate-500 shrink-0">
+              <div>
+                Gate Counts: {Object.entries(backendCircuit.gate_counts || {}).map(([k, v]) => `${k}:${v}`).join(', ')}
+              </div>
+              <button
+                onClick={() => setShowAsciiModal(false)}
+                className="btn-secondary text-xs"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

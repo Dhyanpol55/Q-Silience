@@ -207,13 +207,13 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
 
   const cardClass = isDark
     ? 'bg-slate-900/80 border-slate-800'
-    : 'bg-white border-slate-200 shadow-xs';
+    : 'bg-white border-slate-300 shadow-xs';
   const innerCardClass = isDark
     ? 'bg-slate-950 border-slate-800/80'
-    : 'bg-slate-50 border-slate-200';
-  const headingClass = isDark ? 'text-white' : 'text-slate-900';
-  const textMutedClass = isDark ? 'text-slate-400' : 'text-slate-600';
-  const gridStroke = isDark ? '#1e293b' : '#e2e8f0';
+    : 'bg-slate-50 border-slate-300';
+  const headingClass = isDark ? 'text-white' : 'text-slate-950 font-extrabold';
+  const textMutedClass = isDark ? 'text-slate-300' : 'text-slate-800 font-medium';
+  const gridStroke = isDark ? '#1e293b' : '#cbd5e1';
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -230,11 +230,11 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
                   Live Microgrid Simulation Stream
                 </h1>
                 <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-cyan-950 text-cyan-400 border border-cyan-800 font-semibold">
-                  SIMULATED TELEMETRY
+                  SYNTHETIC TELEMETRY
                 </span>
               </div>
               <p className={`mt-0.5 text-xs sm:text-sm ${textMutedClass}`}>
-                Continuous stream of smart grid sensor telemetry evaluated in real-time by both Classical SVC and Quantum QSVC.
+                Continuous stream of synthetic microgrid sensor telemetry (IEEE 1547.4 physics model) evaluated in real-time by Classical SVC and Quantum QSVC.
               </p>
             </div>
           </div>

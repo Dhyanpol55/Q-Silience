@@ -5,6 +5,8 @@ export interface BackendHealth {
   service?: string;
   qiskitAvailable?: boolean;
   qiskitVersion?: string;
+  qmlAvailable?: boolean;
+  quantumKernelType?: string;
   modelsReady?: boolean;
   datasetSamples?: number;
   latencyMs?: number;
@@ -48,14 +50,66 @@ export interface BackendCircuitInfo {
   ascii_diagram?: string;
 }
 
+export interface BackendScenarioPreset {
+  id: string;
+  name: string;
+  description: string;
+  demand_kw: number;
+  solar_kw: number;
+  battery_soc_pct: number;
+  voltage_dev_v: number;
+  frequency_dev_hz: number;
+  expected_anomaly: boolean;
+}
+
+export interface BackendBenchmarkMetric {
+  accuracy: number;
+  precision: number;
+  recall: number;
+  f1_score: number;
+  true_positives: number;
+  false_positives: number;
+  true_negatives: number;
+  false_negatives: number;
+  confusion_matrix: number[][];
+  train_time_ms: number;
+  inference_time_ms: number;
+}
+
+export interface BackendBenchmarkResponse {
+  timestamp: string;
+  total_samples: number;
+  train_samples: number;
+  test_samples: number;
+  classical_svc: BackendBenchmarkMetric;
+  quantum_qsvc?: BackendBenchmarkMetric;
+  low_data_experiment: {
+    train_fraction: number;
+    sample_count: number;
+    classical_f1: number;
+    quantum_f1: number;
+    classical_accuracy: number;
+    quantum_accuracy: number;
+  }[];
+}
+
 const STORAGE_KEY = 'q_resilience_backend_url';
 
+/**
+ * Returns the normalized API base URL (strips trailing slashes)
+ * Defaults to VITE_API_BASE_URL or relative empty string if not explicitly overridden.
+ */
 export function getStoredBackendUrl(): string {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored !== null && stored !== undefined) return stored;
-    // When running on Vercel or same-domain, default to empty string for relative rewrites (/api and /health)
-    return (import.meta as any).env?.VITE_API_BASE_URL ?? '';
+    if (stored !== null && stored !== undefined && stored.trim() !== '') {
+      return stored.trim().replace(/\/+$/, '');
+    }
+    const envUrl = (import.meta as any).env?.VITE_API_BASE_URL;
+    if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+      return envUrl.trim().replace(/\/+$/, '');
+    }
+    return '';
   } catch {
     return '';
   }
@@ -63,37 +117,60 @@ export function getStoredBackendUrl(): string {
 
 export function setStoredBackendUrl(url: string): void {
   try {
-    localStorage.setItem(STORAGE_KEY, url.trim().replace(/\/+$/, ''));
+    const clean = url.trim().replace(/\/+$/, '');
+    if (clean) {
+      localStorage.setItem(STORAGE_KEY, clean);
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
   } catch {
     // Ignore storage errors in restricted contexts
   }
 }
 
 /**
- * Checks FastAPI backend health and ping latency
+ * Internal helper for resilient network calls with abort timeouts
  */
-export async function pingBackend(baseUrl: string = getStoredBackendUrl()): Promise<BackendHealth> {
-  const cleanUrl = baseUrl.trim().replace(/\/+$/, '');
-  const t0 = performance.now();
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+async function apiFetch(
+  endpoint: string,
+  options: RequestInit = {},
+  timeoutMs: number = 8000,
+  baseUrl: string = getStoredBackendUrl()
+): Promise<Response> {
+  const cleanBase = baseUrl.trim().replace(/\/+$/, '');
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const targetUrl = `${cleanBase}${cleanEndpoint}`;
 
-    let res = await fetch(`${cleanUrl}/health`, {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(targetUrl, {
+      ...options,
       signal: controller.signal,
     });
+    clearTimeout(timer);
+    return res;
+  } catch (err: any) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') {
+      throw new Error(`Connection timed out after ${timeoutMs / 1000}s`);
+    }
+    throw err;
+  }
+}
+
+/**
+ * Checks FastAPI backend health and ping latency (GET /health)
+ */
+export async function pingBackend(baseUrl: string = getStoredBackendUrl()): Promise<BackendHealth> {
+  const t0 = performance.now();
+  try {
+    let res = await apiFetch('/health', { method: 'GET', headers: { Accept: 'application/json' } }, 5000, baseUrl);
 
     if (!res.ok && res.status === 404) {
-      res = await fetch(`${cleanUrl}/api/health`, {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
-        signal: controller.signal,
-      });
+      res = await apiFetch('/api/health', { method: 'GET', headers: { Accept: 'application/json' } }, 5000, baseUrl);
     }
-
-    clearTimeout(timeoutId);
 
     const latencyMs = Math.round(performance.now() - t0);
     if (!res.ok) {
@@ -107,9 +184,11 @@ export async function pingBackend(baseUrl: string = getStoredBackendUrl()): Prom
     const data = await res.json();
     return {
       status: 'healthy',
-      service: data.service || 'Q-RESILIENCE AI FastAPI Backend',
+      service: data.service || 'Q-RESILIENCE AI Backend',
       qiskitAvailable: data.qiskit_available ?? true,
       qiskitVersion: data.qiskit_version || '1.3.0',
+      qmlAvailable: data.qml_available ?? true,
+      quantumKernelType: data.quantum_kernel_type || 'Qiskit ZZFeatureMap Fidelity Kernel',
       modelsReady: data.models_ready ?? true,
       datasetSamples: data.dataset_samples ?? 100,
       latencyMs,
@@ -119,13 +198,60 @@ export async function pingBackend(baseUrl: string = getStoredBackendUrl()): Prom
     return {
       status: 'offline',
       latencyMs,
-      error: err.name === 'AbortError' ? 'Connection timed out (6s)' : err.message || 'Connection refused',
+      error: err.message || 'Backend unreachable',
     };
   }
 }
 
 /**
- * Executes live prediction via remote FastAPI backend
+ * Fetches standard microgrid scenario disturbance presets (GET /api/scenarios)
+ */
+export async function fetchBackendScenarios(baseUrl: string = getStoredBackendUrl()): Promise<BackendScenarioPreset[]> {
+  const res = await apiFetch('/api/scenarios', { method: 'GET', headers: { Accept: 'application/json' } }, 6000, baseUrl);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch scenarios (HTTP ${res.status})`);
+  }
+  const data = await res.json();
+  return data.presets || [];
+}
+
+/**
+ * Fetches current dataset samples from the backend (GET /api/dataset)
+ */
+export async function fetchBackendDataset(limit: number = 100, baseUrl: string = getStoredBackendUrl()): Promise<any[]> {
+  const res = await apiFetch(`/api/dataset?limit=${limit}`, { method: 'GET', headers: { Accept: 'application/json' } }, 8000, baseUrl);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch dataset (HTTP ${res.status})`);
+  }
+  const data = await res.json();
+  return data.samples || [];
+}
+
+/**
+ * Generates synthetic telemetry and triggers backend model retraining (POST /api/dataset/generate)
+ */
+export async function generateBackendDataset(
+  params: { sample_count?: number; random_seed?: number; abnormal_ratio?: number } = {},
+  baseUrl: string = getStoredBackendUrl()
+): Promise<{ message: string; sample_count: number; seed: number; benchmark?: BackendBenchmarkResponse }> {
+  const res = await apiFetch(
+    '/api/dataset/generate',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(params),
+    },
+    12000,
+    baseUrl
+  );
+  if (!res.ok) {
+    throw new Error(`Failed to generate dataset on backend (HTTP ${res.status})`);
+  }
+  return await res.json();
+}
+
+/**
+ * Executes dual classical SVC and quantum QSVC inference via remote FastAPI backend (POST /api/predict)
  */
 export async function predictWithBackend(
   inputs: {
@@ -137,44 +263,57 @@ export async function predictWithBackend(
   },
   baseUrl: string = getStoredBackendUrl()
 ): Promise<BackendDualPrediction> {
-  const cleanUrl = baseUrl.trim().replace(/\/+$/, '');
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-  const res = await fetch(`${cleanUrl}/api/predict`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
+  const res = await apiFetch(
+    '/api/predict',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(inputs),
     },
-    body: JSON.stringify(inputs),
-    signal: controller.signal,
-  });
-  clearTimeout(timeoutId);
+    10000,
+    baseUrl
+  );
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Backend error (${res.status}): ${text}`);
+    throw new Error(`Backend prediction failed (${res.status}): ${text}`);
   }
 
   return await res.json();
 }
 
 /**
- * Fetches compiled Qiskit circuit diagram and metrics from backend
+ * Fetches empirical benchmark results from backend (GET /api/benchmark)
  */
-export async function fetchBackendCircuit(
-  baseUrl: string = getStoredBackendUrl()
-): Promise<BackendCircuitInfo> {
-  const cleanUrl = baseUrl.trim().replace(/\/+$/, '');
-  const res = await fetch(`${cleanUrl}/api/circuit`, {
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-  });
+export async function fetchBackendBenchmark(baseUrl: string = getStoredBackendUrl()): Promise<BackendBenchmarkResponse> {
+  const res = await apiFetch('/api/benchmark', { method: 'GET', headers: { Accept: 'application/json' } }, 10000, baseUrl);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch benchmark from backend (HTTP ${res.status})`);
+  }
+  return await res.json();
+}
 
+/**
+ * Triggers model evaluation and returns benchmark report (POST /api/evaluate)
+ */
+export async function evaluateBackend(baseUrl: string = getStoredBackendUrl()): Promise<BackendBenchmarkResponse> {
+  const res = await apiFetch('/api/evaluate', { method: 'POST', headers: { Accept: 'application/json' } }, 15000, baseUrl);
+  if (!res.ok) {
+    throw new Error(`Failed to evaluate backend models (HTTP ${res.status})`);
+  }
+  return await res.json();
+}
+
+/**
+ * Fetches compiled Qiskit circuit diagram and metrics from backend (GET /api/circuit)
+ */
+export async function fetchBackendCircuit(baseUrl: string = getStoredBackendUrl()): Promise<BackendCircuitInfo> {
+  const res = await apiFetch('/api/circuit', { method: 'GET', headers: { Accept: 'application/json' } }, 8000, baseUrl);
   if (!res.ok) {
     throw new Error(`Circuit endpoint failed: HTTP ${res.status}`);
   }
-
   return await res.json();
 }

@@ -230,11 +230,11 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
                   Live Microgrid Simulation Stream
                 </h1>
                 <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-cyan-950 text-cyan-400 border border-cyan-800 font-semibold">
-                  SIMULATED TELEMETRY
+                  SYNTHETIC TELEMETRY
                 </span>
               </div>
               <p className={`mt-0.5 text-xs sm:text-sm ${textMutedClass}`}>
-                Continuous stream of smart grid sensor telemetry evaluated in real-time by both Classical SVC and Quantum QSVC.
+                Continuous stream of synthetic microgrid sensor telemetry (IEEE 1547.4 physics model) evaluated in real-time by Classical SVC and Quantum QSVC.
               </p>
             </div>
           </div>

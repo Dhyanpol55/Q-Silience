@@ -13,4 +13,4 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: ALLOWED_ORIGINS
-        value: "https://*.vercel.app,http://localhost:3000"
+        value: "https://qresilience.vercel.app,https://*.vercel.app,http://localhost:3000,http://localhost:5173"
