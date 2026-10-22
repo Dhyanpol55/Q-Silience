@@ -253,7 +253,7 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({
             <p className={textMutedClass}>
               Continuous sensor features x in R^4 (Demand, Solar, Voltage Dev, Freq Dev) are scaled into angle coordinates [0, 2π] using training-fit MinMaxScaler:
             </p>
-            <div className="p-2 rounded bg-slate-900 text-cyan-300 font-mono text-[11px]">
+            <div className="p-2.5 rounded bg-slate-900 text-cyan-300 font-mono text-[11px] overflow-x-auto whitespace-normal break-words leading-relaxed">
               {'x_j\' = 2π · (x_j - min(x_j)) / (max(x_j) - min(x_j))'}
             </div>
           </div>
@@ -265,7 +265,7 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({
             <p className={textMutedClass}>
               Applies Hadamard superposition followed by single-qubit phase rotations and two-qubit entangling ZZ terms:
             </p>
-            <div className="p-2 rounded bg-slate-900 text-violet-300 font-mono text-[11px]">
+            <div className="p-2.5 rounded bg-slate-900 text-violet-300 font-mono text-[11px] overflow-x-auto whitespace-normal break-words leading-relaxed">
               {'φ_j(x) = x_j,  φ_jk(x) = (π - x_j)(π - x_k)'}
             </div>
           </div>
@@ -277,7 +277,7 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({
             <p className={textMutedClass}>
               Calculates the transition probability (quantum state overlap) in 16-dimensional complex Hilbert space:
             </p>
-            <div className="p-2 rounded bg-slate-900 text-emerald-300 font-mono text-[11px]">
+            <div className="p-2.5 rounded bg-slate-900 text-emerald-300 font-mono text-[11px] overflow-x-auto whitespace-normal break-words leading-relaxed">
               {'K(x, z) = |⟨Φ(x)|Φ(z)⟩|² = |⟨0ⁿ| U_Φ†(x) U_Φ(z) |0ⁿ⟩|²'}
             </div>
           </div>
@@ -770,7 +770,7 @@ q_3: ┤ H ├┤ Rz(2.0*x[3]) ├───────────────�
                 <div key={idx} className={`p-2 rounded border ${innerCardClass}`}>
                   <div className={`text-[10px] ${textMutedClass}`}>|{bin}⟩</div>
                   <div className={`font-semibold mt-0.5 ${headingClass}`}>{(prob * 100).toFixed(1)}%</div>
-                  <div className={`text-[9px] truncate ${textMutedClass}`}>
+                  <div className={`text-[9px] font-mono break-all leading-tight ${textMutedClass}`}>
                     {c.re.toFixed(2)} + {c.im.toFixed(2)}i
                   </div>
                 </div>

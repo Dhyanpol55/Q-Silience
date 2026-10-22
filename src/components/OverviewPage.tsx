@@ -171,19 +171,19 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
     <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Hero Section with Scroll Reveal & Grid Backdrop */}
       <div
-        className={`scroll-reveal p-6 sm:p-8 rounded-2xl border relative overflow-hidden transition-all ${
+        className={`scroll-reveal p-6 sm:p-8 rounded-2xl border relative transition-all ${
           isDark
             ? 'bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950/40 border-slate-800 shadow-xl'
             : 'bg-gradient-to-br from-white via-cyan-50/40 to-slate-50 border-slate-200/90 shadow-xs'
         }`}
       >
-        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+        </div>
         <div className="relative z-10 max-w-4xl">
           <div className="text-xs font-mono text-slate-700 dark:text-slate-300 mb-3 flex flex-wrap items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-cyan-500 inline-block animate-pulse" />
             <span className="font-bold text-slate-900 dark:text-slate-100">Research Initiative</span>
-            <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
-            <span className="text-slate-800 dark:text-slate-200">VTU Qiskit Fall Fest 2026</span>
             <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
             <span className="text-cyan-800 dark:text-cyan-300 font-bold">Quantum + AI/ML Track</span>
             <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>

@@ -51,7 +51,7 @@ export default function Sidebar({ activeSection, onSelectSection, className }: S
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="font-extrabold tracking-wider text-cyan-600 dark:text-cyan-400 text-sm">Q-RESILIENCE AI</h1>
-            <p className="text-[11px] font-medium text-slate-600 dark:text-slate-400">VTU Qiskit Fall Fest 2026</p>
+            <p className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Quantum Microgrid AI</p>
           </div>
           <span className="text-[10px] font-mono font-semibold bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700">
             v1.4.0

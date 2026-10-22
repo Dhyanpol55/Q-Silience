@@ -672,8 +672,6 @@ export default function App() {
           <div className="flex flex-wrap items-center gap-2 text-center sm:text-left">
             <span className="font-bold text-slate-900 dark:text-slate-100">Q-RESILIENCE AI</span>
             <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
-            <span className="text-slate-800 dark:text-slate-200">VTU Qiskit Fall Fest 2026</span>
-            <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
             <span className="text-cyan-800 dark:text-cyan-300 font-bold">Quantum + AI/ML Track</span>
           </div>
           <div className="text-xs text-slate-600 dark:text-slate-400 text-center sm:text-right">
