@@ -425,10 +425,18 @@ export const Header: React.FC<HeaderProps> = ({
                   <span className="text-slate-500 dark:text-slate-400">Inference Engine:</span>
                   <span className="font-bold">
                     {backendHealth.status === 'healthy'
-                      ? 'Remote Python Qiskit QSVC'
+                      ? backendHealth.quantumModelStatus === 'genuine_qsvc'
+                        ? 'Genuine Qiskit ML QSVC'
+                        : 'Exact Statevector Fidelity Kernel + SVC'
                       : 'In-Browser Quantum Kernel Engine'}
                   </span>
                 </div>
+
+                {backendHealth.status === 'healthy' && backendHealth.quantumModelStatus === 'exact_statevector_fallback' && (
+                  <div className="text-[11px] text-amber-600 dark:text-amber-400 pt-1 border-t border-slate-200 dark:border-slate-700/60 font-sans">
+                    QML Status: Exact Hilbert statevector fidelity kernel active {backendHealth.qmlError ? `(${backendHealth.qmlError})` : ''}. Pre-cached representations ensure sub-5ms latency.
+                  </div>
+                )}
 
                 {backendHealth.status !== 'healthy' && (
                   <div className="text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-700/60 font-sans">

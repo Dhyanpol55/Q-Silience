@@ -139,7 +139,10 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
               try {
                 const data = await fetchBackendBenchmark();
                 setBackendBenchmark(data);
-                setBackendSyncMessage(`Synced with FastAPI backend benchmark (evaluated on ${data.total_samples} samples, test split: ${data.test_samples}).`);
+                const engineName = data.quantum_model_status === 'genuine_qsvc'
+                  ? 'Genuine Qiskit ML QSVC (FidelityQuantumKernel)'
+                  : `Exact Statevector Fidelity Kernel + SVC ${data.qml_error ? `[QML fallback: ${data.qml_error}]` : ''}`;
+                setBackendSyncMessage(`Synced with FastAPI backend (/api/benchmark) — Model: ${engineName} | Evaluated on ${data.total_samples} samples (${data.test_samples} test) | Quantum Inf: ${data.quantum_qsvc?.inference_time_ms ?? 'N/A'}ms`);
               } catch (err: any) {
                 setBackendSyncMessage(`Backend sync unavailable (${err.message || 'offline'}). Displaying local verified model evaluation.`);
               } finally {

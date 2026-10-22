@@ -5,7 +5,12 @@ export interface BackendHealth {
   service?: string;
   qiskitAvailable?: boolean;
   qiskitVersion?: string;
+  qiskitError?: string;
   qmlAvailable?: boolean;
+  qmlVersion?: string;
+  qmlError?: string;
+  qmlRuntimeError?: string;
+  quantumModelStatus?: 'genuine_qsvc' | 'exact_statevector_fallback' | string;
   quantumKernelType?: string;
   modelsReady?: boolean;
   datasetSamples?: number;
@@ -83,8 +88,14 @@ export interface BackendBenchmarkResponse {
   test_samples: number;
   classical_svc: BackendBenchmarkMetric;
   quantum_qsvc?: BackendBenchmarkMetric;
+  quantum_model_type?: string;
+  quantum_model_status?: 'genuine_qsvc' | 'exact_statevector_fallback' | string;
+  qml_available?: boolean;
+  qml_error?: string;
+  qml_runtime_error?: string;
   low_data_experiment: {
-    train_fraction: number;
+    fraction?: number;
+    train_fraction?: number;
     sample_count: number;
     classical_f1: number;
     quantum_f1: number;
@@ -94,10 +105,14 @@ export interface BackendBenchmarkResponse {
 }
 
 const STORAGE_KEY = 'q_resilience_backend_url';
+export const DEFAULT_REMOTE_BACKEND_URL = 'https://q-silience.onrender.com';
 
 /**
  * Returns the normalized API base URL (strips trailing slashes)
- * Defaults to VITE_API_BASE_URL or relative empty string if not explicitly overridden.
+ * Precedence:
+ * 1. User-configured override in localStorage
+ * 2. VITE_API_BASE_URL environment variable
+ * 3. Default Render deployment URL (https://q-silience.onrender.com)
  */
 export function getStoredBackendUrl(): string {
   try {
@@ -109,9 +124,10 @@ export function getStoredBackendUrl(): string {
     if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
       return envUrl.trim().replace(/\/+$/, '');
     }
-    return '';
+    // Default to the live Render backend service
+    return DEFAULT_REMOTE_BACKEND_URL;
   } catch {
-    return '';
+    return DEFAULT_REMOTE_BACKEND_URL;
   }
 }
 
@@ -187,10 +203,15 @@ export async function pingBackend(baseUrl: string = getStoredBackendUrl()): Prom
       service: data.service || 'Q-RESILIENCE AI Backend',
       qiskitAvailable: data.qiskit_available ?? true,
       qiskitVersion: data.qiskit_version || '1.3.0',
-      qmlAvailable: data.qml_available ?? true,
-      quantumKernelType: data.quantum_kernel_type || 'Qiskit ZZFeatureMap Fidelity Kernel',
+      qiskitError: data.qiskit_error,
+      qmlAvailable: data.qml_available ?? false,
+      qmlVersion: data.qml_version,
+      qmlError: data.qml_error,
+      qmlRuntimeError: data.qml_runtime_error,
+      quantumModelStatus: data.quantum_model_status || (data.qml_available ? 'genuine_qsvc' : 'exact_statevector_fallback'),
+      quantumKernelType: data.quantum_model_type || data.quantum_kernel_type || 'Exact Statevector Fidelity Kernel + Scikit-Learn SVC',
       modelsReady: data.models_ready ?? true,
-      datasetSamples: data.dataset_samples ?? 100,
+      datasetSamples: data.dataset_samples ?? 60,
       latencyMs,
     };
   } catch (err: any) {
@@ -212,7 +233,7 @@ export async function fetchBackendScenarios(baseUrl: string = getStoredBackendUr
     throw new Error(`Failed to fetch scenarios (HTTP ${res.status})`);
   }
   const data = await res.json();
-  return data.presets || [];
+  return data.scenarios || data.presets || [];
 }
 
 /**
@@ -273,7 +294,7 @@ export async function predictWithBackend(
       },
       body: JSON.stringify(inputs),
     },
-    10000,
+    8000,
     baseUrl
   );
 

@@ -4,26 +4,27 @@ VTU-Qiskit Fall Fest 2026 — Team Ctrl_AI (VTU-QFF-HC-0025)
 
 Verifies:
 1. Health check & probe variations (Render /health., HEAD /, /api/health)
-2. Reproducible dataset generation with seed
-3. Sensor input validation & error handling
-4. Statevector normalization & Hilbert space kernel bounds
-5. Kernel Gram matrix symmetry & positive semi-definiteness bounds
-6. Dual-model prediction (Classical SVC & Quantum QSVC)
-7. Confusion matrix shape, labels, and ordering
-8. Scenarios and Qiskit quantum circuit inspection endpoints
-9. Benchmark & evaluate schema conformity
+2. QML availability, error capture, and model identity truthfulness
+3. Pre-cached training statevectors and sub-second inference
+4. Reproducible dataset generation with seed
+5. Sensor input validation & error handling
+6. Statevector normalization & Hilbert space kernel bounds
+7. Kernel Gram matrix symmetry & positive semi-definiteness bounds
+8. Dual-model prediction (Classical SVC & Quantum model identity)
+9. Confusion matrix shape, labels, and ordering
+10. Scenarios and Qiskit quantum circuit inspection endpoints
+11. Benchmark & evaluate schema conformity
 """
 
 import pytest
 import numpy as np
 from fastapi.testclient import TestClient
-from main import app, compute_zz_statevector, compute_fidelity_kernel_matrix
+from main import app, state, compute_zz_statevector, compute_fidelity_kernel_matrix
 
 client = TestClient(app)
 
 # 1. Health check & probe variations
 def test_health_check_variations():
-    # Test standard GET /health
     res = client.get("/health")
     assert res.status_code == 200
     data = res.json()
@@ -32,7 +33,10 @@ def test_health_check_variations():
     assert "models_ready" in data
     assert data["models_ready"] is True
     assert "qiskit_available" in data
-    assert "quantum_kernel_type" in data
+    assert "qml_available" in data
+    assert "quantum_model_status" in data
+    assert data["quantum_model_status"] in ["genuine_qsvc", "exact_statevector_fallback"]
+    assert "quantum_model_type" in data
     assert "uptime_seconds" in data
 
     # Test trailing dot probe common in Render health checks: /health.
@@ -50,7 +54,51 @@ def test_health_check_variations():
     assert api_health.json()["status"] == "healthy"
 
 
-# 2. Dataset generation reproducibility
+# 2. Honest Model Identity & Error Reporting
+def test_model_identity_honesty():
+    health = client.get("/health").json()
+    status = health["quantum_model_status"]
+
+    if not health["qml_available"]:
+        # If QML is not available, the system must NOT claim to be genuine QSVC
+        assert status == "exact_statevector_fallback"
+        assert "Qiskit Machine Learning QSVC" not in health["quantum_model_type"]
+        assert "Exact Statevector" in health["quantum_model_type"]
+
+    bench = client.get("/api/benchmark").json()
+    assert "quantum_model_status" in bench
+    assert bench["quantum_model_status"] == status
+
+
+# 3. Pre-cached Training Statevectors & Inference Latency
+def test_cached_training_statevectors_and_fast_inference():
+    # Verify training statevectors are pre-cached on state
+    assert hasattr(state, "psi_train")
+    assert len(state.psi_train) == len(state.X_train)
+    assert state.psi_train.shape[1] == 16  # 4 qubits -> dim=16
+
+    # Unit norm for each pre-cached statevector
+    for i in range(len(state.psi_train)):
+        norm = np.linalg.norm(state.psi_train[i])
+        assert np.isclose(norm, 1.0, atol=1e-5)
+
+    # Inference should run within low latency (<250 ms)
+    payload = {
+        "demand_kw": 55.0,
+        "solar_kw": 45.0,
+        "battery_soc_pct": 70.0,
+        "voltage_dev_v": 0.2,
+        "frequency_dev_hz": 0.01,
+    }
+    res = client.post("/api/predict", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+
+    assert data["quantum_qsvc"]["inference_time_ms"] < 250.0
+    assert data["classical_svc"]["inference_time_ms"] < 50.0
+
+
+# 4. Dataset generation reproducibility
 def test_dataset_generation_reproducibility():
     payload = {"sample_count": 40, "random_seed": 123, "abnormal_ratio": 0.35}
     res1 = client.post("/api/dataset/generate", json=payload)
@@ -71,7 +119,7 @@ def test_dataset_generation_reproducibility():
         assert col in first
 
 
-# 3. Sensor input validation
+# 5. Sensor input validation
 def test_sensor_input_validation():
     # Negative demand (out of bounds ge=0)
     invalid_payload = {
@@ -82,7 +130,7 @@ def test_sensor_input_validation():
         "frequency_dev_hz": 0.0,
     }
     res = client.post("/api/predict", json=invalid_payload)
-    assert res.status_code == 422  # Unprocessable Entity
+    assert res.status_code == 422
 
     # Battery SoC > 100%
     invalid_soc = {
@@ -96,7 +144,7 @@ def test_sensor_input_validation():
     assert res.status_code == 422
 
 
-# 4. Statevector normalization and Hilbert space kernel bounds
+# 6. Statevector normalization and Hilbert space kernel bounds
 def test_statevector_normalization_and_kernel_properties():
     x1 = np.array([0.5, 1.2, 2.4, 3.1])
     x2 = np.array([1.0, 0.2, 0.9, 2.8])
@@ -123,7 +171,7 @@ def test_statevector_normalization_and_kernel_properties():
     assert 0.0 <= fidelity_cross <= 1.00001
 
 
-# 5. Kernel matrix symmetry
+# 7. Kernel matrix symmetry
 def test_fidelity_kernel_matrix_symmetry():
     X = np.array([
         [0.1, 0.5, 1.2, 2.0],
@@ -143,7 +191,7 @@ def test_fidelity_kernel_matrix_symmetry():
     assert np.all(K >= 0.0) and np.all(K <= 1.0)
 
 
-# 6. Dual-model prediction endpoint
+# 8. Dual-model prediction endpoint
 def test_dual_prediction_endpoint():
     payload = {
         "demand_kw": 55.0,
@@ -156,7 +204,6 @@ def test_dual_prediction_endpoint():
     assert response.status_code == 200
     data = response.json()
 
-    # Inputs echoed
     assert "inputs" in data
     assert data["inputs"]["demand_kw"] == 55.0
 
@@ -166,11 +213,15 @@ def test_dual_prediction_endpoint():
     assert data["classical_svc"]["label"] in [0, 1]
     assert data["classical_svc"]["inference_time_ms"] >= 0.0
 
-    # Quantum QSVC fields
+    # Quantum model fields
     assert "quantum_qsvc" in data
     assert data["quantum_qsvc"]["prediction"] in ["NORMAL", "ABNORMAL"]
     assert data["quantum_qsvc"]["label"] in [0, 1]
     assert data["quantum_qsvc"]["inference_time_ms"] >= 0.0
+
+    # Honest naming
+    if not client.get("/health").json()["qml_available"]:
+        assert "Exact Statevector" in data["quantum_qsvc"]["model_name"]
 
     # Heuristic IEEE 1547 diagnosis
     assert "heuristic_diagnosis" in data
@@ -179,14 +230,13 @@ def test_dual_prediction_endpoint():
     assert data["heuristic_diagnosis"]["frequency_status"] == "nominal"
 
 
-# 7. Confusion matrix shape & ordering
+# 9. Confusion matrix shape & ordering
 def test_confusion_matrix_shape_and_ordering():
     response = client.get("/api/benchmark")
     assert response.status_code == 200
     data = response.json()
 
     cm = data["classical_svc"]["confusion_matrix"]
-    # 2x2 binary classification matrix
     assert len(cm) == 2
     assert len(cm[0]) == 2
     assert len(cm[1]) == 2
@@ -197,7 +247,7 @@ def test_confusion_matrix_shape_and_ordering():
     assert (tn + fp + fn + tp) == data["test_samples"]
 
 
-# 8. Scenarios and quantum circuit endpoints
+# 10. Scenarios and quantum circuit endpoints
 def test_scenarios_and_circuit_endpoints():
     scenarios_res = client.get("/api/scenarios")
     assert scenarios_res.status_code == 200
@@ -217,17 +267,15 @@ def test_scenarios_and_circuit_endpoints():
     assert "ascii_diagram" in circuit_data
 
 
-# 9. Evaluate endpoint schema validation
+# 11. Evaluate endpoint schema validation
 def test_evaluate_endpoint_schema():
     res = client.post("/api/evaluate")
     assert res.status_code == 200
     data = res.json()
 
-    # Matches BenchmarkResponse schema
-    for key in ["timestamp", "total_samples", "train_samples", "test_samples", "classical_svc", "quantum_qsvc", "low_data_experiment"]:
+    for key in ["timestamp", "total_samples", "train_samples", "test_samples", "classical_svc", "quantum_qsvc", "quantum_model_status", "low_data_experiment"]:
         assert key in data
 
-    # Verify low_data_experiment structure
     low_data = data["low_data_experiment"]
     assert len(low_data) == 4
     for entry in low_data:
