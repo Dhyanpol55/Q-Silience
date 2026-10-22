@@ -1,0 +1,250 @@
+2026-10-22T08:45:34.673959698Z   Downloading qiskit_machine_learning-0.9.0-py3-none-any.whl.metadata (13 kB)
+2026-10-22T08:45:34.690689452Z   Downloading qiskit_machine_learning-0.8.4-py3-none-any.whl.metadata (13 kB)
+2026-10-22T08:45:34.711513208Z Collecting qiskit>=1.3.0 (from -r requirements.txt (line 4))
+2026-10-22T08:45:34.716476372Z   Downloading qiskit-1.4.6-cp39-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (12 kB)
+2026-10-22T08:45:34.728602934Z Collecting qiskit-machine-learning>=0.7.2 (from -r requirements.txt (line 5))
+2026-10-22T08:45:34.733016179Z   Downloading qiskit_machine_learning-0.8.3-py3-none-any.whl.metadata (13 kB)
+2026-10-22T08:45:34.75017113Z   Downloading qiskit_machine_learning-0.8.2-py3-none-any.whl.metadata (13 kB)
+2026-10-22T08:45:34.866448223Z Collecting psutil>=5 (from qiskit-machine-learning>=0.7.2->-r requirements.txt (line 5))
+2026-10-22T08:45:34.870207146Z   Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl.metadata (22 kB)
+2026-10-22T08:45:35.017520526Z Collecting narwhals>=2.0.1 (from scikit-learn>=1.5.0->-r requirements.txt (line 7))
+2026-10-22T08:45:35.020998737Z   Downloading narwhals-2.27.1-py3-none-any.whl.metadata (15 kB)
+2026-10-22T08:45:35.041796452Z Collecting threadpoolctl>=3.5.0 (from scikit-learn>=1.5.0->-r requirements.txt (line 7))
+2026-10-22T08:45:35.045021285Z   Downloading threadpoolctl-3.7.0-py3-none-any.whl.metadata (24 kB)
+2026-10-22T08:45:35.148458244Z Collecting python-dateutil>=2.8.2 (from pandas>=2.2.0->-r requirements.txt (line 10))
+2026-10-22T08:45:35.15174316Z   Downloading python_dateutil-3.0.0-py2.py3-none-any.whl.metadata (8.2 kB)
+2026-10-22T08:45:35.174006123Z Collecting annotated-types>=0.6.0 (from pydantic>=2.9.0->-r requirements.txt (line 11))
+2026-10-22T08:45:35.178442529Z   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+2026-10-22T08:45:36.028556702Z Collecting pydantic-core==2.50.1 (from pydantic>=2.9.0->-r requirements.txt (line 11))
+2026-10-22T08:45:36.031939219Z   Downloading pydantic_core-2.50.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.5 kB)
+2026-10-22T08:45:36.073283507Z Collecting cloudpickle>=3.0 (from joblib>=1.4.0->-r requirements.txt (line 12))
+2026-10-22T08:45:36.076646668Z   Downloading cloudpickle-3.1.2-py3-none-any.whl.metadata (7.1 kB)
+2026-10-22T08:45:36.09870737Z Collecting iniconfig>=1.0.1 (from pytest>=8.3.0->-r requirements.txt (line 13))
+2026-10-22T08:45:36.101723284Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-10-22T08:45:36.124874179Z Collecting packaging>=22 (from pytest>=8.3.0->-r requirements.txt (line 13))
+2026-10-22T08:45:36.128658729Z   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-10-22T08:45:36.146456058Z Collecting pluggy<2,>=1.5 (from pytest>=8.3.0->-r requirements.txt (line 13))
+2026-10-22T08:45:36.149904599Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-10-22T08:45:36.176300305Z Collecting pygments>=2.7.2 (from pytest>=8.3.0->-r requirements.txt (line 13))
+2026-10-22T08:45:36.180199076Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-10-22T08:45:36.215450007Z Collecting anyio (from httpx>=0.27.0->-r requirements.txt (line 14))
+2026-10-22T08:45:36.218671474Z   Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+2026-10-22T08:45:36.242374569Z Collecting certifi (from httpx>=0.27.0->-r requirements.txt (line 14))
+2026-10-22T08:45:36.247004162Z   Downloading certifi-2026.10.19-py3-none-any.whl.metadata (2.5 kB)
+2026-10-22T08:45:36.272203576Z Collecting httpcore==1.* (from httpx>=0.27.0->-r requirements.txt (line 14))
+2026-10-22T08:45:36.276110348Z   Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+2026-10-22T08:45:36.295817799Z Collecting idna (from httpx>=0.27.0->-r requirements.txt (line 14))
+2026-10-22T08:45:36.29903497Z   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+2026-10-22T08:45:36.384694241Z Collecting httptools>=0.8.0 (from uvicorn[standard]>=0.32.0->-r requirements.txt (line 2))
+2026-10-22T08:45:36.389076616Z   Downloading httptools-0.9.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+2026-10-22T08:45:36.410175424Z Collecting python-dotenv>=0.13 (from uvicorn[standard]>=0.32.0->-r requirements.txt (line 2))
+2026-10-22T08:45:36.413518281Z   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+2026-10-22T08:45:36.454596264Z Collecting pyyaml>=5.1 (from uvicorn[standard]>=0.32.0->-r requirements.txt (line 2))
+2026-10-22T08:45:36.458267524Z   Downloading pyyaml-6.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-10-22T08:45:36.505968734Z Collecting uvloop>=0.15.1 (from uvicorn[standard]>=0.32.0->-r requirements.txt (line 2))
+2026-10-22T08:45:36.51173175Z   Downloading uvloop-0.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.1 kB)
+2026-10-22T08:45:36.593145316Z Collecting watchfiles>=0.20 (from uvicorn[standard]>=0.32.0->-r requirements.txt (line 2))
+2026-10-22T08:45:36.596396637Z   Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+2026-10-22T08:45:36.723341382Z Collecting websockets>=13.0 (from uvicorn[standard]>=0.32.0->-r requirements.txt (line 2))
+2026-10-22T08:45:36.728041826Z   Downloading websockets-17.3-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.3 kB)
+2026-10-22T08:45:36.820305182Z Collecting six>=1.6 (from python-dateutil>=2.8.2->pandas>=2.2.0->-r requirements.txt (line 10))
+2026-10-22T08:45:36.823585315Z   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+2026-10-22T08:45:36.841633116Z Collecting tzdata (from python-dateutil>=2.8.2->pandas>=2.2.0->-r requirements.txt (line 10))
+2026-10-22T08:45:36.844995153Z   Downloading tzdata-2026.5-py2.py3-none-any.whl.metadata (1.4 kB)
+2026-10-22T08:45:36.974518238Z Downloading fastapi-0.159.1-py3-none-any.whl (149 kB)
+2026-10-22T08:45:36.983007048Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 149.6/149.6 kB 21.1 MB/s eta 0:00:00
+2026-10-22T08:45:36.987263415Z Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+2026-10-22T08:45:36.990728518Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 87.4/87.4 kB 42.4 MB/s eta 0:00:00
+2026-10-22T08:45:36.994655826Z Downloading python_multipart-0.0.32-py3-none-any.whl (30 kB)
+2026-10-22T08:45:36.99994141Z Downloading qiskit-2.4.2-cp310-abi3-manylinux_2_28_x86_64.whl (9.3 MB)
+2026-10-22T08:45:37.066297237Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.3/9.3 MB 144.7 MB/s eta 0:00:00
+2026-10-22T08:45:37.070527078Z Downloading qiskit_machine_learning-0.8.2-py3-none-any.whl (231 kB)
+2026-10-22T08:45:37.074472831Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 231.6/231.6 kB 104.7 MB/s eta 0:00:00
+2026-10-22T08:45:37.078494503Z Downloading qiskit_algorithms-0.4.0-py3-none-any.whl (327 kB)
+2026-10-22T08:45:37.083646836Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 327.8/327.8 kB 88.2 MB/s eta 0:00:00
+2026-10-22T08:45:37.090648531Z Downloading scikit_learn-1.9.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (9.3 MB)
+2026-10-22T08:45:37.156249729Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.3/9.3 MB 146.2 MB/s eta 0:00:00
+2026-10-22T08:45:37.162021386Z Downloading scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (38.6 MB)
+2026-10-22T08:45:37.518517196Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 38.6/38.6 MB 74.3 MB/s eta 0:00:00
+2026-10-22T08:45:37.529506004Z Downloading numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (18.3 MB)
+2026-10-22T08:45:37.685703223Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 18.3/18.3 MB 118.6 MB/s eta 0:00:00
+2026-10-22T08:45:37.690445675Z Downloading pandas-3.0.6-cp311-cp311-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (11.1 MB)
+2026-10-22T08:45:37.815515957Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 11.1/11.1 MB 87.5 MB/s eta 0:00:00
+2026-10-22T08:45:37.819804617Z Downloading pydantic-2.14.1-py3-none-any.whl (488 kB)
+2026-10-22T08:45:37.82505001Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 488.1/488.1 kB 138.4 MB/s eta 0:00:00
+2026-10-22T08:45:37.82911687Z Downloading pydantic_core-2.50.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.2 MB)
+2026-10-22T08:45:37.844495902Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 161.8 MB/s eta 0:00:00
+2026-10-22T08:45:37.849201353Z Downloading joblib-1.6.0-py3-none-any.whl (306 kB)
+2026-10-22T08:45:37.854063596Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 306.1/306.1 kB 101.1 MB/s eta 0:00:00
+2026-10-22T08:45:37.858726684Z Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+2026-10-22T08:45:37.863907134Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 386.5/386.5 kB 114.2 MB/s eta 0:00:00
+2026-10-22T08:45:37.873117338Z Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+2026-10-22T08:45:37.882113127Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 73.5/73.5 kB 9.0 MB/s eta 0:00:00
+2026-10-22T08:45:37.88605314Z Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+2026-10-22T08:45:37.889697577Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 78.8/78.8 kB 32.7 MB/s eta 0:00:00
+2026-10-22T08:45:37.901560811Z Downloading setuptools-84.2.1-py3-none-any.whl (876 kB)
+2026-10-22T08:45:37.918905164Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 876.3/876.3 kB 55.4 MB/s eta 0:00:00
+2026-10-22T08:45:37.923139491Z Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+2026-10-22T08:45:37.928888038Z Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+2026-10-22T08:45:37.936098626Z Downloading click-8.5.0-py3-none-any.whl (125 kB)
+2026-10-22T08:45:37.939785733Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 125.3/125.3 kB 55.5 MB/s eta 0:00:00
+2026-10-22T08:45:37.94348394Z Downloading cloudpickle-3.1.2-py3-none-any.whl (22 kB)
+2026-10-22T08:45:37.948506043Z Downloading dill-0.4.1-py3-none-any.whl (120 kB)
+2026-10-22T08:45:37.952084912Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 120.0/120.0 kB 53.2 MB/s eta 0:00:00
+2026-10-22T08:45:37.956181507Z Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+2026-10-22T08:45:37.962313909Z Downloading httptools-0.9.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (499 kB)
+2026-10-22T08:45:37.971233052Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 499.1/499.1 kB 69.3 MB/s eta 0:00:00
+2026-10-22T08:45:37.974515856Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-10-22T08:45:37.979734246Z Downloading narwhals-2.27.1-py3-none-any.whl (483 kB)
+2026-10-22T08:45:37.985128911Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 483.2/483.2 kB 126.7 MB/s eta 0:00:00
+2026-10-22T08:45:37.988950882Z Downloading opentelemetry_api-1.45.1-py3-none-any.whl (60 kB)
+2026-10-22T08:45:37.993185291Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 60.3/60.3 kB 18.7 MB/s eta 0:00:00
+2026-10-22T08:45:37.997674465Z Downloading packaging-26.3-py3-none-any.whl (129 kB)
+2026-10-22T08:45:38.002399204Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.0/130.0 kB 37.4 MB/s eta 0:00:00
+2026-10-22T08:45:38.006107969Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-10-22T08:45:38.012260481Z Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl (155 kB)
+2026-10-22T08:45:38.017938509Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 155.6/155.6 kB 35.5 MB/s eta 0:00:00
+2026-10-22T08:45:38.024426635Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-10-22T08:45:38.040471203Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 87.1 MB/s eta 0:00:00
+2026-10-22T08:45:38.043741564Z Downloading python_dateutil-3.0.0-py2.py3-none-any.whl (94 kB)
+2026-10-22T08:45:38.047492395Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 94.7/94.7 kB 38.0 MB/s eta 0:00:00
+2026-10-22T08:45:38.050561686Z Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+2026-10-22T08:45:38.055796197Z Downloading pyyaml-6.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (806 kB)
+2026-10-22T08:45:38.062991758Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 806.6/806.6 kB 145.2 MB/s eta 0:00:00
+2026-10-22T08:45:38.069122182Z Downloading rustworkx-0.18.1-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.4 MB)
+2026-10-22T08:45:38.086137374Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.4/2.4 MB 155.9 MB/s eta 0:00:00
+2026-10-22T08:45:38.089621181Z Downloading starlette-1.9.0-py3-none-any.whl (80 kB)
+2026-10-22T08:45:38.09438975Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.3/80.3 kB 21.9 MB/s eta 0:00:00
+2026-10-22T08:45:38.097588279Z Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+2026-10-22T08:45:38.101035823Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 132.1/132.1 kB 63.4 MB/s eta 0:00:00
+2026-10-22T08:45:38.104233536Z Downloading idna-3.20-py3-none-any.whl (69 kB)
+2026-10-22T08:45:38.107574396Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 69.6/69.6 kB 32.0 MB/s eta 0:00:00
+2026-10-22T08:45:38.112972288Z Downloading stevedore-5.9.1-py3-none-any.whl (54 kB)
+2026-10-22T08:45:38.116469756Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 54.9/54.9 kB 23.4 MB/s eta 0:00:00
+2026-10-22T08:45:38.119703464Z Downloading threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+2026-10-22T08:45:38.124623305Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-10-22T08:45:38.128713411Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.6/45.6 kB 17.0 MB/s eta 0:00:00
+2026-10-22T08:45:38.132880974Z Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+2026-10-22T08:45:38.139910892Z Downloading uvloop-0.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.0 MB)
+2026-10-22T08:45:38.162891528Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.0/4.0 MB 188.3 MB/s eta 0:00:00
+2026-10-22T08:45:38.166187492Z Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (458 kB)
+2026-10-22T08:45:38.170592567Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 458.4/458.4 kB 166.2 MB/s eta 0:00:00
+2026-10-22T08:45:38.175215053Z Downloading websockets-17.3-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (225 kB)
+2026-10-22T08:45:38.178978171Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 225.5/225.5 kB 97.0 MB/s eta 0:00:00
+2026-10-22T08:45:38.182472396Z Downloading certifi-2026.10.19-py3-none-any.whl (136 kB)
+2026-10-22T08:45:38.186134377Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 136.5/136.5 kB 59.4 MB/s eta 0:00:00
+2026-10-22T08:45:38.189261175Z Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+2026-10-22T08:45:38.19387899Z Downloading tzdata-2026.5-py2.py3-none-any.whl (347 kB)
+2026-10-22T08:45:38.198184346Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 348.0/348.0 kB 136.5 MB/s eta 0:00:00
+2026-10-22T08:45:38.656034737Z Installing collected packages: websockets, uvloop, tzdata, typing-extensions, threadpoolctl, stevedore, six, setuptools, pyyaml, python-multipart, python-dotenv, pygments, psutil, pluggy, packaging, numpy, narwhals, iniconfig, idna, httptools, h11, dill, cloudpickle, click, certifi, annotated-types, annotated-doc, uvicorn, typing-inspection, scipy, rustworkx, python-dateutil, pytest, pydantic-core, opentelemetry-api, joblib, httpcore, anyio, watchfiles, starlette, scikit-learn, qiskit, pydantic, pandas, httpx, qiskit-machine-learning, qiskit-algorithms, fastapi
+2026-10-22T08:45:38.97037942Z   Attempting uninstall: setuptools
+2026-10-22T08:45:38.973685618Z     Found existing installation: setuptools 65.5.0
+2026-10-22T08:45:38.995332514Z     Uninstalling setuptools-65.5.0:
+2026-10-22T08:45:39.005508466Z       Successfully uninstalled setuptools-65.5.0
+2026-10-22T08:45:52.767515511Z Successfully installed annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 certifi-2026.10.19 click-8.5.0 cloudpickle-3.1.2 dill-0.4.1 fastapi-0.159.1 h11-0.16.0 httpcore-1.0.9 httptools-0.9.0 httpx-0.28.1 idna-3.20 iniconfig-2.3.1 joblib-1.6.0 narwhals-2.27.1 numpy-1.26.4 opentelemetry-api-1.45.1 packaging-26.3 pandas-3.0.6 pluggy-1.7.0 psutil-7.2.2 pydantic-2.14.1 pydantic-core-2.50.1 pygments-2.21.0 pytest-9.1.1 python-dateutil-3.0.0 python-dotenv-1.2.4 python-multipart-0.0.32 pyyaml-6.0.3 qiskit-2.4.2 qiskit-algorithms-0.4.0 qiskit-machine-learning-0.8.2 rustworkx-0.18.1 scikit-learn-1.9.1 scipy-1.13.1 setuptools-84.2.1 six-1.17.0 starlette-1.9.0 stevedore-5.9.1 threadpoolctl-3.7.0 typing-extensions-4.16.0 typing-inspection-0.4.4 tzdata-2026.5 uvicorn-0.54.0 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.3
+2026-10-22T08:45:52.871157818Z 
+2026-10-22T08:45:52.871176268Z [notice] A new release of pip is available: 24.0 -> 26.2.2
+2026-10-22T08:45:52.871178315Z [notice] To update, run: pip install --upgrade pip
+2026-10-22T08:45:54.397794651Z ==> Uploading build...
+2026-10-22T08:46:01.253535976Z ==> Uploaded in 4.7s. Compression took 2.2s
+2026-10-22T08:46:01.257845741Z ==> Build successful 🎉
+2026-10-22T08:46:03.455335209Z ==> Deploying...
+2026-10-22T08:46:03.685268588Z ==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+2026-10-22T08:46:21.939984759Z ==> Running 'python -m uvicorn main:app --host 0.0.0.0 --port $PORT'
+2026-10-22T08:46:59.336212418Z /opt/render/project/src/.venv/lib/python3.11/site-packages/sklearn/svm/_base.py:236: FutureWarning: The `probability` parameter was deprecated in 1.9 and will be removed in version 1.11. Use `CalibratedClassifierCV(SVC(), ensemble=False)` instead of `SVC(probability=True)`
+2026-10-22T08:46:59.336241131Z   warnings.warn(
+2026-10-22T08:47:00.432126557Z /opt/render/project/src/.venv/lib/python3.11/site-packages/sklearn/svm/_base.py:236: FutureWarning: The `probability` parameter was deprecated in 1.9 and will be removed in version 1.11. Use `CalibratedClassifierCV(SVC(), ensemble=False)` instead of `SVC(probability=True)`
+2026-10-22T08:47:00.4321618Z   warnings.warn(
+2026-10-22T08:47:08.071675168Z ==> No open ports detected, continuing to scan...
+2026-10-22T08:47:08.448532517Z ==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+2026-10-22T08:47:10.034492101Z INFO:     Started server process [60]
+2026-10-22T08:47:10.034519923Z INFO:     Waiting for application startup.
+2026-10-22T08:47:10.034524374Z INFO:     Application startup complete.
+2026-10-22T08:47:10.130062894Z INFO:     Uvicorn running on http://0.0.0.0:10000 (Press CTRL+C to quit)
+2026-10-22T08:47:10.396538996Z INFO:     127.0.0.1:54110 - "HEAD / HTTP/1.1" 405 Method Not Allowed
+2026-10-22T08:47:13.171332066Z INFO:     10.237.25.155:42084 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:47:23.171543481Z INFO:     10.237.25.155:53992 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:47:33.171736817Z INFO:     10.237.25.155:45192 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:47:43.171566513Z INFO:     10.237.25.155:47480 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:47:53.170621628Z INFO:     10.237.25.155:55524 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:48:03.171554152Z INFO:     10.237.25.155:48636 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:48:13.170419433Z INFO:     10.237.25.155:48976 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:48:23.170914817Z INFO:     10.237.25.155:45346 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:48:33.170656609Z INFO:     10.237.25.155:39802 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:48:43.170667186Z INFO:     10.237.25.155:39394 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:48:53.1702485Z INFO:     10.237.25.155:47520 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:49:03.171915127Z INFO:     10.237.25.155:43040 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:49:13.172403918Z INFO:     10.237.25.155:41526 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:49:23.172027293Z INFO:     10.237.25.155:35024 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:49:33.183516918Z INFO:     10.237.25.155:49776 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:49:43.170660963Z INFO:     10.237.25.155:39514 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:49:53.170467523Z INFO:     10.237.25.155:34180 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:50:03.170882868Z INFO:     10.237.25.155:60394 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:50:13.1714395Z INFO:     10.237.25.155:51134 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:50:23.174146084Z INFO:     10.237.25.155:34854 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:50:33.174516392Z INFO:     10.237.25.155:50300 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:50:43.1702716Z INFO:     10.237.25.155:33806 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:50:53.171046244Z INFO:     10.237.25.155:39128 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:51:03.170790532Z INFO:     10.237.25.155:36488 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:51:13.173005209Z INFO:     10.237.25.155:46988 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:51:23.170945012Z INFO:     10.237.25.155:35536 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:51:33.171075148Z INFO:     10.237.25.155:35444 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:51:43.170383258Z INFO:     10.237.25.155:52514 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:51:53.171055064Z INFO:     10.237.25.155:36214 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:52:03.170920705Z INFO:     10.237.25.155:41446 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:52:13.170214798Z INFO:     10.237.25.155:38554 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:52:23.170324574Z INFO:     10.237.25.155:54902 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:52:33.17064724Z INFO:     10.237.25.155:41776 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:52:43.170529455Z INFO:     10.237.25.155:39186 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:52:53.170248673Z INFO:     10.237.25.155:44120 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:53:03.170878336Z INFO:     10.237.25.155:50716 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:53:13.170588374Z INFO:     10.237.25.155:37254 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:53:23.171686922Z INFO:     10.237.25.155:40784 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:53:33.171196155Z INFO:     10.237.25.155:51034 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:53:43.171326885Z INFO:     10.237.25.155:52916 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:53:53.170647972Z INFO:     10.237.25.155:42038 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:54:03.171198611Z INFO:     10.237.25.155:54290 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:54:13.170946195Z INFO:     10.237.25.155:55194 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:54:23.170908517Z INFO:     10.237.25.155:42242 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:54:33.170307158Z INFO:     10.237.25.155:57058 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:54:43.170435481Z INFO:     10.237.25.155:39224 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:54:53.171533498Z INFO:     10.237.25.155:52358 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:55:03.171208603Z INFO:     10.237.25.155:45488 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:55:13.170575699Z INFO:     10.237.25.155:56980 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:55:23.171395254Z INFO:     10.237.25.155:42564 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:55:33.170894079Z INFO:     10.237.25.155:55882 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:55:43.170975678Z INFO:     10.237.25.155:57258 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:55:53.170311137Z INFO:     10.237.25.155:48898 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:56:03.170334703Z INFO:     10.237.25.155:43698 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:56:13.171101139Z INFO:     10.237.25.155:38550 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:56:23.171122938Z INFO:     10.237.25.155:39192 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:56:33.170837483Z INFO:     10.237.25.155:34162 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:56:43.170216357Z INFO:     10.237.25.155:48244 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:56:53.16994955Z INFO:     10.237.25.155:40448 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:57:03.171452232Z INFO:     10.237.25.155:45166 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:57:13.170356975Z INFO:     10.237.25.155:43612 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:57:23.171583307Z INFO:     10.237.25.155:44824 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:57:33.174890855Z INFO:     10.237.25.155:54440 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:57:43.171421277Z INFO:     10.237.25.155:35216 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:57:53.171234077Z INFO:     10.237.25.155:57560 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:58:03.172571643Z INFO:     10.237.25.155:49796 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:58:13.170759157Z INFO:     10.237.25.155:46200 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:58:23.172498509Z INFO:     10.237.25.155:57966 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:58:33.171172382Z INFO:     10.237.25.155:34350 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:58:43.17091873Z INFO:     10.237.25.155:43600 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:58:53.173793699Z INFO:     10.237.25.155:50888 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:59:03.172146101Z INFO:     10.237.25.155:47898 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:59:13.170029926Z INFO:     10.237.25.155:50286 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:59:23.171962645Z INFO:     10.237.25.155:48654 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:59:33.171689763Z INFO:     10.237.25.155:56502 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:59:43.170179477Z INFO:     10.237.25.155:53256 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T08:59:53.170720145Z INFO:     10.237.25.155:39318 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T09:00:03.170676634Z INFO:     10.237.25.155:50094 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T09:00:13.170314479Z INFO:     10.237.25.155:34998 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T09:00:23.173526571Z INFO:     10.237.25.155:43808 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T09:00:33.171135585Z INFO:     10.237.25.155:47960 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T09:00:43.17090791Z INFO:     10.237.25.155:59784 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T09:00:53.172528543Z INFO:     10.237.25.155:54078 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T09:01:03.191817137Z INFO:     10.237.25.155:55040 - "GET /health. HTTP/1.1" 404 Not Found
+2026-10-22T09:01:03.577678011Z ==> Timed Out
+2026-10-22T09:01:03.580468586Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys

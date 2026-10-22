@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { MicrogridSample, ModelMetrics, LowDataBenchmarkPoint, BenchmarkReport } from './types/microgrid';
 import { generateSyntheticMicrogridData } from './services/dataGenerator';
 import { preparePreprocessedDataset, DatasetSplit } from './services/preprocessing';
@@ -13,6 +13,7 @@ import { AnomalyInvestigationPage } from './components/AnomalyInvestigationPage'
 import { QuantumLabPage } from './components/QuantumLabPage';
 import { BenchmarkPage } from './components/BenchmarkPage';
 import { ReportPage } from './components/ReportPage';
+import { ChevronUp, ChevronDown, ArrowUp, Sparkles, Layers } from 'lucide-react';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageId>('overview');
@@ -20,7 +21,7 @@ export default function App() {
   const [sampleCount] = useState<number>(100);
   const [samples, setSamples] = useState<MicrogridSample[]>([]);
 
-  // Theme State: defaults to 'light' (clean white background on load/reload)
+  // Theme State: defaults to 'light'
   const [theme, setTheme] = useState<'dark' | 'light'>('light');
 
   const toggleTheme = () => {
@@ -34,11 +35,6 @@ export default function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [theme]);
-
-  // Smooth scroll to top when page changes
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentPage]);
 
   // Training & Evaluation states
   const [isTraining, setIsTraining] = useState<boolean>(true);
@@ -151,6 +147,99 @@ export default function App() {
     trainAndBenchmark(samples, randomSeed);
   };
 
+  // Ordered list of tabs for scroll-spy and sequential navigation
+  const tabSequence: { id: PageId; label: string; number: string; subtitle: string }[] = useMemo(
+    () => [
+      { id: 'overview', label: 'Overview', number: '01', subtitle: 'Executive Dashboard & Real-Time Telemetry' },
+      { id: 'scenario_lab', label: 'Scenario Lab', number: '02', subtitle: 'Microgrid Physics Compliance & Fault Injector' },
+      { id: 'investigation', label: 'Investigation', number: '03', subtitle: 'Historical Telemetry Space & Deep Anomaly Forensics' },
+      { id: 'live_stream', label: 'Live Stream', number: '04', subtitle: 'Real-Time Streaming Telemetry & Continuous Dual ML' },
+      { id: 'quantum_lab', label: 'Quantum Circuit', number: '05', subtitle: 'Qiskit ZZFeatureMap & Statevector Kernel Inspection' },
+      { id: 'benchmark', label: 'Benchmark', number: '06', subtitle: 'Rigorous Classical vs Quantum Evaluation & Low-Data Regimes' },
+      { id: 'report', label: 'Report & Git', number: '07', subtitle: 'VTU Hackathon Audit Checklist, Branch Guide & CSV Export' },
+    ],
+    []
+  );
+
+  const isManualScrolling = useRef<boolean>(false);
+
+  // Smooth scroll to target tab section
+  const handleSelectPage = useCallback((pageId: PageId) => {
+    setCurrentPage(pageId);
+    isManualScrolling.current = true;
+    const el = document.getElementById(`section-${pageId}`);
+    if (el) {
+      const headerOffset = 76;
+      const elementPosition = el.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+    }
+    setTimeout(() => {
+      isManualScrolling.current = false;
+    }, 850);
+  }, []);
+
+  // Real-time scroll spy: updates active tab as user scrolls through sections
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isManualScrolling.current) return;
+
+      const headerOffset = 180;
+      const scrollY = window.scrollY;
+
+      for (let i = tabSequence.length - 1; i >= 0; i--) {
+        const item = tabSequence[i];
+        const el = document.getElementById(`section-${item.id}`);
+        if (el) {
+          const top = el.offsetTop - headerOffset;
+          if (scrollY >= top - 20) {
+            setCurrentPage((prev) => (prev !== item.id ? item.id : prev));
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [tabSequence]);
+
+  // Entrance scroll animation observer for each tab section
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('section-visible');
+          }
+        });
+      },
+      {
+        threshold: 0.05,
+        rootMargin: '0px 0px -50px 0px',
+      }
+    );
+
+    const sections = document.querySelectorAll('.tab-section');
+    sections.forEach((sec) => observer.observe(sec));
+
+    return () => observer.disconnect();
+  }, [samples.length]);
+
+  // Next / Previous tab navigation helpers
+  const currentIndex = tabSequence.findIndex((t) => t.id === currentPage);
+  const handleNextTab = () => {
+    const nextIdx = (currentIndex + 1) % tabSequence.length;
+    handleSelectPage(tabSequence[nextIdx].id);
+  };
+  const handlePrevTab = () => {
+    const prevIdx = (currentIndex - 1 + tabSequence.length) % tabSequence.length;
+    handleSelectPage(tabSequence[prevIdx].id);
+  };
+
   // Build report object
   const report: BenchmarkReport | null = useMemo(() => {
     if (!classicalMetrics || !quantumMetrics || !datasetSplit) return null;
@@ -183,7 +272,7 @@ export default function App() {
     >
       <Header
         currentPage={currentPage}
-        onSelectPage={setCurrentPage}
+        onSelectPage={handleSelectPage}
         datasetCount={samples.length}
         isTraining={isTraining}
         onResetData={handleResetData}
@@ -191,8 +280,14 @@ export default function App() {
         onToggleTheme={toggleTheme}
       />
 
-      <main className="flex-1">
-        {currentPage === 'overview' && (
+      {/* CONTINUOUS SCROLL CONTAINER: All Tabs rendered with Scroll Animation & Scroll-Spy Sync */}
+      <main className="flex-1 space-y-20 pb-28">
+        {/* TAB 01: OVERVIEW */}
+        <section
+          id="section-overview"
+          data-tab="overview"
+          className={`tab-section ${currentPage === 'overview' ? 'section-active' : ''}`}
+        >
           <OverviewPage
             samples={samples}
             classicalModel={classicalModel}
@@ -200,31 +295,68 @@ export default function App() {
             classicalMetrics={classicalMetrics}
             quantumMetrics={quantumMetrics}
             scaler={datasetSplit?.scaler || null}
-            onNavigateToScenarioLab={() => setCurrentPage('scenario_lab')}
-            onNavigateToQuantumLab={() => setCurrentPage('quantum_lab')}
+            onNavigateToScenarioLab={() => handleSelectPage('scenario_lab')}
+            onNavigateToQuantumLab={() => handleSelectPage('quantum_lab')}
             theme={theme}
           />
-        )}
+        </section>
 
-        {currentPage === 'live_stream' && (
-          <LiveSimulationPage
-            classicalModel={classicalModel}
-            quantumModel={quantumModel}
-            scaler={datasetSplit?.scaler || null}
-            theme={theme}
-          />
-        )}
-
-        {currentPage === 'scenario_lab' && (
+        {/* TAB 02: SCENARIO LAB */}
+        <section
+          id="section-scenario_lab"
+          data-tab="scenario_lab"
+          className={`tab-section ${currentPage === 'scenario_lab' ? 'section-active' : ''}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <span className="section-badge px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                  TAB 02 // SCENARIO LAB
+                </span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
+                  Microgrid Physics Compliance &amp; Fault Injector
+                </span>
+              </div>
+              <button
+                onClick={() => handleSelectPage('overview')}
+                className="text-xs font-mono text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <ArrowUp className="w-3.5 h-3.5" /> Back to Top
+              </button>
+            </div>
+          </div>
           <ScenarioLabPage
             classicalModel={classicalModel}
             quantumModel={quantumModel}
             scaler={datasetSplit?.scaler || null}
             theme={theme}
           />
-        )}
+        </section>
 
-        {currentPage === 'investigation' && (
+        {/* TAB 03: INVESTIGATION */}
+        <section
+          id="section-investigation"
+          data-tab="investigation"
+          className={`tab-section ${currentPage === 'investigation' ? 'section-active' : ''}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <span className="section-badge px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30">
+                  TAB 03 // INVESTIGATION
+                </span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
+                  Historical Telemetry Space &amp; Multi-Fault Forensic Inspection
+                </span>
+              </div>
+              <button
+                onClick={() => handleSelectPage('overview')}
+                className="text-xs font-mono text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <ArrowUp className="w-3.5 h-3.5" /> Back to Top
+              </button>
+            </div>
+          </div>
           <AnomalyInvestigationPage
             samples={samples}
             classicalModel={classicalModel}
@@ -232,13 +364,92 @@ export default function App() {
             scaler={datasetSplit?.scaler || null}
             theme={theme}
           />
-        )}
+        </section>
 
-        {currentPage === 'quantum_lab' && (
+        {/* TAB 04: LIVE STREAM */}
+        <section
+          id="section-live_stream"
+          data-tab="live_stream"
+          className={`tab-section ${currentPage === 'live_stream' ? 'section-active' : ''}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <span className="section-badge px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping inline-block" />
+                  TAB 04 // LIVE STREAM
+                </span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
+                  Real-Time Streaming Telemetry Generator &amp; Dual ML Detection
+                </span>
+              </div>
+              <button
+                onClick={() => handleSelectPage('overview')}
+                className="text-xs font-mono text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <ArrowUp className="w-3.5 h-3.5" /> Back to Top
+              </button>
+            </div>
+          </div>
+          <LiveSimulationPage
+            classicalModel={classicalModel}
+            quantumModel={quantumModel}
+            scaler={datasetSplit?.scaler || null}
+            theme={theme}
+          />
+        </section>
+
+        {/* TAB 05: QUANTUM CIRCUIT */}
+        <section
+          id="section-quantum_lab"
+          data-tab="quantum_lab"
+          className={`tab-section ${currentPage === 'quantum_lab' ? 'section-active' : ''}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <span className="section-badge px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-violet-500/15 text-violet-700 dark:text-violet-300 border border-violet-500/30">
+                  TAB 05 // QUANTUM CIRCUIT
+                </span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
+                  Qiskit ZZFeatureMap Circuit &amp; Fidelity Statevector Heatmap
+                </span>
+              </div>
+              <button
+                onClick={() => handleSelectPage('overview')}
+                className="text-xs font-mono text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <ArrowUp className="w-3.5 h-3.5" /> Back to Top
+              </button>
+            </div>
+          </div>
           <QuantumLabPage kernelMatrix={kernelMatrix} theme={theme} />
-        )}
+        </section>
 
-        {currentPage === 'benchmark' && (
+        {/* TAB 06: BENCHMARK */}
+        <section
+          id="section-benchmark"
+          data-tab="benchmark"
+          className={`tab-section ${currentPage === 'benchmark' ? 'section-active' : ''}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <span className="section-badge px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/30">
+                  TAB 06 // BENCHMARK
+                </span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
+                  Rigorous Classical vs Quantum Evaluation &amp; Low-Data Experiment
+                </span>
+              </div>
+              <button
+                onClick={() => handleSelectPage('overview')}
+                className="text-xs font-mono text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <ArrowUp className="w-3.5 h-3.5" /> Back to Top
+              </button>
+            </div>
+          </div>
           <BenchmarkPage
             classicalMetrics={classicalMetrics}
             quantumMetrics={quantumMetrics}
@@ -247,9 +458,32 @@ export default function App() {
             isBenchmarking={isTraining}
             theme={theme}
           />
-        )}
+        </section>
 
-        {currentPage === 'report' && (
+        {/* TAB 07: REPORT */}
+        <section
+          id="section-report"
+          data-tab="report"
+          className={`tab-section ${currentPage === 'report' ? 'section-active' : ''}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <span className="section-badge px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
+                  TAB 07 // REPORT &amp; GIT
+                </span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
+                  VTU Hackathon Audit Checklist, Branch Guide &amp; CSV Export
+                </span>
+              </div>
+              <button
+                onClick={() => handleSelectPage('overview')}
+                className="text-xs font-mono text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <ArrowUp className="w-3.5 h-3.5" /> Back to Top
+              </button>
+            </div>
+          </div>
           <ReportPage
             report={report}
             samples={samples}
@@ -257,10 +491,60 @@ export default function App() {
             randomSeed={randomSeed}
             theme={theme}
           />
-        )}
+        </section>
       </main>
 
-      {/* Global Footer — Issue 8 Fix: Generous padding matching main card layout margins */}
+      {/* FLOATING QUICK-JUMP TAB CONTROLLER */}
+      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 shadow-2xl">
+        <div
+          className={`px-3.5 py-2 rounded-xl border flex items-center gap-3 backdrop-blur-md transition-all ${
+            isDark
+              ? 'bg-slate-900/95 border-slate-700/80 text-white shadow-cyan-950/50'
+              : 'bg-white/95 border-slate-300/80 text-slate-900 shadow-slate-300/60'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
+            <div className="text-[11px] font-mono leading-none">
+              <div className="font-bold text-cyan-600 dark:text-cyan-400">
+                {tabSequence[currentIndex]?.number}/07 {tabSequence[currentIndex]?.label}
+              </div>
+              <div className="text-[9px] text-slate-500 dark:text-slate-400 mt-0.5">
+                Scroll to change tab
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1 border-l border-slate-200 dark:border-slate-800 pl-2">
+            <button
+              onClick={handlePrevTab}
+              title="Previous Tab"
+              aria-label="Scroll to previous tab"
+              className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
+            >
+              <ChevronUp className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleNextTab}
+              title="Next Tab"
+              aria-label="Scroll to next tab"
+              className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
+            >
+              <ChevronDown className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => handleSelectPage('overview')}
+              title="Scroll to Top"
+              aria-label="Scroll to top overview"
+              className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-cyan-600 dark:text-cyan-400 transition-colors cursor-pointer"
+            >
+              <ArrowUp className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Global Footer */}
       <footer
         className={`border-t py-8 sm:py-10 text-xs font-mono transition-colors ${
           isDark ? 'border-slate-800/80 bg-slate-950 text-slate-400' : 'border-slate-200 bg-slate-50/60 text-slate-600'
