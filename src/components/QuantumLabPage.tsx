@@ -64,6 +64,10 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({
     ? computeNoisyZZFeatureMapStatevector(testAngles, numQubits, reps, 'linear', noiseConfig)
     : idealStatevector;
 
+  const stateFidelity = noiseConfig.enabled
+    ? computeQuantumFidelity(idealStatevector, activeStatevector)
+    : 1.0;
+
   // Pairwise Sample Intelligence Lab definitions
   interface SamplePreset {
     id: string;
