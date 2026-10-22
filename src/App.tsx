@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { MicrogridSample, ModelMetrics, LowDataBenchmarkPoint, BenchmarkReport } from './types/microgrid';
+import { MicrogridSample, ModelMetrics, LowDataBenchmarkPoint } from './types/microgrid';
 import { generateSyntheticMicrogridData } from './services/dataGenerator';
 import { preparePreprocessedDataset, DatasetSplit } from './services/preprocessing';
 import { computeQuantumKernelMatrix } from './services/quantumEngine';
@@ -26,7 +26,6 @@ import {
   Radio,
   Atom,
   BarChart3,
-  FileText,
 } from 'lucide-react';
 
 export default function App() {
@@ -259,28 +258,6 @@ export default function App() {
     const prevIdx = (currentIndex - 1 + tabSequence.length) % tabSequence.length;
     handleSelectPage(tabSequence[prevIdx].id);
   };
-
-  // Build report object
-  const report: BenchmarkReport | null = useMemo(() => {
-    if (!classicalMetrics || !quantumMetrics || !datasetSplit) return null;
-    return {
-      timestamp: new Date().toISOString(),
-      datasetSize: samples.length,
-      trainSize: datasetSplit.X_train.length,
-      testSize: datasetSplit.X_test.length,
-      selectedFeatures: datasetSplit.featureKeys,
-      randomSeed,
-      classicalMetrics,
-      quantumMetrics,
-      lowDataPoints,
-      quantumCircuit: {
-        numQubits: 4,
-        depth: 6,
-        reps: 2,
-        kernelType: 'FidelityQuantumKernel (ZZFeatureMap)',
-      },
-    };
-  }, [classicalMetrics, quantumMetrics, datasetSplit, samples.length, randomSeed, lowDataPoints]);
 
   const isDark = theme === 'dark';
 
