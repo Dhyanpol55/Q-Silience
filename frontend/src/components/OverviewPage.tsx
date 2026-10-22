@@ -179,15 +179,15 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
       >
         <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-4xl">
-          <div className="text-xs font-mono text-slate-500 dark:text-slate-400 mb-3 flex flex-wrap items-center gap-2">
+          <div className="text-xs font-mono text-slate-700 dark:text-slate-300 mb-3 flex flex-wrap items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-cyan-500 inline-block animate-pulse" />
-            <span className="font-semibold text-slate-800 dark:text-slate-200">Research Initiative</span>
-            <span aria-hidden="true">·</span>
-            <span>VTU Qiskit Fall Fest 2026</span>
-            <span aria-hidden="true">·</span>
-            <span className="text-cyan-600 dark:text-cyan-400 font-semibold">Quantum + AI/ML Track</span>
-            <span aria-hidden="true">·</span>
-            <span>IEEE 1547.4 &amp; EN 50160 Compliant</span>
+            <span className="font-bold text-slate-900 dark:text-slate-100">Research Initiative</span>
+            <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
+            <span className="text-slate-800 dark:text-slate-200">VTU Qiskit Fall Fest 2026</span>
+            <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
+            <span className="text-cyan-800 dark:text-cyan-300 font-bold">Quantum + AI/ML Track</span>
+            <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
+            <span className="text-slate-800 dark:text-slate-200">IEEE 1547.4 &amp; EN 50160 Compliant</span>
           </div>
 
           <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug ${headingClass}`}>
@@ -274,30 +274,30 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
         <div className="flex flex-wrap items-center gap-4 sm:gap-6">
           <div className="flex items-baseline gap-1.5">
             <span className={textSubtleClass}>Frequency:</span>
-            <span className="font-bold text-cyan-600 dark:text-cyan-400">
+            <span className="font-bold text-cyan-800 dark:text-cyan-300">
               {(50.0 + telemetry.frequency_dev_hz).toFixed(3)} Hz
             </span>
-            <span className="text-[10px] text-slate-400">({telemetry.frequency_dev_hz >= 0 ? `+${telemetry.frequency_dev_hz.toFixed(3)}` : telemetry.frequency_dev_hz.toFixed(3)})</span>
+            <span className="text-[10px] text-slate-600 dark:text-slate-400">({telemetry.frequency_dev_hz >= 0 ? `+${telemetry.frequency_dev_hz.toFixed(3)}` : telemetry.frequency_dev_hz.toFixed(3)})</span>
           </div>
 
           <div className="flex items-baseline gap-1.5">
             <span className={textSubtleClass}>Bus Voltage:</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+            <span className="font-bold text-emerald-800 dark:text-emerald-300">
               {(230.0 + telemetry.voltage_dev_v).toFixed(1)} V
             </span>
-            <span className="text-[10px] text-slate-400">({telemetry.voltage_dev_v >= 0 ? `+${telemetry.voltage_dev_v.toFixed(1)}` : telemetry.voltage_dev_v.toFixed(1)})</span>
+            <span className="text-[10px] text-slate-600 dark:text-slate-400">({telemetry.voltage_dev_v >= 0 ? `+${telemetry.voltage_dev_v.toFixed(1)}` : telemetry.voltage_dev_v.toFixed(1)})</span>
           </div>
 
           <div className="flex items-baseline gap-1.5">
             <span className={textSubtleClass}>Solar PV:</span>
-            <span className="font-bold text-amber-600 dark:text-amber-400">
+            <span className="font-bold text-amber-800 dark:text-amber-300">
               {telemetry.solar_kw.toFixed(1)} kW
             </span>
           </div>
 
           <div className="flex items-baseline gap-1.5">
             <span className={textSubtleClass}>BESS SoC:</span>
-            <span className="font-bold text-indigo-600 dark:text-indigo-400">
+            <span className="font-bold text-indigo-800 dark:text-indigo-300">
               {telemetry.battery_soc_pct.toFixed(0)}%
             </span>
           </div>
@@ -306,7 +306,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
             <span className={textSubtleClass}>Operating Status:</span>
             <span
               className={`font-semibold ${
-                physicalDiag.isEngineeringAbnormal ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
+                physicalDiag.isEngineeringAbnormal ? 'text-rose-800 dark:text-rose-300' : 'text-emerald-800 dark:text-emerald-300'
               }`}
             >
               {physicalDiag.isEngineeringAbnormal ? 'Fault Breach Detected' : 'Nominal Equilibrium'}
@@ -375,19 +375,19 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
               <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
                 <div>
                   <div className={`text-[11px] font-mono font-semibold ${textSubtleClass} flex items-center gap-1.5`}>
-                    <Cpu className="w-3.5 h-3.5 text-emerald-500" /> CLASSICAL SVC VERDICT
+                    <Cpu className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> CLASSICAL SVC VERDICT
                   </div>
                   <div className="mt-1 flex items-baseline gap-2">
                     <span
                       className={`text-sm font-mono font-black ${
-                        quickClassicalPred?.label === 1 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
+                        quickClassicalPred?.label === 1 ? 'text-rose-800 dark:text-rose-300' : 'text-emerald-800 dark:text-emerald-300'
                       }`}
                     >
                       {quickClassicalPred?.label === 1 ? 'ANOMALOUS (FAULT)' : 'NORMAL OPERATION'}
                     </span>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono text-slate-400">
+                <span className="text-[10px] font-mono text-slate-600 dark:text-slate-400">
                   margin={quickClassicalPred?.margin.toFixed(2) || '0.00'}
                 </span>
               </div>
@@ -396,19 +396,19 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
               <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
                 <div>
                   <div className={`text-[11px] font-mono font-semibold ${textSubtleClass} flex items-center gap-1.5`}>
-                    <Atom className="w-3.5 h-3.5 text-violet-500" /> QUANTUM QSVC VERDICT
+                    <Atom className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" /> QUANTUM QSVC VERDICT
                   </div>
                   <div className="mt-1 flex items-baseline gap-2">
                     <span
                       className={`text-sm font-mono font-black ${
-                        quickQuantumPred?.label === 1 ? 'text-rose-600 dark:text-rose-400' : 'text-violet-600 dark:text-violet-400'
+                        quickQuantumPred?.label === 1 ? 'text-rose-800 dark:text-rose-300' : 'text-violet-800 dark:text-violet-300'
                       }`}
                     >
                       {quickQuantumPred?.label === 1 ? 'ANOMALOUS (FAULT)' : 'NORMAL OPERATION'}
                     </span>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono text-slate-400">
+                <span className="text-[10px] font-mono text-slate-600 dark:text-slate-400">
                   margin={quickQuantumPred?.margin.toFixed(2) || '0.00'}
                 </span>
               </div>
@@ -417,19 +417,19 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
               <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
                 <div>
                   <div className={`text-[11px] font-mono font-semibold ${textSubtleClass} flex items-center gap-1.5`}>
-                    <ShieldCheck className="w-3.5 h-3.5 text-cyan-500" /> IEEE 1547 GRID STANDARD
+                    <ShieldCheck className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" /> IEEE 1547 GRID STANDARD
                   </div>
                   <div className="mt-1 flex items-baseline gap-2">
                     <span
                       className={`text-sm font-mono font-black ${
-                        physicalDiag.isEngineeringAbnormal ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
+                        physicalDiag.isEngineeringAbnormal ? 'text-rose-800 dark:text-rose-300' : 'text-emerald-800 dark:text-emerald-300'
                       }`}
                     >
                       {physicalDiag.isEngineeringAbnormal ? 'LIMIT BREACH' : 'ENVELOPE COMPLIANT'}
                     </span>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono text-slate-400">
+                <span className="text-[10px] font-mono text-slate-600 dark:text-slate-400">
                   {physicalDiag.warnings.length} warning{physicalDiag.warnings.length !== 1 ? 's' : ''}
                 </span>
               </div>

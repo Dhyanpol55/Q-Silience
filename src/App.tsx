@@ -6,6 +6,7 @@ import { computeQuantumKernelMatrix } from './services/quantumEngine';
 import { trainClassicalSVC, trainQuantumQSVC, predictBatch, SVCTrainedModel } from './services/svmSolver';
 import { calculateMetrics, runLowDataExperiment } from './services/evaluation';
 import { Header, PageId } from './components/Header';
+import Sidebar from './components/Sidebar';
 import { OverviewPage } from './components/OverviewPage';
 import { LiveSimulationPage } from './components/LiveSimulationPage';
 import { ScenarioLabPage } from './components/ScenarioLabPage';
@@ -372,15 +373,17 @@ export default function App() {
         isDark ? 'bg-[#090d16] text-slate-100' : 'bg-white text-slate-900'
       }`}
     >
-      <Header
-        currentPage={currentPage}
-        onSelectPage={handleSelectPage}
-        datasetCount={samples.length}
-        isTraining={isTraining}
-        onResetData={handleResetData}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-      />
+      <div className="xl:pl-72 transition-all">
+        <Header
+          currentPage={currentPage}
+          onSelectPage={handleSelectPage}
+          datasetCount={samples.length}
+          isTraining={isTraining}
+          onResetData={handleResetData}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
+      </div>
 
       {/* TELEMETRY SCROLL PROGRESS LINE (0 - 100%) */}
       <div className="fixed top-[68px] sm:top-[72px] left-0 right-0 z-40 h-[2.5px] bg-slate-200/40 dark:bg-slate-800/40 pointer-events-none">
@@ -390,137 +393,33 @@ export default function App() {
         />
       </div>
 
-      {/* LEFT-SIDE VERTICAL NAVIGATION: Displays icons WITH full names for Overview, Scenario Lab, Investigation, Live Stream */}
-      <aside
-        aria-label="Vertical navigation sidebar"
-        style={{ width: '190px', height: '500px' }}
-        className={`fixed left-2 sm:left-3 lg:left-4 top-20 z-30 hidden md:flex flex-col justify-between p-2 lg:p-3 rounded-2xl backdrop-blur-xl border transition-all duration-200 shadow-2xl overflow-y-auto w-[190px] h-[500px] ${
-          isDark
-            ? 'bg-slate-950/95 border-slate-800 text-slate-100 shadow-cyan-950/50'
-            : 'bg-white border-slate-300 text-slate-950 shadow-slate-300/60'
-        }`}
-      >
-        <div className="flex flex-col gap-1.5">
-          {/* Header Title in Sidebar */}
-          <div className="pb-2 mb-1 border-b border-slate-200 dark:border-slate-800">
-            <div className="hidden lg:flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">
-                Navigation
-              </span>
-              <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/25">
-                v1.4.0
-              </span>
-            </div>
-            <div className="lg:hidden text-[9px] font-mono font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 text-center">
-              Nav
-            </div>
-          </div>
-
-          {/* Primary 4 sections requested: Overview, Scenario Lab, Investigation, Live Stream */}
-          <div className="space-y-1">
-            <div className="hidden lg:block text-[9px] font-mono font-bold uppercase tracking-wider text-slate-900 dark:text-slate-300 px-2 py-0.5">
-              Core Modules
-            </div>
-            {leftVerticalNavItems.slice(0, 4).map((item) => {
-              const isActive = currentPage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleSelectPage(item.id)}
-                  aria-label={`Navigate to ${item.label}`}
-                  title={`${item.number}. ${item.label} — ${item.subtitle}`}
-                  className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all duration-150 cursor-pointer text-left ${
-                    isActive
-                      ? item.activeClass
-                      : item.inactiveClass
-                  }`}
-                >
-                  <span className="shrink-0 flex items-center justify-center">
-                    {item.icon}
-                  </span>
-                  <span className="hidden lg:flex flex-1 items-center justify-between min-w-0">
-                    <span className="text-xs font-bold truncate text-slate-950 dark:text-white">{item.label}</span>
-                    <span
-                      className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${
-                        isActive
-                          ? 'bg-black/20 text-inherit border-black/30'
-                          : item.badgeColor
-                      }`}
-                    >
-                      {item.number}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Subtle Divider */}
-          <div className="my-1.5 border-t border-slate-200 dark:border-slate-800" />
-
-          {/* Secondary chapters: Quantum Circuit, Benchmark, Report */}
-          <div className="space-y-1">
-            <div className="hidden lg:block text-[9px] font-mono font-bold uppercase tracking-wider text-slate-900 dark:text-slate-300 px-2 py-0.5">
-              Deep Analysis
-            </div>
-            {leftVerticalNavItems.slice(4).map((item) => {
-              const isActive = currentPage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleSelectPage(item.id)}
-                  aria-label={`Navigate to ${item.label}`}
-                  title={`${item.number}. ${item.label} — ${item.subtitle}`}
-                  className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl transition-all duration-150 cursor-pointer text-left ${
-                    isActive
-                      ? item.activeClass
-                      : item.inactiveClass
-                  }`}
-                >
-                  <span className="shrink-0 flex items-center justify-center">
-                    {item.icon}
-                  </span>
-                  <span className="hidden lg:flex flex-1 items-center justify-between min-w-0">
-                    <span className="text-xs font-semibold truncate text-slate-950 dark:text-white">{item.label}</span>
-                    <span
-                      className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${
-                        isActive
-                          ? 'bg-black/20 text-inherit border-black/30'
-                          : item.badgeColor
-                      }`}
-                    >
-                      {item.number}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Scroll Progress depth meter at the bottom of the sidebar */}
-        <div className="pt-2 mt-2 border-t border-slate-200 dark:border-slate-800">
-          <div className="hidden lg:flex flex-col gap-1.5">
-            <div className="flex items-center justify-between text-[10px] font-mono text-slate-900 dark:text-slate-200 font-bold">
-              <span>Scroll Depth</span>
-              <span className="font-extrabold text-cyan-700 dark:text-cyan-400">{scrollPercent}%</span>
-            </div>
-            <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-cyan-500 to-indigo-500 transition-all duration-150"
-                style={{ width: `${scrollPercent}%` }}
-              />
-            </div>
-          </div>
-          <div className="lg:hidden text-center font-mono text-[9px] font-bold text-cyan-700 dark:text-cyan-400">
-            {scrollPercent}%
-          </div>
-        </div>
-      </aside>
+      {/* DEDICATED 7-SECTION VERTICAL SIDEBAR */}
+      <Sidebar
+        activeSection={currentPage}
+        onSelectSection={(id) => {
+          const pageIdMap: Record<string, PageId> = {
+            'overview': 'overview',
+            'scenario-lab': 'scenario_lab',
+            'scenario_lab': 'scenario_lab',
+            'investigation': 'investigation',
+            'live-stream': 'live_stream',
+            'live_stream': 'live_stream',
+            'quantum-circuit': 'quantum_lab',
+            'quantum_lab': 'quantum_lab',
+            'benchmark': 'benchmark',
+            'reports': 'report',
+            'report': 'report',
+          };
+          const target = pageIdMap[id] || (id as PageId);
+          handleSelectPage(target);
+        }}
+        className="hidden xl:flex"
+      />
 
       {/* CONTINUOUS SCROLL CONTAINER: All Tabs rendered with High-Performance Scroll-Spy Sync */}
-      <main className="flex-1 space-y-20 pb-28 md:pl-16 lg:pl-64">
+      <main className="flex-1 space-y-20 pb-28 xl:pl-72">
         {/* TAB 01: OVERVIEW */}
+        <div id="overview" className="relative -top-24 pointer-events-none" aria-hidden="true" />
         <section
           id="section-overview"
           data-tab="overview"
@@ -540,6 +439,7 @@ export default function App() {
         </section>
 
         {/* CHAPTER 02: SCENARIO LAB */}
+        <div id="scenario-lab" className="relative -top-24 pointer-events-none" aria-hidden="true" />
         <section
           id="section-scenario_lab"
           data-tab="scenario_lab"
@@ -576,6 +476,7 @@ export default function App() {
         </section>
 
         {/* CHAPTER 03: INVESTIGATION */}
+        <div id="investigation" className="relative -top-24 pointer-events-none" aria-hidden="true" />
         <section
           id="section-investigation"
           data-tab="investigation"
@@ -613,6 +514,7 @@ export default function App() {
         </section>
 
         {/* CHAPTER 04: LIVE STREAM */}
+        <div id="live-stream" className="relative -top-24 pointer-events-none" aria-hidden="true" />
         <section
           id="section-live_stream"
           data-tab="live_stream"
@@ -649,6 +551,7 @@ export default function App() {
         </section>
 
         {/* CHAPTER 05: QUANTUM CIRCUIT */}
+        <div id="quantum-circuit" className="relative -top-24 pointer-events-none" aria-hidden="true" />
         <section
           id="section-quantum_lab"
           data-tab="quantum_lab"
@@ -680,6 +583,7 @@ export default function App() {
         </section>
 
         {/* CHAPTER 06: BENCHMARK */}
+        <div id="benchmark" className="relative -top-24 pointer-events-none" aria-hidden="true" />
         <section
           id="section-benchmark"
           data-tab="benchmark"
@@ -718,6 +622,7 @@ export default function App() {
         </section>
 
         {/* CHAPTER 07: REPORT */}
+        <div id="reports" className="relative -top-24 pointer-events-none" aria-hidden="true" />
         <section
           id="section-report"
           data-tab="report"
@@ -765,22 +670,27 @@ export default function App() {
           }`}
         >
           {/* Chapter dots indicator */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-0.5">
             {tabSequence.map((tab) => {
               const isActive = currentPage === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => handleSelectPage(tab.id)}
+                  aria-label={`${tab.number}. ${tab.label}`}
                   title={`${tab.number}. ${tab.label}`}
-                  className={`w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-cyan-500 ring-2 ring-cyan-500/40 scale-125'
-                      : isDark
-                      ? 'bg-slate-700 hover:bg-slate-500'
-                      : 'bg-slate-300 hover:bg-slate-400'
-                  }`}
-                />
+                  className="w-6 h-6 min-w-[24px] min-h-[24px] p-1 flex items-center justify-center rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+                >
+                  <span
+                    className={`w-2.5 h-2.5 rounded-full transition-all ${
+                      isActive
+                        ? 'bg-cyan-500 ring-2 ring-cyan-500/40 scale-125'
+                        : isDark
+                        ? 'bg-slate-700 hover:bg-slate-500'
+                        : 'bg-slate-400 hover:bg-slate-500'
+                    }`}
+                  />
+                </button>
               );
             })}
           </div>
@@ -789,10 +699,10 @@ export default function App() {
 
           {/* Active section label */}
           <div className="text-left font-mono leading-tight">
-            <div className="text-[11px] font-bold text-cyan-600 dark:text-cyan-400">
+            <div className="text-[11px] font-bold text-cyan-800 dark:text-cyan-300">
               {tabSequence[currentIndex]?.number}. {tabSequence[currentIndex]?.label}
             </div>
-            <div className="text-[9px] text-slate-400 dark:text-slate-500">
+            <div className="text-[9px] text-slate-500 dark:text-slate-400">
               Scroll spy synchronized
             </div>
           </div>
@@ -802,7 +712,7 @@ export default function App() {
               onClick={handlePrevTab}
               title="Previous Chapter"
               aria-label="Scroll to previous chapter"
-              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-slate-600 dark:text-slate-300"
+              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-slate-700 dark:text-slate-200"
             >
               <ChevronUp className="w-3.5 h-3.5" />
             </button>
@@ -810,7 +720,7 @@ export default function App() {
               onClick={handleNextTab}
               title="Next Chapter"
               aria-label="Scroll to next chapter"
-              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-slate-600 dark:text-slate-300"
+              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-slate-700 dark:text-slate-200"
             >
               <ChevronDown className="w-3.5 h-3.5" />
             </button>
@@ -818,7 +728,7 @@ export default function App() {
               onClick={() => handleSelectPage('overview')}
               title="Return to Executive Overview"
               aria-label="Scroll to top overview"
-              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-cyan-600 dark:text-cyan-400"
+              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-cyan-800 dark:text-cyan-300"
             >
               <ArrowUp className="w-3.5 h-3.5" />
             </button>
@@ -828,19 +738,19 @@ export default function App() {
 
       {/* Global Footer */}
       <footer
-        className={`border-t py-8 sm:py-10 text-xs font-mono transition-colors ${
-          isDark ? 'border-slate-800/80 bg-slate-950 text-slate-400' : 'border-slate-200 bg-slate-50/60 text-slate-600'
+        className={`border-t py-8 sm:py-10 text-xs font-mono transition-colors xl:pl-72 ${
+          isDark ? 'border-slate-800/80 bg-slate-950 text-slate-300' : 'border-slate-300 bg-slate-50 text-slate-700'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2 text-center sm:text-left">
-            <span className="font-semibold text-slate-800 dark:text-slate-200">Q-RESILIENCE AI</span>
-            <span aria-hidden="true" className="text-slate-300 dark:text-slate-700">·</span>
-            <span>VTU Qiskit Fall Fest 2026</span>
-            <span aria-hidden="true" className="text-slate-300 dark:text-slate-700">·</span>
-            <span className="text-cyan-600 dark:text-cyan-400">Quantum + AI/ML Track</span>
+            <span className="font-bold text-slate-900 dark:text-slate-100">Q-RESILIENCE AI</span>
+            <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
+            <span className="text-slate-800 dark:text-slate-200">VTU Qiskit Fall Fest 2026</span>
+            <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
+            <span className="text-cyan-800 dark:text-cyan-300 font-bold">Quantum + AI/ML Track</span>
           </div>
-          <div className="text-xs text-slate-500 text-center sm:text-right">
+          <div className="text-xs text-slate-600 dark:text-slate-400 text-center sm:text-right">
             Powered by Qiskit Quantum Feature Maps &amp; Scikit-learn Baselines
           </div>
         </div>

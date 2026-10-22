@@ -423,11 +423,13 @@ export const ReportPage: React.FC<ReportPageProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* Direct GitHub Data Fetcher */}
           <div className="space-y-3">
-            <label className={`text-xs font-mono font-semibold block ${headingClass}`}>
+            <label htmlFor="github-dataset-url-input" className={`text-xs font-mono font-semibold block ${headingClass}`}>
               Access Dataset from GitHub Source:
             </label>
             <div className="flex gap-2">
               <input
+                id="github-dataset-url-input"
+                aria-label="GitHub dataset raw CSV URL"
                 type="text"
                 value={githubUrlInput}
                 onChange={(e) => setGithubUrlInput(e.target.value)}
@@ -496,7 +498,12 @@ export const ReportPage: React.FC<ReportPageProps> = ({
                 </button>
               </div>
 
-              <pre className={`p-2.5 rounded-lg border text-[11px] overflow-x-auto ${isDark ? 'bg-slate-900/90 border-slate-800 text-slate-200' : 'bg-white border-slate-200 text-slate-800'}`}>
+              <pre
+                tabIndex={0}
+                role="region"
+                aria-label="Git SSH remote push command"
+                className={`p-2.5 rounded-lg border text-[11px] overflow-x-auto focus:ring-2 focus:ring-cyan-500 focus:outline-hidden ${isDark ? 'bg-slate-900/90 border-slate-800 text-slate-200' : 'bg-white border-slate-200 text-slate-800'}`}
+              >
                 git remote set-url origin git@github.com:Dhyanpol55/Q-Silience.git && git push -u origin main
               </pre>
 
@@ -577,7 +584,12 @@ export const ReportPage: React.FC<ReportPageProps> = ({
             Upload custom CSV telemetry containing columns: <code className="text-cyan-600 dark:text-cyan-300 font-bold">demand_kw, solar_kw, battery_soc_pct, voltage_dev_v, frequency_dev_hz, is_abnormal</code>.
           </p>
 
+          <label htmlFor="custom-csv-file-upload" className="sr-only">
+            Upload Custom Microgrid Dataset CSV
+          </label>
           <input
+            id="custom-csv-file-upload"
+            aria-label="Upload custom CSV telemetry dataset"
             type="file"
             accept=".csv"
             onChange={handleFileUpload}
@@ -655,8 +667,12 @@ export const ReportPage: React.FC<ReportPageProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div className="lg:col-span-6 space-y-3">
             <div>
-              <label className={`text-xs font-mono block mb-1 ${textMutedClass}`}>Backend Base URL (Render / Local):</label>
+              <label htmlFor="backend-base-url-input" className={`text-xs font-mono block mb-1 ${textMutedClass}`}>
+                Backend Base URL (Render / Local):
+              </label>
               <input
+                id="backend-base-url-input"
+                aria-label="Backend Base URL"
                 type="text"
                 value={backendUrl}
                 onChange={(e) => setBackendUrl(e.target.value)}
@@ -719,7 +735,12 @@ export const ReportPage: React.FC<ReportPageProps> = ({
                   Copy cURL
                 </button>
               </div>
-              <pre className={`p-2 rounded border font-mono text-[10px] overflow-x-auto ${innerCardClass} ${textMutedClass}`}>
+              <pre
+                tabIndex={0}
+                role="region"
+                aria-label="cURL terminal equivalent snippet"
+                className={`p-2 rounded border font-mono text-[10px] overflow-x-auto focus:ring-2 focus:ring-cyan-500 focus:outline-hidden ${innerCardClass} ${textMutedClass}`}
+              >
                 {apiTestEndpoint === '/api/predict'
                   ? `curl -X POST "${backendUrl}/api/predict" \\
   -H "Content-Type: application/json" \\
@@ -735,7 +756,12 @@ export const ReportPage: React.FC<ReportPageProps> = ({
               <span>FastAPI JSON Response:</span>
               <span className="text-emerald-600 dark:text-emerald-400">HTTP 200 OK</span>
             </div>
-            <div className={`p-3 rounded-lg border h-64 overflow-y-auto font-mono text-xs ${innerCardClass} text-cyan-600 dark:text-cyan-300`}>
+            <div
+              tabIndex={0}
+              role="region"
+              aria-label="FastAPI JSON response payload"
+              className={`p-3 rounded-lg border h-64 overflow-y-auto font-mono text-xs focus:ring-2 focus:ring-cyan-500 focus:outline-hidden ${innerCardClass} text-cyan-600 dark:text-cyan-300`}
+            >
               {apiTestResponse ? (
                 <pre className="whitespace-pre">{apiTestResponse}</pre>
               ) : (

@@ -205,10 +205,12 @@ export const AnomalyInvestigationPage: React.FC<AnomalyInvestigationPageProps> =
           {/* Voltage Threshold Slider */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className={textMutedClass}>Voltage Tolerance Limit:</span>
+              <label htmlFor="voltage-tolerance-slider" className={textMutedClass}>Voltage Tolerance Limit:</label>
               <span className="font-bold text-cyan-600 dark:text-cyan-400">±{voltageThreshold.toFixed(1)} V</span>
             </div>
             <input
+              id="voltage-tolerance-slider"
+              aria-label="Voltage Tolerance Limit"
               type="range"
               min="2.0"
               max="12.0"
@@ -227,10 +229,12 @@ export const AnomalyInvestigationPage: React.FC<AnomalyInvestigationPageProps> =
           {/* Frequency Threshold Slider */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className={textMutedClass}>Frequency Droop Limit:</span>
+              <label htmlFor="frequency-droop-slider" className={textMutedClass}>Frequency Droop Limit:</label>
               <span className="font-bold text-violet-600 dark:text-violet-400">±{freqThreshold.toFixed(2)} Hz</span>
             </div>
             <input
+              id="frequency-droop-slider"
+              aria-label="Frequency Droop Limit"
               type="range"
               min="0.05"
               max="0.50"
@@ -249,10 +253,12 @@ export const AnomalyInvestigationPage: React.FC<AnomalyInvestigationPageProps> =
           {/* Battery SoC Cutoff Slider */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className={textMutedClass}>BESS Critical Cutoff:</span>
+              <label htmlFor="bess-cutoff-slider" className={textMutedClass}>BESS Critical Cutoff:</label>
               <span className="font-bold text-amber-600 dark:text-amber-400">{batterySocCutoff.toFixed(0)}% SoC</span>
             </div>
             <input
+              id="bess-cutoff-slider"
+              aria-label="BESS Critical Cutoff"
               type="range"
               min="10"
               max="30"
@@ -316,6 +322,8 @@ export const AnomalyInvestigationPage: React.FC<AnomalyInvestigationPageProps> =
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           <input
+            id="anomaly-search-query-input"
+            aria-label="Search sample ID or scenario"
             type="text"
             placeholder="Search sample ID or scenario..."
             value={searchQuery}

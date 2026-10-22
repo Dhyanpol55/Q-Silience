@@ -240,11 +240,11 @@ export const Header: React.FC<HeaderProps> = ({
                   >
                     Q-RESILIENCE AI
                   </span>
-                  <span className="text-[10px] text-cyan-800 dark:text-cyan-300 font-mono font-bold px-1.5 py-0.5 rounded-md bg-cyan-100/90 dark:bg-cyan-950/90 border border-cyan-300 dark:border-cyan-700">
+                  <span className="text-[10px] text-cyan-950 dark:text-cyan-200 font-mono font-bold px-1.5 py-0.5 rounded-md bg-cyan-100 dark:bg-cyan-950 border border-cyan-400 dark:border-cyan-700">
                     v1.4.0
                   </span>
                   {isTraining && (
-                    <span className="hidden sm:inline-flex items-center gap-1 text-[10px] bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/40 px-1.5 py-0.5 rounded-md animate-pulse font-mono font-semibold">
+                    <span className="hidden sm:inline-flex items-center gap-1 text-[10px] bg-cyan-500/15 text-cyan-900 dark:text-cyan-200 border border-cyan-500/40 px-1.5 py-0.5 rounded-md animate-pulse font-mono font-semibold">
                       <Atom className="w-3 h-3 animate-spin" />
                       QML Fitting...
                     </span>
@@ -254,11 +254,11 @@ export const Header: React.FC<HeaderProps> = ({
                   <span className={isDark ? 'text-slate-300' : 'text-slate-900 font-semibold'}>
                     VTU Qiskit Fall Fest 2026
                   </span>
-                  <span aria-hidden="true" className={isDark ? 'text-slate-500' : 'text-slate-400'}>
+                  <span aria-hidden="true" className={isDark ? 'text-slate-400' : 'text-slate-600'}>
                     ·
                   </span>
-                  <span className="text-cyan-800 dark:text-cyan-300 font-bold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 inline text-cyan-600 dark:text-cyan-400" />
+                  <span className="text-cyan-900 dark:text-cyan-200 font-bold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 inline text-cyan-700 dark:text-cyan-300" />
                     Quantum + AI/ML
                   </span>
                 </div>
