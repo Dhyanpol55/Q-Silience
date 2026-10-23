@@ -6,9 +6,10 @@
 **VTU-Qiskit Fall Fest 2026** &nbsp;|&nbsp; Team **Ctrl_AI** (`VTU-QFF-HC-0025`) &nbsp;|&nbsp; Tier: **Both**
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-qresilience.vercel.app-0ea5e9?style=flat&logo=vercel)](https://qresilience.vercel.app/)
+[![Demo Video](https://img.shields.io/badge/Demo%20Video-YouTube-FF0000?style=flat&logo=youtube)](https://youtu.be/HAgrzv3rs3k)
 [![Backend Health](https://img.shields.io/badge/Backend%20Health-q--silience.onrender.com%2Fhealth-10b981?style=flat&logo=render)](https://q-silience.onrender.com/health)
 [![API Docs](https://img.shields.io/badge/API%20Docs-Swagger%20%2F%20OpenAPI-009688?style=flat&logo=fastapi)](https://q-silience.onrender.com/docs)
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Dhyanpol55%2FQ--Silience-181717?style=flat&logo=github)](https://github.com/Dhyanpol55/Q-Silience)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-vtu--qiskit--fall--fest--2026%2Fvtu--hc--ctrl--ai-181717?style=flat&logo=github)](https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git)
 [![Qiskit](https://img.shields.io/badge/Qiskit-1.4.6-6929C4?style=flat&logo=qiskit)](https://qiskit.org/)
 [![Qiskit ML](https://img.shields.io/badge/Qiskit%20Machine%20Learning-0.8.2-8a2be2?style=flat&logo=qiskit)](https://github.com/qiskit-community/qiskit-machine-learning)
 
@@ -22,8 +23,9 @@
 | :--- | :--- |
 | **Team Name** | Ctrl_AI |
 | **Team ID** | VTU-QFF-HC-0025 |
-| **Official Repository** |(https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git)|
+| **Official Repository** | [vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai](https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git) |
 | **Live Frontend** | [https://qresilience.vercel.app/](https://qresilience.vercel.app/) |
+| **Demo Video (YouTube)** | [https://youtu.be/HAgrzv3rs3k](https://youtu.be/HAgrzv3rs3k) |
 | **Live Backend API** | [https://q-silience.onrender.com](https://q-silience.onrender.com) |
 | **Backend Health Endpoint** | [https://q-silience.onrender.com/health](https://q-silience.onrender.com/health) |
 | **Interactive API Documentation** | [https://q-silience.onrender.com/docs](https://q-silience.onrender.com/docs) |
@@ -47,6 +49,7 @@
 - [Deployment Guide (Render & Vercel)](#-deployment-guide-render--vercel)
 - [Local Development & Tests](#-local-development--tests)
 - [Resources & Project Links](#-resources)
+- [Submission Checklist](#-submission-checklist)
 - [License](#-license)
 
 ---
@@ -253,7 +256,7 @@ flowchart TD
 
 ### Backend Deployment (Render)
 1. In the [Render Dashboard](https://dashboard.render.com), click **New +** ➔ **Web Service**.
-2. Connect repository `https://github.com/Dhyanpol55/Q-Silience`.
+2. Connect repository `https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git`.
 3. Set configuration:
    - **Root Directory**: `backend`
    - **Runtime**: `Python 3`
@@ -265,7 +268,7 @@ flowchart TD
    - `ALLOWED_ORIGINS`: `https://qresilience.vercel.app,https://*.vercel.app,http://localhost:3000`
 
 ### Frontend Deployment (Vercel)
-1. In the [Vercel Dashboard](https://vercel.com/new), import repository `Dhyanpol55/Q-Silience`.
+1. In the [Vercel Dashboard](https://vercel.com/new), import repository `vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai`.
 2. Set configuration:
    - **Framework Preset**: `Vite`
    - **Root Directory**: `./`
@@ -323,8 +326,23 @@ npm run lint
 ### Project Links
 
 - 🌐 **Live Demo:** https://qresilience.vercel.app/
+- 🎥 **Video Demo (YouTube):** https://youtu.be/HAgrzv3rs3k
 - 💻 **Source Code:** https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git
 - 🔌 **Backend Health Check:** https://q-silience.onrender.com/health
+
+---
+
+## ✅ Submission Checklist
+
+- [x] Repository created and public
+- [x] All team members added as collaborators and invitations accepted
+- [x] README.md updated with project details, problem statement and solution
+- [x] Team members listed under Team Members
+- [x] requirements.txt committed and project runs from a clean clone
+- [x] Code pushed to main and the latest main builds successfully
+- [x] Notebooks committed with cleared outputs (or use nbstrip)
+- [x] README includes a demo screenshot / video link ([Watch on YouTube](https://youtu.be/HAgrzv3rs3k))
+- [x] Short project summary submitted on the hackathon portal
 
 ---
 
