@@ -46,6 +46,7 @@
 - [Interactive Platform Modules](#-interactive-platform-modules)
 - [Deployment Guide (Render & Vercel)](#-deployment-guide-render--vercel)
 - [Local Development & Tests](#-local-development--tests)
+- [Resources & Project Links](#-resources)
 - [License](#-license)
 
 ---
@@ -302,6 +303,28 @@ Build and validate for production:
 npm run build
 npm run lint
 ```
+
+---
+
+## 📚 Resources
+
+| **Resource** | **Link** |
+|---|---|
+| 🔁 Git & Collaboration Handbook | [Git & Collaboration Handbook](https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai/blob/feature/vtu-hc-guide-git-and-collaboration) |
+| ❓ Problem Statements, Solutions & Terms | [Problem Statements, Solutions & Terms](https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai/blob/feature/vtu-hc-guide-problem-and-solution) |
+| 📄 README Writing Guide | [README Guide & Template](https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai/blob/feature/vtu-hc-guide-readme-template) |
+| ⚛️ Qiskit Documentation | [Qiskit Docs](https://docs.quantum.ibm.com/) |
+| ⚛️ Qiskit Runtime & Primitives | [IBM Quantum Documentation](https://quantum.cloud.ibm.com/docs/) |
+| 🧪 Qiskit Aer Simulator | [Qiskit Simulator Guide](https://docs.quantum.ibm.com/guides/simulator) |
+| 💻 IBM Quantum Platform | [IBM Quantum](https://quantum.cloud.ibm.com/) |
+| 🎓 Qiskit Learning Resources | [Qiskit Learning](https://qiskit.qotlabs.org/learning/) |
+| 📋 GitHub Documentation | [GitHub Docs](https://docs.github.com/) |
+
+### Project Links
+
+- 🌐 **Live Demo:** https://qresilience.vercel.app/
+- 💻 **Source Code:** https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git
+- 🔌 **Backend Health Check:** https://q-silience.onrender.com/health
 
 ---
 
