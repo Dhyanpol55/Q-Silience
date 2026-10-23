@@ -434,7 +434,7 @@ export const Header: React.FC<HeaderProps> = ({
 
                 {backendHealth.status === 'healthy' && backendHealth.quantumModelStatus === 'exact_statevector_fallback' && (
                   <div className="text-[11px] text-amber-600 dark:text-amber-400 pt-1 border-t border-slate-200 dark:border-slate-700/60 font-sans">
-                    QML Status: Exact Hilbert statevector fidelity kernel active {backendHealth.qmlError ? `(${backendHealth.qmlError})` : ''}. Pre-cached representations ensure sub-5ms latency.
+                    QML Status: Exact Hilbert statevector fidelity kernel active {backendHealth.qmlError ? `(${backendHealth.qmlError})` : ''}. Pre-cached statevector representation enables immediate analytical evaluation.
                   </div>
                 )}
 

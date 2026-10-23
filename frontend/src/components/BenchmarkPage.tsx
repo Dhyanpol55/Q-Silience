@@ -13,6 +13,7 @@ import {
   RefreshCw,
   Sparkles,
   CheckCircle2,
+  AlertTriangle,
   ShieldCheck,
   Trophy,
   Timer,
@@ -66,42 +67,116 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
   const [selectedSweepRep, setSelectedSweepRep] = useState<number | 'all'>('all');
   const [sweepDataset, setSweepDataset] = useState<HyperparameterSweepPoint[]>(generateHyperparameterSweepData());
   const [isSweeping, setIsSweeping] = useState<boolean>(false);
+  
+  // Explicit Data Source Management: 'local_demo' (browser) vs 'backend' (/api/benchmark)
+  const [activeSource, setActiveSource] = useState<'local_demo' | 'backend'>('local_demo');
   const [backendBenchmark, setBackendBenchmark] = useState<BackendBenchmarkResponse | null>(null);
   const [isFetchingBackend, setIsFetchingBackend] = useState<boolean>(false);
   const [backendSyncMessage, setBackendSyncMessage] = useState<string | null>(null);
+  const [backendError, setBackendError] = useState<string | null>(null);
 
+  const handleFetchBackend = async () => {
+    setIsFetchingBackend(true);
+    setBackendError(null);
+    setBackendSyncMessage(null);
+    try {
+      const data = await fetchBackendBenchmark();
+      setBackendBenchmark(data);
+      setActiveSource('backend');
+      const engineName = data.quantum_model_status === 'genuine_qsvc'
+        ? 'Genuine Qiskit ML QSVC (FidelityQuantumKernel)'
+        : `Exact Statevector Fidelity Kernel + SVC ${data.qml_error ? `[QML fallback: ${data.qml_error}]` : ''}`;
+      setBackendSyncMessage(`Synced with FastAPI backend (/api/benchmark) — Model: ${engineName} | Evaluated on ${data.total_samples} samples (${data.test_samples} test) | Quantum Inf: ${data.quantum_qsvc?.inference_time_ms ?? 'N/A'}ms`);
+    } catch (err: any) {
+      const msg = err.message || 'FastAPI backend unreachable';
+      setBackendError(msg);
+      setActiveSource('local_demo');
+      setBackendSyncMessage(`Backend sync failed (${msg}). Retaining verified LOCAL DEMO model evaluation.`);
+    } finally {
+      setIsFetchingBackend(false);
+    }
+  };
 
-  // Recharts data for Low-Data Scaling LineChart
-  const lowDataChartData = lowDataPoints.map((pt) => ({
-    name: `${pt.trainFraction * 100}% (${pt.sampleCount} samples)`,
-    fractionPct: pt.trainFraction * 100,
-    classicalF1: Number((pt.classicalF1 * 100).toFixed(1)),
-    quantumF1: Number((pt.quantumF1 * 100).toFixed(1)),
-    classicalAcc: Number((pt.classicalAccuracy * 100).toFixed(1)),
-    quantumAcc: Number((pt.quantumAccuracy * 100).toFixed(1)),
-  }));
+  const isBackendActive = activeSource === 'backend' && !!backendBenchmark;
 
-  // Recharts data for Metrics Head-to-Head BarChart
+  // Derive active metrics based on explicitly selected data source with zero cross-contamination
+  const activeClassicalMetrics: ModelMetrics | null = activeSource === 'backend'
+    ? (backendBenchmark
+        ? {
+            accuracy: backendBenchmark.classical_svc.accuracy,
+            precision: backendBenchmark.classical_svc.precision,
+            recall: backendBenchmark.classical_svc.recall,
+            f1Score: backendBenchmark.classical_svc.f1_score,
+            truePositives: backendBenchmark.classical_svc.true_positives,
+            falsePositives: backendBenchmark.classical_svc.false_positives,
+            trueNegatives: backendBenchmark.classical_svc.true_negatives,
+            falseNegatives: backendBenchmark.classical_svc.false_negatives,
+            trainTimeMs: backendBenchmark.classical_svc.train_time_ms,
+            inferenceTimeMs: backendBenchmark.classical_svc.inference_time_ms,
+          }
+        : null)
+    : classicalMetrics;
+
+  const activeQuantumMetrics: ModelMetrics | null = activeSource === 'backend'
+    ? (backendBenchmark?.quantum_qsvc
+        ? {
+            accuracy: backendBenchmark.quantum_qsvc.accuracy,
+            precision: backendBenchmark.quantum_qsvc.precision,
+            recall: backendBenchmark.quantum_qsvc.recall,
+            f1Score: backendBenchmark.quantum_qsvc.f1_score,
+            truePositives: backendBenchmark.quantum_qsvc.true_positives,
+            falsePositives: backendBenchmark.quantum_qsvc.false_positives,
+            trueNegatives: backendBenchmark.quantum_qsvc.true_negatives,
+            falseNegatives: backendBenchmark.quantum_qsvc.false_negatives,
+            trainTimeMs: backendBenchmark.quantum_qsvc.train_time_ms,
+            inferenceTimeMs: backendBenchmark.quantum_qsvc.inference_time_ms,
+          }
+        : null)
+    : quantumMetrics;
+
+  // Recharts data for Low-Data Scaling LineChart mapped to active source
+  const lowDataChartData = isBackendActive && backendBenchmark?.low_data_experiment && backendBenchmark.low_data_experiment.length > 0
+    ? backendBenchmark.low_data_experiment.map((pt) => {
+        const fracPct = ((pt.train_fraction ?? pt.fraction ?? 0.25) * 100);
+        return {
+          name: `${fracPct.toFixed(0)}% (${pt.sample_count} samples)`,
+          fractionPct: fracPct,
+          classicalF1: Number((pt.classical_f1 * 100).toFixed(1)),
+          quantumF1: Number((pt.quantum_f1 * 100).toFixed(1)),
+          classicalAcc: Number((pt.classical_accuracy * 100).toFixed(1)),
+          quantumAcc: Number((pt.quantum_accuracy * 100).toFixed(1)),
+        };
+      })
+    : lowDataPoints.map((pt) => ({
+        name: `${pt.trainFraction * 100}% (${pt.sampleCount} samples)`,
+        fractionPct: pt.trainFraction * 100,
+        classicalF1: Number((pt.classicalF1 * 100).toFixed(1)),
+        quantumF1: Number((pt.quantumF1 * 100).toFixed(1)),
+        classicalAcc: Number((pt.classicalAccuracy * 100).toFixed(1)),
+        quantumAcc: Number((pt.quantumAccuracy * 100).toFixed(1)),
+      }));
+
+  // Recharts data for Metrics Head-to-Head BarChart mapped to active source
   const metricsBarData = [
     {
       metric: 'Accuracy',
-      Classical: classicalMetrics ? Number((classicalMetrics.accuracy * 100).toFixed(1)) : 0,
-      Quantum: quantumMetrics ? Number((quantumMetrics.accuracy * 100).toFixed(1)) : 0,
+      Classical: activeClassicalMetrics ? Number((activeClassicalMetrics.accuracy * 100).toFixed(1)) : 0,
+      Quantum: activeQuantumMetrics ? Number((activeQuantumMetrics.accuracy * 100).toFixed(1)) : 0,
     },
     {
       metric: 'Precision',
-      Classical: classicalMetrics ? Number((classicalMetrics.precision * 100).toFixed(1)) : 0,
-      Quantum: quantumMetrics ? Number((quantumMetrics.precision * 100).toFixed(1)) : 0,
+      Classical: activeClassicalMetrics ? Number((activeClassicalMetrics.precision * 100).toFixed(1)) : 0,
+      Quantum: activeQuantumMetrics ? Number((activeQuantumMetrics.precision * 100).toFixed(1)) : 0,
     },
     {
       metric: 'Recall',
-      Classical: classicalMetrics ? Number((classicalMetrics.recall * 100).toFixed(1)) : 0,
-      Quantum: quantumMetrics ? Number((quantumMetrics.recall * 100).toFixed(1)) : 0,
+      Classical: activeClassicalMetrics ? Number((activeClassicalMetrics.recall * 100).toFixed(1)) : 0,
+      Quantum: activeQuantumMetrics ? Number((activeQuantumMetrics.recall * 100).toFixed(1)) : 0,
     },
     {
       metric: 'F1-Score',
-      Classical: classicalMetrics ? Number((classicalMetrics.f1Score * 100).toFixed(1)) : 0,
-      Quantum: quantumMetrics ? Number((quantumMetrics.f1Score * 100).toFixed(1)) : 0,
+      Classical: activeClassicalMetrics ? Number((activeClassicalMetrics.f1Score * 100).toFixed(1)) : 0,
+      Quantum: activeQuantumMetrics ? Number((activeQuantumMetrics.f1Score * 100).toFixed(1)) : 0,
     },
   ];
 
@@ -133,22 +208,7 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
 
         <div className="flex flex-wrap items-center gap-2.5">
           <button
-            onClick={async () => {
-              setIsFetchingBackend(true);
-              setBackendSyncMessage(null);
-              try {
-                const data = await fetchBackendBenchmark();
-                setBackendBenchmark(data);
-                const engineName = data.quantum_model_status === 'genuine_qsvc'
-                  ? 'Genuine Qiskit ML QSVC (FidelityQuantumKernel)'
-                  : `Exact Statevector Fidelity Kernel + SVC ${data.qml_error ? `[QML fallback: ${data.qml_error}]` : ''}`;
-                setBackendSyncMessage(`Synced with FastAPI backend (/api/benchmark) — Model: ${engineName} | Evaluated on ${data.total_samples} samples (${data.test_samples} test) | Quantum Inf: ${data.quantum_qsvc?.inference_time_ms ?? 'N/A'}ms`);
-              } catch (err: any) {
-                setBackendSyncMessage(`Backend sync unavailable (${err.message || 'offline'}). Displaying local verified model evaluation.`);
-              } finally {
-                setIsFetchingBackend(false);
-              }
-            }}
+            onClick={handleFetchBackend}
             disabled={isFetchingBackend}
             className="btn-secondary text-xs font-mono"
             title="Fetch benchmark directly from Python FastAPI /api/benchmark"
@@ -168,16 +228,100 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
         </div>
       </div>
 
+      {/* Explicit Data Source Selection Bar */}
+      <div className={`p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors ${innerCardClass}`}>
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">ACTIVE BENCHMARK SOURCE:</span>
+            {isBackendActive ? (
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800 flex items-center gap-1.5 shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
+                LIVE BACKEND RESULTS (/api/benchmark)
+              </span>
+            ) : (
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 flex items-center gap-1.5 shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                LOCAL DEMO RESULTS (Client-Side)
+              </span>
+            )}
+            {isBackendActive && backendBenchmark && (
+              <span className="text-[10px] font-mono text-slate-400">
+                (Timestamp: {new Date(backendBenchmark.timestamp).toLocaleTimeString()})
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            {isBackendActive && backendBenchmark
+              ? `Displaying verified live metrics from FastAPI service (${backendBenchmark.total_samples} samples: ${backendBenchmark.train_samples} train / ${backendBenchmark.test_samples} test). Quantum model: ${backendBenchmark.quantum_model_type || 'QSVC'} [${backendBenchmark.quantum_model_status}].`
+              : 'Displaying instant client-side evaluation generated inside your browser via local SVM solver and analytical statevector simulator.'}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => {
+              setActiveSource('local_demo');
+              setBackendError(null);
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+              activeSource === 'local_demo'
+                ? 'bg-amber-500 text-slate-950 shadow-xs'
+                : isDark
+                ? 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
+            }`}
+          >
+            ⚡ Local Demo
+          </button>
+
+          <button
+            onClick={async () => {
+              if (backendBenchmark) {
+                setActiveSource('backend');
+              } else {
+                await handleFetchBackend();
+              }
+            }}
+            disabled={isFetchingBackend}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeSource === 'backend'
+                ? 'bg-cyan-500 text-slate-950 shadow-xs'
+                : isDark
+                ? 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
+            }`}
+          >
+            <Server className={`w-3 h-3 ${isFetchingBackend ? 'animate-pulse' : ''}`} />
+            <span>{isFetchingBackend ? 'Fetching Backend...' : '☁️ Live Backend'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Explicit Backend Error Banner */}
+      {backendError && (
+        <div className="p-3.5 rounded-xl border border-rose-300 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 text-xs font-mono flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
+            <div>
+              <span className="font-bold">Backend Sync Failed: </span>
+              <span>{backendError}. Preserving LOCAL DEMO metrics. (Local browser results are never misrepresented as live backend data).</span>
+            </div>
+          </div>
+          <button
+            onClick={() => setBackendError(null)}
+            className="text-rose-400 hover:text-rose-600 dark:hover:text-rose-200 cursor-pointer text-xs font-bold"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Backend Sync Notification Banner */}
-      {backendSyncMessage && (
+      {backendSyncMessage && !backendError && (
         <div className={`p-3 rounded-xl border text-xs font-mono flex items-center justify-between gap-3 ${
-          backendBenchmark
-            ? isDark
-              ? 'bg-emerald-950/30 border-emerald-800/40 text-emerald-300'
-              : 'bg-emerald-50 border-emerald-300 text-emerald-900'
-            : isDark
-            ? 'bg-slate-900/60 border-slate-800 text-slate-300'
-            : 'bg-slate-100 border-slate-300 text-slate-800'
+          isDark
+            ? 'bg-emerald-950/30 border-emerald-800/40 text-emerald-300'
+            : 'bg-emerald-50 border-emerald-300 text-emerald-900'
         }`}>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
@@ -215,69 +359,87 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
                 <Cpu className="w-4.5 h-4.5 stroke-[2.2]" />
               </div>
               <div>
-                <span className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Classical Baseline</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Classical Baseline</span>
+                  {isBackendActive ? (
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800">
+                      LIVE BACKEND
+                    </span>
+                  ) : (
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                      LOCAL DEMO
+                    </span>
+                  )}
+                </div>
                 <h2 className={`text-base font-bold ${headingClass}`}>Support Vector Classifier (SVC)</h2>
               </div>
             </div>
-            <span className={`text-xs font-mono ${textMutedClass}`}>Kernel: RBF</span>
+            <div className="text-right">
+              <span className={`text-xs font-mono block ${textMutedClass}`}>Kernel: RBF</span>
+              <span className="text-[10px] font-mono text-slate-400">
+                {isBackendActive && backendBenchmark ? `${backendBenchmark.train_samples} tr / ${backendBenchmark.test_samples} te` : 'Local Split'}
+              </span>
+            </div>
           </div>
 
-          {classicalMetrics ? (
+          {activeClassicalMetrics ? (
             <div className="space-y-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
                 <div className={`p-2.5 rounded-lg border ${innerCardClass}`}>
                   <div className={`text-[10px] font-mono ${textMutedClass}`}>ACCURACY</div>
                   <div className={`text-lg font-bold font-mono mt-0.5 ${headingClass}`}>
-                    {(classicalMetrics.accuracy * 100).toFixed(1)}%
+                    {(activeClassicalMetrics.accuracy * 100).toFixed(1)}%
                   </div>
                 </div>
                 <div className={`p-2.5 rounded-lg border ${innerCardClass}`}>
                   <div className={`text-[10px] font-mono ${textMutedClass}`}>F1-SCORE</div>
                   <div className="text-lg font-bold text-cyan-600 dark:text-cyan-400 font-mono mt-0.5">
-                    {classicalMetrics.f1Score.toFixed(3)}
+                    {activeClassicalMetrics.f1Score.toFixed(3)}
                   </div>
                 </div>
                 <div className={`p-2.5 rounded-lg border ${innerCardClass}`}>
                   <div className={`text-[10px] font-mono ${textMutedClass}`}>PRECISION</div>
                   <div className={`text-lg font-bold font-mono mt-0.5 ${headingClass}`}>
-                    {classicalMetrics.precision.toFixed(3)}
+                    {activeClassicalMetrics.precision.toFixed(3)}
                   </div>
                 </div>
                 <div className={`p-2.5 rounded-lg border ${innerCardClass}`}>
                   <div className={`text-[10px] font-mono ${textMutedClass}`}>RECALL</div>
                   <div className={`text-lg font-bold font-mono mt-0.5 ${headingClass}`}>
-                    {classicalMetrics.recall.toFixed(3)}
+                    {activeClassicalMetrics.recall.toFixed(3)}
                   </div>
                 </div>
               </div>
 
               {/* Confusion Matrix */}
               <div>
-                <div className={`text-xs font-medium mb-2 ${headingClass}`}>Confusion Matrix (Held-out Test Split)</div>
+                <div className={`text-xs font-medium mb-2 ${headingClass}`}>
+                  Confusion Matrix ({isBackendActive && backendBenchmark ? `Held-out Test Split, n=${backendBenchmark.test_samples}` : 'Held-out Test Split'})
+                </div>
                 <div className="grid grid-cols-2 gap-2 font-mono text-xs text-center">
                   <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/60 rounded-lg">
                     <div className="text-[10px] text-emerald-700 dark:text-emerald-400">TRUE NEGATIVES (Normal)</div>
-                    <div className="text-xl font-bold text-emerald-600 dark:text-emerald-300 mt-1">{classicalMetrics.trueNegatives}</div>
+                    <div className="text-xl font-bold text-emerald-600 dark:text-emerald-300 mt-1">{activeClassicalMetrics.trueNegatives}</div>
                   </div>
                   <div className="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-300 dark:border-rose-900/40 rounded-lg">
                     <div className="text-[10px] text-rose-700 dark:text-rose-400">FALSE POSITIVES (False Alarm)</div>
-                    <div className="text-xl font-bold text-rose-600 dark:text-rose-300 mt-1">{classicalMetrics.falsePositives}</div>
+                    <div className="text-xl font-bold text-rose-600 dark:text-rose-300 mt-1">{activeClassicalMetrics.falsePositives}</div>
                   </div>
                   <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-900/40 rounded-lg">
                     <div className="text-[10px] text-amber-700 dark:text-amber-400">FALSE NEGATIVES (Missed)</div>
-                    <div className="text-xl font-bold text-amber-600 dark:text-amber-300 mt-1">{classicalMetrics.falseNegatives}</div>
+                    <div className="text-xl font-bold text-amber-600 dark:text-amber-300 mt-1">{activeClassicalMetrics.falseNegatives}</div>
                   </div>
                   <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/60 rounded-lg">
                     <div className="text-[10px] text-emerald-700 dark:text-emerald-400">TRUE POSITIVES (Detected)</div>
-                    <div className="text-xl font-bold text-emerald-600 dark:text-emerald-300 mt-1">{classicalMetrics.truePositives}</div>
+                    <div className="text-xl font-bold text-emerald-600 dark:text-emerald-300 mt-1">{activeClassicalMetrics.truePositives}</div>
                   </div>
                 </div>
               </div>
 
               {/* Timing */}
               <div className={`flex items-center justify-between pt-2 border-t text-xs font-mono ${isDark ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-500'}`}>
-                <span>Training Latency: {classicalMetrics.trainTimeMs} ms</span>
-                <span>Inference Latency: {classicalMetrics.inferenceTimeMs} ms</span>
+                <span>Training Latency: {activeClassicalMetrics.trainTimeMs} ms</span>
+                <span>Inference Latency: {activeClassicalMetrics.inferenceTimeMs} ms</span>
               </div>
             </div>
           ) : (
@@ -293,69 +455,89 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
                 <Atom className="w-4.5 h-4.5 stroke-[2.2]" />
               </div>
               <div>
-                <span className="text-[10px] font-mono font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider">Quantum Classifier</span>
-                <h2 className={`text-base font-bold ${headingClass}`}>Quantum SVC (QSVC)</h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider">Quantum Classifier</span>
+                  {isBackendActive ? (
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300 border border-violet-300 dark:border-violet-800">
+                      LIVE BACKEND ({backendBenchmark?.quantum_model_status || 'genuine_qsvc'})
+                    </span>
+                  ) : (
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                      LOCAL DEMO
+                    </span>
+                  )}
+                </div>
+                <h2 className={`text-base font-bold ${headingClass}`}>
+                  {isBackendActive && backendBenchmark?.quantum_model_type ? backendBenchmark.quantum_model_type : 'Quantum SVC (QSVC)'}
+                </h2>
               </div>
             </div>
-            <span className={`text-xs font-mono ${textMutedClass}`}>Kernel: ZZFeatureMap</span>
+            <div className="text-right">
+              <span className={`text-xs font-mono block ${textMutedClass}`}>Kernel: ZZFeatureMap</span>
+              <span className="text-[10px] font-mono text-slate-400">
+                {isBackendActive && backendBenchmark ? `${backendBenchmark.train_samples} tr / ${backendBenchmark.test_samples} te` : 'Local Split'}
+              </span>
+            </div>
           </div>
 
-          {quantumMetrics ? (
+          {activeQuantumMetrics ? (
             <div className="space-y-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
                 <div className={`p-2.5 rounded-lg border ${innerCardClass}`}>
                   <div className={`text-[10px] font-mono ${textMutedClass}`}>ACCURACY</div>
                   <div className={`text-lg font-bold font-mono mt-0.5 ${headingClass}`}>
-                    {(quantumMetrics.accuracy * 100).toFixed(1)}%
+                    {(activeQuantumMetrics.accuracy * 100).toFixed(1)}%
                   </div>
                 </div>
                 <div className={`p-2.5 rounded-lg border ${innerCardClass}`}>
                   <div className={`text-[10px] font-mono ${textMutedClass}`}>F1-SCORE</div>
                   <div className="text-lg font-bold text-violet-600 dark:text-violet-400 font-mono mt-0.5">
-                    {quantumMetrics.f1Score.toFixed(3)}
+                    {activeQuantumMetrics.f1Score.toFixed(3)}
                   </div>
                 </div>
                 <div className={`p-2.5 rounded-lg border ${innerCardClass}`}>
                   <div className={`text-[10px] font-mono ${textMutedClass}`}>PRECISION</div>
                   <div className={`text-lg font-bold font-mono mt-0.5 ${headingClass}`}>
-                    {quantumMetrics.precision.toFixed(3)}
+                    {activeQuantumMetrics.precision.toFixed(3)}
                   </div>
                 </div>
                 <div className={`p-2.5 rounded-lg border ${innerCardClass}`}>
                   <div className={`text-[10px] font-mono ${textMutedClass}`}>RECALL</div>
                   <div className={`text-lg font-bold font-mono mt-0.5 ${headingClass}`}>
-                    {quantumMetrics.recall.toFixed(3)}
+                    {activeQuantumMetrics.recall.toFixed(3)}
                   </div>
                 </div>
               </div>
 
               {/* Confusion Matrix */}
               <div>
-                <div className={`text-xs font-medium mb-2 ${headingClass}`}>Confusion Matrix (Held-out Test Split)</div>
+                <div className={`text-xs font-medium mb-2 ${headingClass}`}>
+                  Confusion Matrix ({isBackendActive && backendBenchmark ? `Held-out Test Split, n=${backendBenchmark.test_samples}` : 'Held-out Test Split'})
+                </div>
                 <div className="grid grid-cols-2 gap-2 font-mono text-xs text-center">
                   <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/60 rounded-lg">
                     <div className="text-[10px] text-emerald-700 dark:text-emerald-400">TRUE NEGATIVES (Normal)</div>
-                    <div className="text-xl font-bold text-emerald-600 dark:text-emerald-300 mt-1">{quantumMetrics.trueNegatives}</div>
+                    <div className="text-xl font-bold text-emerald-600 dark:text-emerald-300 mt-1">{activeQuantumMetrics.trueNegatives}</div>
                   </div>
                   <div className="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-300 dark:border-rose-900/40 rounded-lg">
                     <div className="text-[10px] text-rose-700 dark:text-rose-400">FALSE POSITIVES (False Alarm)</div>
-                    <div className="text-xl font-bold text-rose-600 dark:text-rose-300 mt-1">{quantumMetrics.falsePositives}</div>
+                    <div className="text-xl font-bold text-rose-600 dark:text-rose-300 mt-1">{activeQuantumMetrics.falsePositives}</div>
                   </div>
                   <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-900/40 rounded-lg">
                     <div className="text-[10px] text-amber-700 dark:text-amber-400">FALSE NEGATIVES (Missed)</div>
-                    <div className="text-xl font-bold text-amber-600 dark:text-amber-300 mt-1">{quantumMetrics.falseNegatives}</div>
+                    <div className="text-xl font-bold text-amber-600 dark:text-amber-300 mt-1">{activeQuantumMetrics.falseNegatives}</div>
                   </div>
                   <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/60 rounded-lg">
                     <div className="text-[10px] text-emerald-700 dark:text-emerald-400">TRUE POSITIVES (Detected)</div>
-                    <div className="text-xl font-bold text-emerald-600 dark:text-emerald-300 mt-1">{quantumMetrics.truePositives}</div>
+                    <div className="text-xl font-bold text-emerald-600 dark:text-emerald-300 mt-1">{activeQuantumMetrics.truePositives}</div>
                   </div>
                 </div>
               </div>
 
               {/* Timing */}
               <div className={`flex items-center justify-between pt-2 border-t text-xs font-mono ${isDark ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-500'}`}>
-                <span>Training Latency: {quantumMetrics.trainTimeMs} ms</span>
-                <span>Inference Latency: {quantumMetrics.inferenceTimeMs} ms</span>
+                <span>Training Latency: {activeQuantumMetrics.trainTimeMs} ms</span>
+                <span>Inference Latency: {activeQuantumMetrics.inferenceTimeMs} ms</span>
               </div>
             </div>
           ) : (
@@ -373,7 +555,7 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
               <span>Comparative Performance Metrics (Recharts BarChart)</span>
             </h2>
             <p className={`text-xs ${textMutedClass}`}>
-              Direct comparison of Classical SVC vs Quantum QSVC across Accuracy, Precision, Recall, and F1 (%)
+              Direct comparison of Classical SVC vs Quantum QSVC across Accuracy, Precision, Recall, and F1 (%) — Source: <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">{isBackendActive ? 'LIVE FASTAPI BACKEND (/api/benchmark)' : 'LOCAL IN-BROWSER DEMO'}</span>
             </p>
           </div>
           <span className={`text-xs font-mono ${textMutedClass}`}>Higher is Better</span>
@@ -421,7 +603,7 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
               <span>Sample Efficiency: Low-Data Scaling Curves (Recharts LineChart)</span>
             </h2>
             <p className={`text-xs ${textMutedClass}`}>
-              F1-score trajectories as training data scales from 25% (sparse) to 100% on fixed held-out test split
+              F1-score trajectories as training data scales from 25% (sparse) to 100% on fixed held-out test split — Source: <span className="font-mono font-bold text-violet-600 dark:text-violet-400">{isBackendActive ? 'LIVE FASTAPI BACKEND (/api/benchmark)' : 'LOCAL IN-BROWSER DEMO'}</span>
             </p>
           </div>
           <span className="text-xs font-mono text-cyan-600 dark:text-cyan-400">Sample Generalization</span>

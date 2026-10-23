@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FeatureKey, ScalerModel } from '../types/microgrid';
 import { SVCTrainedModel, predictSample } from '../services/svmSolver';
 import { transformSample } from '../services/preprocessing';
@@ -12,7 +12,7 @@ import {
   DecisionSupportAdvice,
 } from '../services/scenarioEngine';
 import { MicrogridDigitalTwin } from './MicrogridDigitalTwin';
-import { predictWithBackend, getStoredBackendUrl } from '../services/apiClient';
+import { predictWithBackend, pingBackend, BackendHealth, BackendDualPrediction, getStoredBackendUrl } from '../services/apiClient';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import {
   Zap,
@@ -94,10 +94,19 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
   }[] | null>(null);
   const [isRunningStressBatch, setIsRunningStressBatch] = useState<boolean>(false);
 
-  // Backend simulation state
+  // Explicit Backend Connection & Inference Source Management
+  const [activeInferenceSource, setActiveInferenceSource] = useState<'local_demo' | 'backend'>('local_demo');
+  const [backendHealth, setBackendHealth] = useState<BackendHealth | null>(null);
+  const [backendInferenceError, setBackendInferenceError] = useState<string | null>(null);
+  const [backendPrediction, setBackendPrediction] = useState<BackendDualPrediction | null>(null);
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
   const [executionMessage, setExecutionMessage] = useState<string | null>(null);
-  const [backendPrediction, setBackendPrediction] = useState<any | null>(null);
+
+  useEffect(() => {
+    pingBackend()
+      .then((h) => setBackendHealth(h))
+      .catch((err) => setBackendHealth({ status: 'offline', error: err.message }));
+  }, []);
 
   const currentValues = {
     demand_kw: demand,
@@ -177,23 +186,35 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
     }, 300);
   };
 
-  // Run Scenario action (evaluates local + tries remote backend)
+  // Run Scenario action (strictly respects activeInferenceSource)
   const handleRunSimulation = async () => {
     setIsExecuting(true);
-    setExecutionMessage('Executing dual classical & quantum inference engine...');
+    setBackendInferenceError(null);
 
-    const t0 = performance.now();
-    try {
-      // Attempt remote backend call if reachable
-      const backendRes = await predictWithBackend(currentValues, getStoredBackendUrl());
-      setBackendPrediction(backendRes);
-      const elapsed = Math.round(performance.now() - t0);
-      setExecutionMessage(`Execution complete in ${elapsed}ms via FastAPI backend.`);
-    } catch (err: any) {
-      setBackendPrediction(null);
-      const elapsed = Math.round(performance.now() - t0);
-      setExecutionMessage(`Backend offline (${err.message || 'unreachable'}). Evaluated in ${Math.max(4, elapsed)}ms via local demo simulation mode.`);
-    } finally {
+    if (activeInferenceSource === 'backend') {
+      setExecutionMessage('Querying FastAPI /api/predict for dual Scikit-Learn SVC & Qiskit QSVC inference...');
+      const t0 = performance.now();
+      try {
+        const backendRes = await predictWithBackend(currentValues, getStoredBackendUrl());
+        setBackendPrediction(backendRes);
+        const elapsed = Math.round(performance.now() - t0);
+        const qModelName = backendRes.quantum_qsvc?.model_name || backendHealth?.quantumModelStatus || 'Genuine Qiskit ML QSVC';
+        setExecutionMessage(
+          `Live backend inference successful (${elapsed}ms roundtrip). Model: ${qModelName} | Classical: ${backendRes.classical_svc.inference_time_ms}ms, Quantum: ${backendRes.quantum_qsvc?.inference_time_ms ?? 'N/A'}ms.`
+        );
+      } catch (err: any) {
+        setBackendPrediction(null);
+        const msg = err.message || 'FastAPI backend unreachable';
+        setBackendInferenceError(msg);
+        setExecutionMessage(
+          `Backend inference failed (${msg}). Local demo predictions are NOT silently substituted. Switch to Local Demo mode to view in-browser calculations.`
+        );
+      } finally {
+        setIsExecuting(false);
+      }
+    } else {
+      // Local demo evaluation
+      setExecutionMessage('Evaluated instantaneously via in-browser local demo engine (analytical statevector fidelity kernel).');
       setIsExecuting(false);
     }
   };
@@ -290,8 +311,112 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
         </div>
       </div>
 
+      {/* Explicit Inference Engine Source Selector */}
+      <div className={`p-4 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors ${innerCardClass}`}>
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              INFERENCE DATA SOURCE:
+            </span>
+            {activeInferenceSource === 'backend' ? (
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800 flex items-center gap-1.5 shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
+                LIVE BACKEND (/api/predict)
+              </span>
+            ) : (
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 flex items-center gap-1.5 shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                LOCAL DEMO (In-Browser Solver)
+              </span>
+            )}
+            {backendHealth?.status === 'healthy' ? (
+              <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                Backend Online: {backendHealth.quantumModelStatus === 'genuine_qsvc' ? 'Genuine Qiskit ML QSVC' : (backendHealth.quantumModelStatus || 'Qiskit')} ({backendHealth.latencyMs}ms)
+              </span>
+            ) : backendHealth?.status === 'offline' ? (
+              <span className="text-[10px] font-mono text-slate-500 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                Backend Offline ({backendHealth.error || 'unreachable'})
+              </span>
+            ) : null}
+          </div>
+          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            {activeInferenceSource === 'backend'
+              ? 'Evaluating telemetry remotely via Python FastAPI service on Render. If the service is waking from cold sleep or unreachable, failures are shown explicitly without silent local substitution.'
+              : 'Evaluating telemetry immediately inside your browser via local TypeScript SVM solver and analytical 4-qubit ZZFeatureMap statevector mathematics.'}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => {
+              setActiveInferenceSource('local_demo');
+              setBackendInferenceError(null);
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+              activeInferenceSource === 'local_demo'
+                ? 'bg-amber-500 text-slate-950 shadow-xs'
+                : isDark
+                ? 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
+            }`}
+          >
+            ⚡ Local Demo
+          </button>
+          <button
+            onClick={async () => {
+              setActiveInferenceSource('backend');
+              setBackendInferenceError(null);
+              if (!backendPrediction && !isExecuting) {
+                setIsExecuting(true);
+                try {
+                  const res = await predictWithBackend(currentValues, getStoredBackendUrl());
+                  setBackendPrediction(res);
+                  setExecutionMessage('Live backend prediction retrieved successfully.');
+                } catch (e: any) {
+                  setBackendPrediction(null);
+                  setBackendInferenceError(e.message || 'FastAPI backend unreachable');
+                } finally {
+                  setIsExecuting(false);
+                }
+              }
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeInferenceSource === 'backend'
+                ? 'bg-cyan-500 text-slate-950 shadow-xs'
+                : isDark
+                ? 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
+            }`}
+          >
+            <Server className="w-3 h-3 text-cyan-500" />
+            <span>☁️ Live Backend</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Explicit Backend Error Banner */}
+      {backendInferenceError && (
+        <div className="p-3.5 rounded-xl border border-rose-300 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 text-xs font-mono flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
+            <div>
+              <span className="font-bold">Backend Inference Failed: </span>
+              <span>{backendInferenceError}. Local demo predictions are NOT silently substituted.</span>
+            </div>
+          </div>
+          <button
+            onClick={() => setActiveInferenceSource('local_demo')}
+            className="text-rose-600 dark:text-rose-300 underline hover:no-underline cursor-pointer text-xs font-bold"
+          >
+            Switch to Local Demo
+          </button>
+        </div>
+      )}
+
       {/* Execution Feedback Banner */}
-      {executionMessage && (
+      {executionMessage && !backendInferenceError && (
         <div className={`p-3 rounded-xl border text-xs font-mono flex items-center justify-between ${
           isDark ? 'bg-cyan-950/40 border-cyan-800/80 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-900'
         }`}>
@@ -299,7 +424,9 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
             <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
             <span>{executionMessage}</span>
           </div>
-          <span className="text-[10px] uppercase font-bold text-cyan-700 dark:text-cyan-300">Live Result</span>
+          <span className="text-[10px] uppercase font-bold text-cyan-700 dark:text-cyan-300">
+            {activeInferenceSource === 'backend' ? 'Live Backend' : 'Local Demo'}
+          </span>
         </div>
       )}
 
@@ -748,10 +875,59 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 </div>
                 <span className={`text-xs font-bold ${headingClass}`}>CLASSICAL SVC (RBF)</span>
               </div>
-              <span className={`text-[10px] font-mono ${textMutedClass}`}>Scikit-Learn Standard</span>
+              <div className="flex items-center gap-2">
+                {activeInferenceSource === 'backend' ? (
+                  <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800">
+                    LIVE BACKEND
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                    LOCAL DEMO
+                  </span>
+                )}
+                <span className={`text-[10px] font-mono ${textMutedClass}`}>Scikit-Learn Standard</span>
+              </div>
             </div>
 
-            {classicalPred ? (
+            {activeInferenceSource === 'backend' ? (
+              backendInferenceError ? (
+                <div className="p-4 my-2 text-center text-xs font-mono text-rose-600 dark:text-rose-400">
+                  Backend request failed. Local demo predictions are not silently substituted.
+                </div>
+              ) : backendPrediction ? (
+                <div className="mt-3.5 flex items-center justify-between">
+                  <div>
+                    <div className={`text-[11px] ${textMutedClass}`}>Predicted State</div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {backendPrediction.classical_svc.prediction === 'ABNORMAL' ? (
+                        <span className="text-base font-bold text-rose-700 dark:text-rose-400 flex items-center gap-1.5">
+                          <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                          ABNORMAL FAULT
+                        </span>
+                      ) : (
+                        <span className="text-base font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                          NORMAL EQUILIBRIUM
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-[11px] ${textMutedClass}`}>Backend Inference Latency</div>
+                    <div className={`text-base font-mono font-bold ${headingClass}`}>
+                      {backendPrediction.classical_svc.inference_time_ms} ms
+                    </div>
+                    <div className={`text-[10px] font-mono ${textMutedClass}`}>
+                      {backendPrediction.classical_svc.model_name}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className={`py-4 text-center text-xs ${textMutedClass}`}>
+                  Click &quot;Run Scenario Simulation&quot; to execute on FastAPI backend.
+                </div>
+              )
+            ) : classicalPred ? (
               <div className="mt-3.5 flex items-center justify-between">
                 <div>
                   <div className={`text-[11px] ${textMutedClass}`}>Predicted State</div>
@@ -794,10 +970,59 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                 </div>
                 <span className={`text-xs font-bold ${headingClass}`}>QUANTUM QSVC (ZZFeatureMap)</span>
               </div>
-              <span className="text-[10px] font-mono text-violet-800 dark:text-violet-300 font-bold">Fidelity Quantum Kernel</span>
+              <div className="flex items-center gap-2">
+                {activeInferenceSource === 'backend' ? (
+                  <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300 border border-violet-300 dark:border-violet-800">
+                    LIVE BACKEND ({backendHealth?.quantumModelStatus || 'genuine_qsvc'})
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                    LOCAL DEMO
+                  </span>
+                )}
+                <span className="text-[10px] font-mono text-violet-800 dark:text-violet-300 font-bold">Fidelity Quantum Kernel</span>
+              </div>
             </div>
 
-            {quantumPred ? (
+            {activeInferenceSource === 'backend' ? (
+              backendInferenceError ? (
+                <div className="p-4 my-2 text-center text-xs font-mono text-rose-600 dark:text-rose-400">
+                  Backend request failed. Local demo predictions are not silently substituted.
+                </div>
+              ) : backendPrediction ? (
+                <div className="mt-3.5 flex items-center justify-between">
+                  <div>
+                    <div className={`text-[11px] ${textMutedClass}`}>Predicted State</div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {backendPrediction.quantum_qsvc?.prediction === 'ABNORMAL' ? (
+                        <span className="text-base font-bold text-rose-700 dark:text-rose-400 flex items-center gap-1.5">
+                          <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                          ABNORMAL FAULT
+                        </span>
+                      ) : (
+                        <span className="text-base font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                          NORMAL EQUILIBRIUM
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-[11px] ${textMutedClass}`}>Backend Inference Latency</div>
+                    <div className={`text-base font-mono font-bold ${headingClass}`}>
+                      {backendPrediction.quantum_qsvc?.inference_time_ms ?? 'N/A'} ms
+                    </div>
+                    <div className={`text-[10px] font-mono ${textMutedClass}`}>
+                      {backendPrediction.quantum_qsvc?.model_name || backendHealth?.quantumModelStatus || 'Genuine Qiskit ML QSVC'}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className={`py-4 text-center text-xs ${textMutedClass}`}>
+                  Click &quot;Run Scenario Simulation&quot; to execute on FastAPI backend.
+                </div>
+              )
+            ) : quantumPred ? (
               <div className="mt-3.5 flex items-center justify-between">
                 <div>
                   <div className={`text-[11px] ${textMutedClass}`}>Predicted State</div>

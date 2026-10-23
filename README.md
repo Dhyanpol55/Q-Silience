@@ -37,6 +37,8 @@
 
 - [Problem Statement](#-problem-statement)
 - [Proposed Solution](#-proposed-solution)
+- [Project Structure](#-project-structure)
+- [Team Members](#-team-members)
 - [Quantum Machine Learning Architecture](#-quantum-machine-learning-architecture)
 - [Empirical Benchmark & Measured Performance](#-empirical-benchmark--measured-performance)
 - [Scientific Disclosures & Limitations](#-scientific-disclosures--limitations)
@@ -45,6 +47,63 @@
 - [Deployment Guide (Render & Vercel)](#-deployment-guide-render--vercel)
 - [Local Development & Tests](#-local-development--tests)
 - [License](#-license)
+
+---
+
+## 👥 Team Members
+
+Members are added to this repository as collaborators and must accept the GitHub invitation before they can push.
+
+| # | Name | GitHub Username | Role |
+| :-: | :--- | :--- | :--- |
+| 1 | Dhyan P | [@Dhyanpol55](https://github.com/Dhyanpol55) | Team Lead |
+| 2 | Sangamesh Athani | [@SangameshAthani](https://github.com/SangameshAthani) | Developer |
+| 3 | Harsha Hiregoudar | [@harshhgouda-byte](https://github.com/harshhgouda-byte) | Developer |
+
+---
+
+## 📂 Project Structure
+
+```text
+Q-Silience/
+│
+├── frontend/                         # User interface
+│   ├── public/                       # Static assets
+│   ├── src/
+│   │   ├── components/               # Reusable UI components
+│   │   ├── pages/                    # Dashboard views, if separated
+│   │   ├── charts/                   # Charts and visualizations
+│   │   ├── services/
+│   │   │   └── api.ts                # Backend API integration
+│   │   ├── App.tsx                   # Main application and navigation
+│   │   ├── main.tsx                  # Frontend entry point
+│   │   └── index.css                 # Global styling
+│   ├── package.json                  # Frontend dependencies
+│   ├── vite.config.ts                # Vite configuration
+│   └── tsconfig.json                 # TypeScript configuration
+│
+├── backend/                          # API and ML processing
+│   ├── app/
+│   │   ├── main.py                   # API entry point
+│   │   ├── data.py                   # Data loading or generation
+│   │   ├── preprocessing.py          # Data preprocessing
+│   │   ├── classical_model.py        # Classical ML model
+│   │   ├── quantum_model.py          # Quantum ML / QSVC model
+│   │   └── evaluation.py             # Metrics and model comparison
+│   ├── tests/                        # Backend tests
+│   └── requirements.txt              # Python dependencies
+│
+├── data/
+│   └── generate_data.py              # Synthetic data generation
+│
+├── notebooks/                        # Experiments and analysis
+│
+├── docs/
+│   └── architecture.md               # Architecture documentation
+│
+├── README.md                         # Project overview and setup
+└── .gitignore                        # Excluded files
+```
 
 ---
 

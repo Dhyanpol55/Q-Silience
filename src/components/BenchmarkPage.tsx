@@ -99,35 +99,39 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
 
   const isBackendActive = activeSource === 'backend' && !!backendBenchmark;
 
-  // Derive active metrics based on explicitly selected data source
-  const activeClassicalMetrics: ModelMetrics | null = isBackendActive && backendBenchmark
-    ? {
-        accuracy: backendBenchmark.classical_svc.accuracy,
-        precision: backendBenchmark.classical_svc.precision,
-        recall: backendBenchmark.classical_svc.recall,
-        f1Score: backendBenchmark.classical_svc.f1_score,
-        truePositives: backendBenchmark.classical_svc.true_positives,
-        falsePositives: backendBenchmark.classical_svc.false_positives,
-        trueNegatives: backendBenchmark.classical_svc.true_negatives,
-        falseNegatives: backendBenchmark.classical_svc.false_negatives,
-        trainTimeMs: backendBenchmark.classical_svc.train_time_ms,
-        inferenceTimeMs: backendBenchmark.classical_svc.inference_time_ms,
-      }
+  // Derive active metrics based on explicitly selected data source with zero cross-contamination
+  const activeClassicalMetrics: ModelMetrics | null = activeSource === 'backend'
+    ? (backendBenchmark
+        ? {
+            accuracy: backendBenchmark.classical_svc.accuracy,
+            precision: backendBenchmark.classical_svc.precision,
+            recall: backendBenchmark.classical_svc.recall,
+            f1Score: backendBenchmark.classical_svc.f1_score,
+            truePositives: backendBenchmark.classical_svc.true_positives,
+            falsePositives: backendBenchmark.classical_svc.false_positives,
+            trueNegatives: backendBenchmark.classical_svc.true_negatives,
+            falseNegatives: backendBenchmark.classical_svc.false_negatives,
+            trainTimeMs: backendBenchmark.classical_svc.train_time_ms,
+            inferenceTimeMs: backendBenchmark.classical_svc.inference_time_ms,
+          }
+        : null)
     : classicalMetrics;
 
-  const activeQuantumMetrics: ModelMetrics | null = isBackendActive && backendBenchmark?.quantum_qsvc
-    ? {
-        accuracy: backendBenchmark.quantum_qsvc.accuracy,
-        precision: backendBenchmark.quantum_qsvc.precision,
-        recall: backendBenchmark.quantum_qsvc.recall,
-        f1Score: backendBenchmark.quantum_qsvc.f1_score,
-        truePositives: backendBenchmark.quantum_qsvc.true_positives,
-        falsePositives: backendBenchmark.quantum_qsvc.false_positives,
-        trueNegatives: backendBenchmark.quantum_qsvc.true_negatives,
-        falseNegatives: backendBenchmark.quantum_qsvc.false_negatives,
-        trainTimeMs: backendBenchmark.quantum_qsvc.train_time_ms,
-        inferenceTimeMs: backendBenchmark.quantum_qsvc.inference_time_ms,
-      }
+  const activeQuantumMetrics: ModelMetrics | null = activeSource === 'backend'
+    ? (backendBenchmark?.quantum_qsvc
+        ? {
+            accuracy: backendBenchmark.quantum_qsvc.accuracy,
+            precision: backendBenchmark.quantum_qsvc.precision,
+            recall: backendBenchmark.quantum_qsvc.recall,
+            f1Score: backendBenchmark.quantum_qsvc.f1_score,
+            truePositives: backendBenchmark.quantum_qsvc.true_positives,
+            falsePositives: backendBenchmark.quantum_qsvc.false_positives,
+            trueNegatives: backendBenchmark.quantum_qsvc.true_negatives,
+            falseNegatives: backendBenchmark.quantum_qsvc.false_negatives,
+            trainTimeMs: backendBenchmark.quantum_qsvc.train_time_ms,
+            inferenceTimeMs: backendBenchmark.quantum_qsvc.inference_time_ms,
+          }
+        : null)
     : quantumMetrics;
 
   // Recharts data for Low-Data Scaling LineChart mapped to active source

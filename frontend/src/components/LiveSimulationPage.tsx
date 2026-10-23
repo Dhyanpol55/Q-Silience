@@ -49,10 +49,13 @@ interface LiveStreamPoint {
   battery_soc_pct: number;
   voltage_dev_v: number;
   frequency_dev_hz: number;
-  classicalPred: 'NORMAL' | 'ABNORMAL';
-  quantumPred: 'NORMAL' | 'ABNORMAL';
+  classicalPred: 'NORMAL' | 'ABNORMAL' | 'FAILED';
+  quantumPred: 'NORMAL' | 'ABNORMAL' | 'FAILED';
   isAnomaly: boolean;
   rootCause: string;
+  source: 'backend' | 'local_demo' | 'failed';
+  latencyMs?: number;
+  backendError?: string;
 }
 
 export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
@@ -68,10 +71,11 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
   const [streamHistory, setStreamHistory] = useState<LiveStreamPoint[]>([]);
   const [currentTick, setCurrentTick] = useState<number>(1);
   const [anomalyInjection, setAnomalyInjection] = useState<string>('none');
-  const [backendConnected, setBackendConnected] = useState<boolean>(false);
-  const [lastInferenceSource, setLastInferenceSource] = useState<'backend' | 'local_demo'>('local_demo');
+  const [streamInferenceMode, setStreamInferenceMode] = useState<'local_demo' | 'backend'>('local_demo');
+  const [backendHealth, setBackendHealth] = useState<BackendHealth | null>(null);
+  const [backendStreamError, setBackendStreamError] = useState<string | null>(null);
   const [recentAlerts, setRecentAlerts] = useState<
-    { id: string; time: string; reason: string; cPred: string; qPred: string }[]
+    { id: string; time: string; reason: string; cPred: string; qPred: string; source: string }[]
   >([]);
 
   const tickRef = useRef<number>(1);
@@ -80,9 +84,13 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
 
   // Probe backend on mount
   useEffect(() => {
-    pingBackend().then((res: BackendHealth) => {
-      setBackendConnected(res.status === 'healthy');
-    });
+    pingBackend()
+      .then((res: BackendHealth) => {
+        setBackendHealth(res);
+      })
+      .catch((err) => {
+        setBackendHealth({ status: 'offline', error: err.message });
+      });
   }, []);
 
   // Generate next telemetry tick
@@ -131,63 +139,98 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
       frequency_dev_hz: Number(freqDev.toFixed(3)),
     };
 
-    // Client-side local inference baseline
-    let cLabel: 'NORMAL' | 'ABNORMAL' = 'NORMAL';
-    let qLabel: 'NORMAL' | 'ABNORMAL' = 'NORMAL';
-
-    if (scaler && classicalModel) {
-      const vec = transformSample(sensorVals, scaler);
-      const cRes = predictSample(classicalModel, vec);
-      cLabel = cRes.label === 1 ? 'ABNORMAL' : 'NORMAL';
-
-      if (quantumModel) {
-        const qRes = predictSample(quantumModel, vec);
-        qLabel = qRes.label === 1 ? 'ABNORMAL' : 'NORMAL';
-      } else {
-        qLabel = cLabel;
-      }
-    }
-
-    const isAnomaly = cLabel === 'ABNORMAL' || qLabel === 'ABNORMAL';
-
-    // Asynchronous backend inference (non-blocking, single in-flight request guard)
-    if (backendConnected && !isCallingBackendRef.current) {
-      isCallingBackendRef.current = true;
-      predictWithBackend(sensorVals)
-        .then((res) => {
-          setLastInferenceSource('backend');
-          setStreamHistory((prev) => {
-            if (prev.length === 0) return prev;
-            const updated = [...prev];
-            const idx = updated.findIndex((p) => p.tick === tick);
-            if (idx !== -1) {
-              updated[idx] = {
-                ...updated[idx],
-                classicalPred: res.classical_svc.prediction,
-                quantumPred: res.quantum_qsvc ? res.quantum_qsvc.prediction : updated[idx].quantumPred,
-                isAnomaly: res.classical_svc.prediction === 'ABNORMAL' || (res.quantum_qsvc?.prediction === 'ABNORMAL'),
-              };
-            }
-            return updated;
+    if (streamInferenceMode === 'backend') {
+      // Backend inference mode
+      if (!isCallingBackendRef.current) {
+        isCallingBackendRef.current = true;
+        predictWithBackend(sensorVals)
+          .then((res) => {
+            setBackendStreamError(null);
+            setStreamHistory((prev) => {
+              if (prev.length === 0) return prev;
+              const updated = [...prev];
+              const idx = updated.findIndex((p) => p.tick === tick);
+              if (idx !== -1) {
+                const cPred = res.classical_svc.prediction;
+                const qPred = res.quantum_qsvc ? res.quantum_qsvc.prediction : 'NORMAL';
+                updated[idx] = {
+                  ...updated[idx],
+                  classicalPred: cPred,
+                  quantumPred: qPred,
+                  isAnomaly: cPred === 'ABNORMAL' || qPred === 'ABNORMAL',
+                  source: 'backend',
+                  latencyMs: res.classical_svc.inference_time_ms,
+                };
+              }
+              return updated;
+            });
+          })
+          .catch((err: any) => {
+            const msg = err.message || 'FastAPI backend unreachable';
+            setBackendStreamError(msg);
+            setStreamHistory((prev) => {
+              if (prev.length === 0) return prev;
+              const updated = [...prev];
+              const idx = updated.findIndex((p) => p.tick === tick);
+              if (idx !== -1) {
+                // Do NOT silently replace with local predictions! Record explicit failure
+                updated[idx] = {
+                  ...updated[idx],
+                  classicalPred: 'FAILED',
+                  quantumPred: 'FAILED',
+                  source: 'failed',
+                  backendError: msg,
+                };
+              }
+              return updated;
+            });
+          })
+          .finally(() => {
+            isCallingBackendRef.current = false;
           });
-        })
-        .catch(() => {
-          setLastInferenceSource('local_demo');
-        })
-        .finally(() => {
-          isCallingBackendRef.current = false;
-        });
-    }
+      }
 
-    return {
-      tick,
-      timeStr,
-      ...sensorVals,
-      classicalPred: cLabel,
-      quantumPred: qLabel,
-      isAnomaly,
-      rootCause,
-    };
+      return {
+        tick,
+        timeStr,
+        ...sensorVals,
+        classicalPred: 'NORMAL',
+        quantumPred: 'NORMAL',
+        isAnomaly: false,
+        rootCause,
+        source: 'backend',
+      };
+    } else {
+      // Client-side local inference baseline
+      let cLabel: 'NORMAL' | 'ABNORMAL' = 'NORMAL';
+      let qLabel: 'NORMAL' | 'ABNORMAL' = 'NORMAL';
+
+      if (scaler && classicalModel) {
+        const vec = transformSample(sensorVals, scaler);
+        const cRes = predictSample(classicalModel, vec);
+        cLabel = cRes.label === 1 ? 'ABNORMAL' : 'NORMAL';
+
+        if (quantumModel) {
+          const qRes = predictSample(quantumModel, vec);
+          qLabel = qRes.label === 1 ? 'ABNORMAL' : 'NORMAL';
+        } else {
+          qLabel = cLabel;
+        }
+      }
+
+      const isAnomaly = cLabel === 'ABNORMAL' || qLabel === 'ABNORMAL';
+
+      return {
+        tick,
+        timeStr,
+        ...sensorVals,
+        classicalPred: cLabel,
+        quantumPred: qLabel,
+        isAnomaly,
+        rootCause,
+        source: 'local_demo',
+      };
+    }
   };
 
   // Streaming effect
@@ -211,6 +254,7 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
             reason: nextPt.rootCause,
             cPred: nextPt.classicalPred,
             qPred: nextPt.quantumPred,
+            source: nextPt.source,
           },
           ...prev.slice(0, 5),
         ]);
@@ -222,7 +266,7 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
     }, streamSpeedMs);
 
     return () => clearInterval(interval);
-  }, [isRunning, streamSpeedMs, anomalyInjection, classicalModel, quantumModel, scaler, backendConnected]);
+  }, [isRunning, streamSpeedMs, anomalyInjection, classicalModel, quantumModel, scaler, streamInferenceMode]);
 
   // Initial seed
   useEffect(() => {
@@ -270,18 +314,27 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
                 <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
                   Live Microgrid Simulation Stream
                 </h1>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-cyan-950 text-cyan-400 border border-cyan-800 font-semibold">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800 font-semibold">
                   SYNTHETIC TELEMETRY
                 </span>
-                {lastInferenceSource === 'backend' ? (
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 font-semibold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    FASTAPI INFERENCE
+                {streamInferenceMode === 'backend' ? (
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800 font-semibold flex items-center gap-1.5 shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
+                    LIVE BACKEND INFERENCE
                   </span>
                 ) : (
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-amber-950 text-amber-400 border border-amber-800 font-semibold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800 font-semibold flex items-center gap-1.5 shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                     LOCAL DEMO INFERENCE
+                  </span>
+                )}
+                {backendHealth?.status === 'healthy' ? (
+                  <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                    (Backend Online: {backendHealth.quantumModelStatus === 'genuine_qsvc' ? 'Genuine Qiskit ML QSVC' : backendHealth.quantumModelStatus} · {backendHealth.latencyMs}ms)
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-mono text-slate-500">
+                    (Backend: {backendHealth?.error || 'Offline / Sleep'})
                   </span>
                 )}
               </div>
@@ -292,8 +345,42 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
           </div>
         </div>
 
-        {/* Live Controls with Enhanced Buttons */}
+        {/* Live Controls with Explicit Source Toggle */}
         <div className="flex flex-wrap items-center gap-2.5">
+          {/* Mode Switcher */}
+          <div className="flex items-center text-xs font-mono mr-1">
+            <button
+              onClick={() => {
+                setStreamInferenceMode('local_demo');
+                setBackendStreamError(null);
+              }}
+              className={`px-3 py-1.5 rounded-l-xl border text-xs font-bold transition-all cursor-pointer ${
+                streamInferenceMode === 'local_demo'
+                  ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-xs'
+                  : isDark
+                  ? 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                  : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+              }`}
+            >
+              ⚡ Local Demo
+            </button>
+            <button
+              onClick={() => {
+                setStreamInferenceMode('backend');
+                setBackendStreamError(null);
+              }}
+              className={`px-3 py-1.5 rounded-r-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                streamInferenceMode === 'backend'
+                  ? 'bg-cyan-500 text-slate-950 border-cyan-500 shadow-xs'
+                  : isDark
+                  ? 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                  : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+              }`}
+            >
+              <Server className="w-3 h-3 text-cyan-600 dark:text-cyan-300" />
+              <span>☁️ Live Backend</span>
+            </button>
+          </div>
           <button
             onClick={() => setIsRunning(!isRunning)}
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shadow-xs ${
@@ -346,6 +433,28 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Backend Stream Error Banner */}
+      {backendStreamError && streamInferenceMode === 'backend' && (
+        <div className="p-3.5 rounded-xl border border-rose-300 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 text-xs font-mono flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
+            <div>
+              <span className="font-bold">Live Backend Stream Failed: </span>
+              <span>{backendStreamError}. Local demo predictions are NOT silently substituted.</span>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              setStreamInferenceMode('local_demo');
+              setBackendStreamError(null);
+            }}
+            className="text-rose-600 dark:text-rose-300 underline hover:no-underline cursor-pointer text-xs font-bold"
+          >
+            Switch to Local Demo
+          </button>
+        </div>
+      )}
 
       {/* Fault Injection Toolbar with Enhanced Icons */}
       <div className={`p-4 rounded-2xl border transition-colors ${cardClass}`}>
@@ -460,15 +569,30 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
 
       {/* Real-Time Detection Badges */}
       <div className={`p-5 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors ${cardClass}`}>
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
               <Cpu className="w-5 h-5" />
             </div>
             <div>
-              <span className={`text-[11px] font-mono block ${textMutedClass}`}>CLASSICAL SVC</span>
+              <div className="flex items-center gap-1.5">
+                <span className={`text-[11px] font-mono block ${textMutedClass}`}>CLASSICAL SVC</span>
+                {streamInferenceMode === 'backend' ? (
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800">
+                    LIVE BACKEND
+                  </span>
+                ) : (
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                    LOCAL DEMO
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-1.5 mt-0.5">
-                {latest.classicalPred === 'ABNORMAL' ? (
+                {latest.classicalPred === 'FAILED' ? (
+                  <span className="text-xs font-mono font-bold text-rose-500">
+                    INFERENCE FAILED
+                  </span>
+                ) : latest.classicalPred === 'ABNORMAL' ? (
                   <span className="text-sm font-bold text-rose-500 flex items-center gap-1">
                     <AlertTriangle className="w-4 h-4 text-rose-500" />
                     ANOMALY DETECTED
@@ -490,9 +614,24 @@ export const LiveSimulationPage: React.FC<LiveSimulationPageProps> = ({
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <span className={`text-[11px] font-mono block ${textMutedClass}`}>QUANTUM QSVC</span>
+              <div className="flex items-center gap-1.5">
+                <span className={`text-[11px] font-mono block ${textMutedClass}`}>QUANTUM QSVC</span>
+                {streamInferenceMode === 'backend' ? (
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300 border border-violet-300 dark:border-violet-800">
+                    LIVE BACKEND ({backendHealth?.quantumModelStatus || 'genuine_qsvc'})
+                  </span>
+                ) : (
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                    LOCAL DEMO
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-1.5 mt-0.5">
-                {latest.quantumPred === 'ABNORMAL' ? (
+                {latest.quantumPred === 'FAILED' ? (
+                  <span className="text-xs font-mono font-bold text-rose-500">
+                    INFERENCE FAILED
+                  </span>
+                ) : latest.quantumPred === 'ABNORMAL' ? (
                   <span className="text-sm font-bold text-rose-500 flex items-center gap-1">
                     <AlertTriangle className="w-4 h-4 text-rose-500" />
                     ANOMALY DETECTED

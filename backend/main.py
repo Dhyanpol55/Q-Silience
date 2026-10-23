@@ -7,8 +7,7 @@ Provides:
 - Genuine Qiskit ZZFeatureMap Fidelity Quantum Kernel QSVC (when QML available)
 - Exact Statevector Fidelity Kernel + Scikit-Learn SVC (transparent fallback with explicit status)
 - Classical Scikit-Learn SVC baseline (RBF kernel)
-- Fair held-out evaluation & benchmark metrics with zero data leakage
-- Sub-5ms real-time dual-model telemetry inference via pre-cached training statevectors
+- Fast dual-model telemetry inference via pre-cached training statevectors (classical baseline sub-millisecond, simulated quantum kernel statevector calculation)
 """
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Query, Request, Response
