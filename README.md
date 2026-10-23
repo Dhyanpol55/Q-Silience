@@ -22,7 +22,7 @@
 | :--- | :--- |
 | **Team Name** | Ctrl_AI |
 | **Team ID** | VTU-QFF-HC-0025 |
-| **Official Repository** | [Dhyanpol55/Q-Silience](https://github.com/Dhyanpol55/Q-Silience) |
+| **Official Repository** |(https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git)|
 | **Live Frontend** | [https://qresilience.vercel.app/](https://qresilience.vercel.app/) |
 | **Live Backend API** | [https://q-silience.onrender.com](https://q-silience.onrender.com) |
 | **Backend Health Endpoint** | [https://q-silience.onrender.com/health](https://q-silience.onrender.com/health) |
