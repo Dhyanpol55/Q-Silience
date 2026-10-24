@@ -5,8 +5,6 @@ import {
   Activity,
   BarChart3,
   RefreshCw,
-  Sun,
-  Moon,
   Radio,
   Sparkles,
   Atom,
@@ -33,8 +31,8 @@ interface HeaderProps {
   datasetCount: number;
   isTraining: boolean;
   onResetData: () => void;
-  theme: 'dark' | 'light';
-  onToggleTheme: () => void;
+  theme?: 'dark' | 'light';
+  onToggleTheme?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -43,10 +41,8 @@ export const Header: React.FC<HeaderProps> = ({
   datasetCount,
   isTraining,
   onResetData,
-  theme,
-  onToggleTheme,
 }) => {
-  const isDark = theme === 'dark';
+  const isDark = false;
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [backendHealth, setBackendHealth] = useState<BackendHealth>({ status: 'checking' });
   const [backendModalOpen, setBackendModalOpen] = useState<boolean>(false);
@@ -278,20 +274,6 @@ export const Header: React.FC<HeaderProps> = ({
                   <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" />
                 </button>
 
-                {/* Theme Toggle Button */}
-                <button
-                  onClick={onToggleTheme}
-                  title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-                  className="btn-secondary"
-                  aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-                >
-                  <span className={isDark ? 'text-amber-400' : 'text-slate-600'}>
-                    {isDark ? <Sun className="w-4 h-4 stroke-[2]" /> : <Moon className="w-4 h-4 stroke-[2]" />}
-                  </span>
-                  <span className="hidden lg:inline font-sans text-xs font-medium">
-                    {isDark ? 'Light' : 'Dark'}
-                  </span>
-                </button>
 
                 {/* Reset Data Button */}
                 <button

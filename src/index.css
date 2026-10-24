@@ -5,10 +5,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-  }
-
-  html.dark {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
@@ -19,11 +16,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-  }
-
-  .dark body, body.dark, html.dark body, html.dark {
-    background-color: #070a12;
-    color: #f8fafc;
   }
 
   h1, h2, h3, h4, h5, h6 {

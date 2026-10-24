@@ -34,20 +34,19 @@ export default function App() {
   const [sampleCount] = useState<number>(100);
   const [samples, setSamples] = useState<MicrogridSample[]>([]);
 
-  // Theme State: defaults to 'light'
-  const [theme, setTheme] = useState<'dark' | 'light'>('light');
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
+  // Light mode permanently enforced
+  const theme = 'light' as const;
 
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    document.documentElement.classList.remove('dark');
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('theme');
+      } catch {
+        // ignore
+      }
     }
-  }, [theme]);
+  }, []);
 
   // Training & Evaluation states
   const [isTraining, setIsTraining] = useState<boolean>(true);
@@ -259,7 +258,7 @@ export default function App() {
     handleSelectPage(tabSequence[prevIdx].id);
   };
 
-  const isDark = theme === 'dark';
+  const isDark = false;
 
   // Left-side vertical navigation items with icons, full names, and deep ink fonts
   const leftVerticalNavItems = useMemo(
@@ -271,8 +270,8 @@ export default function App() {
         subtitle: 'Executive Telemetry & KPI Matrix',
         icon: <Activity className="w-4 h-4 stroke-[2.2]" />,
         activeClass: 'bg-cyan-500 text-slate-950 font-extrabold ring-2 ring-cyan-400/50 shadow-md shadow-cyan-500/30',
-        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
-        badgeColor: 'text-slate-950 dark:text-cyan-300 bg-slate-200/90 dark:bg-cyan-500/20 border-slate-300 dark:border-cyan-500/30 font-bold',
+        inactiveClass: 'text-slate-900 hover:text-cyan-600 hover:bg-slate-100 font-bold',
+        badgeColor: 'text-slate-950 bg-slate-200/90 border-slate-300 font-bold',
       },
       {
         id: 'scenario_lab' as PageId,
@@ -281,8 +280,8 @@ export default function App() {
         subtitle: 'Multi-Modal Physics Transient Injector',
         icon: <Zap className="w-4 h-4 stroke-[2.2]" />,
         activeClass: 'bg-amber-500 text-slate-950 font-extrabold ring-2 ring-amber-400/50 shadow-md shadow-amber-500/30',
-        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
-        badgeColor: 'text-slate-950 dark:text-amber-300 bg-slate-200/90 dark:bg-amber-500/20 border-slate-300 dark:border-amber-500/30 font-bold',
+        inactiveClass: 'text-slate-900 hover:text-amber-600 hover:bg-slate-100 font-bold',
+        badgeColor: 'text-slate-950 bg-slate-200/90 border-slate-300 font-bold',
       },
       {
         id: 'investigation' as PageId,
@@ -291,8 +290,8 @@ export default function App() {
         subtitle: '4D State-Space Anomaly Forensics',
         icon: <Eye className="w-4 h-4 stroke-[2.2]" />,
         activeClass: 'bg-cyan-600 text-white font-extrabold ring-2 ring-cyan-500/50 shadow-md shadow-cyan-600/30',
-        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
-        badgeColor: 'text-slate-950 dark:text-cyan-300 bg-slate-200/90 dark:bg-cyan-500/20 border-slate-300 dark:border-cyan-500/30 font-bold',
+        inactiveClass: 'text-slate-900 hover:text-cyan-600 hover:bg-slate-100 font-bold',
+        badgeColor: 'text-slate-950 bg-slate-200/90 border-slate-300 font-bold',
       },
       {
         id: 'live_stream' as PageId,
@@ -306,8 +305,8 @@ export default function App() {
           </div>
         ),
         activeClass: 'bg-rose-500 text-white font-extrabold ring-2 ring-rose-400/50 shadow-md shadow-rose-500/30',
-        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
-        badgeColor: 'text-slate-950 dark:text-rose-300 bg-slate-200/90 dark:bg-rose-500/20 border-slate-300 dark:border-rose-500/30 font-bold',
+        inactiveClass: 'text-slate-900 hover:text-rose-600 hover:bg-slate-100 font-bold',
+        badgeColor: 'text-slate-950 bg-slate-200/90 border-slate-300 font-bold',
       },
       {
         id: 'quantum_lab' as PageId,
@@ -316,8 +315,8 @@ export default function App() {
         subtitle: 'Qiskit ZZFeatureMap Hilbert Space',
         icon: <Atom className="w-4 h-4 stroke-[2]" />,
         activeClass: 'bg-violet-600 text-white font-extrabold ring-2 ring-violet-400/50 shadow-md shadow-violet-600/30',
-        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
-        badgeColor: 'text-slate-950 dark:text-violet-300 bg-slate-200/90 dark:bg-violet-500/20 border-slate-300 dark:border-violet-500/30 font-bold',
+        inactiveClass: 'text-slate-900 hover:text-violet-600 hover:bg-slate-100 font-bold',
+        badgeColor: 'text-slate-950 bg-slate-200/90 border-slate-300 font-bold',
       },
       {
         id: 'benchmark' as PageId,
@@ -326,19 +325,15 @@ export default function App() {
         subtitle: 'Classical vs Quantum Empirical Regimes',
         icon: <BarChart3 className="w-4 h-4 stroke-[2]" />,
         activeClass: 'bg-sky-600 text-white font-extrabold ring-2 ring-sky-400/50 shadow-md shadow-sky-600/30',
-        inactiveClass: 'text-slate-900 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-100 dark:hover:bg-slate-900/90 font-bold',
-        badgeColor: 'text-slate-950 dark:text-sky-300 bg-slate-200/90 dark:bg-sky-500/20 border-slate-300 dark:border-sky-500/30 font-bold',
+        inactiveClass: 'text-slate-900 hover:text-sky-600 hover:bg-slate-100 font-bold',
+        badgeColor: 'text-slate-950 bg-slate-200/90 border-slate-300 font-bold',
       },
     ],
     []
   );
 
   return (
-    <div
-      className={`min-h-screen flex flex-col font-sans transition-colors duration-200 ${
-        isDark ? 'bg-[#090d16] text-slate-100' : 'bg-white text-slate-900'
-      }`}
-    >
+    <div className="min-h-screen flex flex-col font-sans transition-colors duration-200 bg-white text-slate-900">
       <div className="xl:pl-72 transition-all">
         <Header
           currentPage={currentPage}
@@ -347,7 +342,6 @@ export default function App() {
           isTraining={isTraining}
           onResetData={handleResetData}
           theme={theme}
-          onToggleTheme={toggleTheme}
         />
       </div>
 
@@ -663,11 +657,7 @@ export default function App() {
       </div>
 
       {/* Global Footer */}
-      <footer
-        className={`border-t py-8 sm:py-10 text-xs font-mono transition-colors xl:pl-[220px] ${
-          isDark ? 'border-slate-800/80 bg-slate-950 text-slate-300' : 'border-slate-300 bg-slate-50 text-slate-700'
-        }`}
-      >
+      <footer className="border-t py-8 sm:py-10 text-xs font-mono transition-colors xl:pl-[220px] border-slate-300 bg-slate-50 text-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2 text-center sm:text-left">
             <span className="font-bold text-slate-900 dark:text-slate-100">Q-RESILIENCE AI</span>
