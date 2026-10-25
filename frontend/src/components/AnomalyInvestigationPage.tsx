@@ -141,9 +141,9 @@ export const AnomalyInvestigationPage: React.FC<AnomalyInvestigationPageProps> =
     return { total, physicalFaults, classicalFlagged, quantumFlagged, disagreements };
   }, [enrichedSamples]);
 
-  const cardClass = isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-xs';
-  const headingClass = isDark ? 'text-white' : 'text-slate-900';
-  const textMutedClass = isDark ? 'text-slate-400' : 'text-slate-600';
+  const cardClass = isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-300 shadow-xs';
+  const headingClass = isDark ? 'text-white' : 'text-slate-950 font-extrabold';
+  const textMutedClass = isDark ? 'text-slate-300' : 'text-slate-800 font-medium';
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

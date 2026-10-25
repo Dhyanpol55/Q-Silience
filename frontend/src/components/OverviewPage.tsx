@@ -150,17 +150,17 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
     reason: s.scenario_reason,
   }));
 
-  // High-contrast, WCAG AA compliant surface and text tokens
+  // High-contrast, WCAG AA compliant surface and text tokens with deep ink black fonts
   const cardClass = isDark
     ? 'bg-slate-900/90 border-slate-800 shadow-md'
-    : 'bg-white border-slate-200 shadow-xs';
+    : 'bg-white border-slate-300 shadow-xs';
   const innerCardClass = isDark
     ? 'bg-slate-950/80 border-slate-800'
-    : 'bg-slate-50 border-slate-200/90';
-  const headingClass = isDark ? 'text-white' : 'text-slate-950';
-  const textBodyClass = isDark ? 'text-slate-200' : 'text-slate-700';
-  const textSubtleClass = isDark ? 'text-slate-400' : 'text-slate-500';
-  const gridStroke = isDark ? '#1e293b' : '#e2e8f0';
+    : 'bg-slate-50 border-slate-300';
+  const headingClass = isDark ? 'text-white' : 'text-slate-950 font-extrabold';
+  const textBodyClass = isDark ? 'text-slate-100' : 'text-slate-900';
+  const textSubtleClass = isDark ? 'text-slate-300' : 'text-slate-800 font-medium';
+  const gridStroke = isDark ? '#1e293b' : '#cbd5e1';
 
   // Calculate comparative accuracy gap
   const cAcc = classicalMetrics ? classicalMetrics.accuracy * 100 : 100.0;
