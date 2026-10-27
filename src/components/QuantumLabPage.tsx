@@ -196,10 +196,10 @@ export const QuantumLabPage: React.FC<QuantumLabPageProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
+                <h2 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
                   Quantum Circuit & Kernel Architecture
-                </h1>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-violet-100 dark:bg-violet-950/80 text-violet-800 dark:text-violet-300 border border-violet-200 dark:border-violet-800">
+                </h2>
+                <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-violet-100 dark:bg-violet-950/80 text-violet-800 dark:text-violet-300 border border-violet-200 dark:border-violet-800">
                   QISKIT 1.3+ ZZFEATUREMAP
                 </span>
               </div>

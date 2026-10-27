@@ -50,10 +50,10 @@ export default function Sidebar({ activeSection, onSelectSection, className }: S
       <div>
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="font-extrabold tracking-wider text-cyan-600 dark:text-cyan-400 text-sm">Q-RESILIENCE AI</h1>
-            <p className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Quantum Microgrid AI</p>
+            <div className="font-extrabold tracking-wider text-cyan-600 dark:text-cyan-400 text-sm" role="banner">Q-RESILIENCE AI</div>
+            <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Quantum Microgrid AI</p>
           </div>
-          <span className="text-[10px] font-mono font-semibold bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700">
+          <span className="text-xs font-mono font-semibold bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-0.5 rounded-md border border-slate-300 dark:border-slate-700">
             v1.4.0
           </span>
         </div>
@@ -97,14 +97,14 @@ export default function Sidebar({ activeSection, onSelectSection, className }: S
 
       {/* Footer Info / Status */}
       <div className="pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex flex-col gap-2">
-        <div className="flex items-center justify-between text-[11px] font-medium">
+        <div className="flex items-center justify-between text-xs font-medium">
           <span>Local Engine</span>
           <span className="flex h-2 w-2 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
         </div>
-        <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">IEEE 1547.4 & EN 50160</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">IEEE 1547.4 &amp; EN 50160</p>
       </div>
     </aside>
   );

@@ -156,10 +156,10 @@ export const AnomalyInvestigationPage: React.FC<AnomalyInvestigationPageProps> =
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
+                <h2 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
                   Anomaly Investigation & Diagnostic Explorer
-                </h1>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">
+                </h2>
+                <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">
                   DEEP TELEMETRY AUDIT
                 </span>
               </div>

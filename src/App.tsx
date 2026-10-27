@@ -620,10 +620,10 @@ export default function App() {
 
           {/* Active section label */}
           <div className="text-left font-mono leading-tight">
-            <div className="text-[11px] font-bold text-cyan-800">
+            <div className="text-xs font-bold text-cyan-800">
               {tabSequence[currentIndex]?.number}. {tabSequence[currentIndex]?.label}
             </div>
-            <div className="text-[9px] text-slate-500">
+            <div className="text-xs text-slate-500">
               Scroll spy synchronized
             </div>
           </div>

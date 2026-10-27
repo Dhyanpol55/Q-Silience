@@ -23,7 +23,8 @@
 | :--- | :--- |
 | **Team Name** | Ctrl_AI |
 | **Team ID** | VTU-QFF-HC-0025 |
-| **Official Repository** | [vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai](https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git) |
+| **GitHub Repository** | [Dhyanpol55/Q-Silience](https://github.com/Dhyanpol55/Q-Silience) |
+| **Hackathon Team Repo** | [vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai](https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git) |
 | **Live Frontend** | [https://qresilience.vercel.app/](https://qresilience.vercel.app/) |
 | **Demo Video (YouTube)** | [https://youtu.be/HAgrzv3rs3k](https://youtu.be/HAgrzv3rs3k) |
 | **Live Backend API** | [https://q-silience.onrender.com](https://q-silience.onrender.com) |
@@ -180,12 +181,19 @@ The following are the **actual measured benchmark results** evaluated on the liv
 | **Feature Map** | Classical Gaussian RBF | Qiskit `ZZFeatureMap` (4 qubits, reps=2, linear) |
 | **Backend Environment** | Scikit-Learn 1.5.0 | Qiskit 1.4.6, Qiskit Machine Learning 0.8.2 |
 | **Backend Model Status** | `ready` | `genuine_qsvc` (`qml_available=true`) |
-| **Test Accuracy** | **100.0%** | **86.67%** (13 / 15 correct) |
+| **Test Accuracy** | **100.0%** (15 / 15 correct) | **86.67%** (13 / 15 correct) |
 | **Precision** | **1.000** | **0.8000** |
 | **Recall** | **1.000** | **1.0000** |
 | **F1-Score** | **1.000** | **0.8571** |
 | **Training Time** | **2.05 ms** | **27,197.41 ms** (~27.2 seconds) |
 | **Inference Time (15 test samples)** | **0.29 ms** | **16,793.07 ms** (~16.8 seconds) |
+
+#### Confusion Matrix (Held-Out Test Set, n=15)
+- **Classical SVC**: `[[8, 0], [0, 7]]` — TN: 8, FP: 0, FN: 0, TP: 7 (100% precision & recall)
+- **Genuine QSVC**: `[[6, 2], [0, 7]]` — TN: 6, FP: 2, FN: 0, TP: 7 (100% fault recall, 2 nominal false alarms)
+
+> **Note on Latency & Simulation Metrics:**  
+> Genuine Qiskit Machine Learning `QSVC` with `FidelityQuantumKernel` evaluates $45 \times 45 = 2,025$ transition probability circuits during training and $15 \times 45 = 675$ circuits during batch test inference on Render CPU. The ~1.2s – 1.3s figure occasionally referenced in preliminary presentation slides corresponds to the local in-browser analytical statevector transition matrix calculation over a smaller batch, not full Python Qiskit circuit execution.
 
 ---
 
@@ -327,7 +335,8 @@ npm run lint
 
 - 🌐 **Live Demo:** https://qresilience.vercel.app/
 - 🎥 **Video Demo (YouTube):** https://youtu.be/HAgrzv3rs3k
-- 💻 **Source Code:** https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git
+- 💻 **Project Repository:** https://github.com/Dhyanpol55/Q-Silience
+- 🏛️ **Official Hackathon Repo:** https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git
 - 🔌 **Backend Health Check:** https://q-silience.onrender.com/health
 
 ---
