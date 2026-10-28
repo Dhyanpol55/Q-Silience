@@ -26,6 +26,9 @@ import {
   Radio,
   Atom,
   BarChart3,
+  Video,
+  GitBranch,
+  ExternalLink,
 } from 'lucide-react';
 
 export default function App() {
@@ -605,8 +608,6 @@ export default function App() {
                     className={`w-2.5 h-2.5 rounded-full transition-all ${
                       isActive
                         ? 'bg-cyan-500 ring-2 ring-cyan-500/40 scale-125'
-                        : isDark
-                        ? 'bg-slate-700 hover:bg-slate-500'
                         : 'bg-slate-400 hover:bg-slate-500'
                     }`}
                   />
@@ -615,24 +616,24 @@ export default function App() {
             })}
           </div>
 
-          <div className="h-5 w-px bg-slate-200 dark:bg-slate-800" />
+          <div className="h-5 w-px bg-slate-200" />
 
           {/* Active section label */}
           <div className="text-left font-mono leading-tight">
-            <div className="text-[11px] font-bold text-cyan-800 dark:text-cyan-300">
+            <div className="text-xs font-bold text-cyan-800">
               {tabSequence[currentIndex]?.number}. {tabSequence[currentIndex]?.label}
             </div>
-            <div className="text-[9px] text-slate-500 dark:text-slate-400">
+            <div className="text-xs text-slate-500">
               Scroll spy synchronized
             </div>
           </div>
 
-          <div className="flex items-center gap-1 border-l border-slate-200 dark:border-slate-800 pl-2">
+          <div className="flex items-center gap-1 border-l border-slate-200 pl-2">
             <button
               onClick={handlePrevTab}
               title="Previous Chapter"
               aria-label="Scroll to previous chapter"
-              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-slate-700 dark:text-slate-200"
+              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-slate-700"
             >
               <ChevronUp className="w-3.5 h-3.5" />
             </button>
@@ -640,7 +641,7 @@ export default function App() {
               onClick={handleNextTab}
               title="Next Chapter"
               aria-label="Scroll to next chapter"
-              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-slate-700 dark:text-slate-200"
+              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-slate-700"
             >
               <ChevronDown className="w-3.5 h-3.5" />
             </button>
@@ -648,7 +649,7 @@ export default function App() {
               onClick={() => handleSelectPage('overview')}
               title="Return to Executive Overview"
               aria-label="Scroll to top overview"
-              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-cyan-800 dark:text-cyan-300"
+              className="btn-ghost p-1.5 h-7 w-7 rounded-lg text-cyan-800"
             >
               <ArrowUp className="w-3.5 h-3.5" />
             </button>
@@ -659,10 +660,34 @@ export default function App() {
       {/* Global Footer */}
       <footer className="border-t py-8 sm:py-10 text-xs font-mono transition-colors xl:pl-[220px] border-slate-300 bg-slate-50 text-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-2 text-center sm:text-left">
+          <div className="flex flex-wrap items-center gap-2.5 text-center sm:text-left">
             <span className="font-bold text-slate-900 dark:text-slate-100">Q-RESILIENCE AI</span>
             <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
             <span className="text-cyan-800 dark:text-cyan-300 font-bold">Quantum + AI/ML Track</span>
+            <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
+            <a
+              href="https://youtu.be/HAgrzv3rs3k"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded font-semibold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 transition-colors"
+              title="Watch VTU-Qiskit Fall Fest Hackathon Demo Video on YouTube"
+            >
+              <Video className="w-3.5 h-3.5 text-rose-500" />
+              <span>Watch Demo</span>
+              <ExternalLink className="w-3 h-3 opacity-70" />
+            </a>
+            <span aria-hidden="true" className="text-slate-400 dark:text-slate-600">·</span>
+            <a
+              href="https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 transition-colors"
+              title="GitHub Repository: vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai"
+            >
+              <GitBranch className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+              <span>GitHub Repo</span>
+              <ExternalLink className="w-3 h-3 opacity-70" />
+            </a>
           </div>
           <div className="text-xs text-slate-600 dark:text-slate-400 text-center sm:text-right">
             Powered by Qiskit Quantum Feature Maps &amp; Scikit-learn Baselines

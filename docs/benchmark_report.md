@@ -3,7 +3,7 @@
 ## 1. Executive Summary
 This report documents the empirical performance comparison between a **Classical Support Vector Classifier (SVC with RBF kernel)** and a **Genuine Quantum Support Vector Classifier (QSVC with Qiskit ZZFeatureMap Fidelity Kernel)** evaluated on synthetic smart microgrid telemetry.
 
-**Key Finding:** The classical SVC baseline achieves 100% test accuracy with sub-millisecond execution (0.29 ms test inference), whereas genuine Qiskit ML QSVC attains 86.67% test accuracy (13/15 correct) with substantial classical simulation latency (~16.8 seconds test inference). These preliminary results on synthetic benchmarks demonstrate functional quantum feature map encoding, but **provide zero evidence of quantum advantage or sample-efficiency superiority** over standard classical methods on this dataset.
+**Key Finding:** The classical SVC baseline achieves 100% test accuracy with sub-millisecond execution (0.35 ms test inference), whereas genuine Qiskit ML QSVC attains 86.7% test accuracy (13/15 correct) with substantial classical simulation latency (~17.4 seconds test inference). These preliminary results on synthetic benchmarks demonstrate functional quantum feature map encoding, but **provide zero evidence of quantum advantage or sample-efficiency superiority** over standard classical methods on this dataset.
 
 ## 2. Experimental Setup
 - **Dataset:** 60 synthetic microgrid telemetry samples generated from IEEE 1547.4 physics equations modeling solar PV generation curves, industrial load surges, and battery state-of-charge.
@@ -25,12 +25,12 @@ The table below reflects the actual measured performance from the live backend `
 | **Feature Map** | Classical Gaussian RBF | Qiskit `ZZFeatureMap` (4 qubits, reps=2, linear) | Non-linear Hilbert embedding |
 | **Backend Environment** | Scikit-Learn 1.5.0 | Qiskit 1.4.6, Qiskit Machine Learning 0.8.2 | Live Render Service |
 | **Backend Model Status** | `ready` | `genuine_qsvc` (`qml_available=true`) | Real Qiskit QML execution |
-| **Test Accuracy** | **100.0%** (15 / 15) | **86.67%** (13 / 15) | Classical +13.33% |
-| **Precision** | **1.000** | **0.8000** | Classical +0.200 |
-| **Recall** | **1.000** | **1.0000** | Parity (both 100% fault recall) |
-| **F1-Score** | **1.000** | **0.8571** | Classical +0.1429 |
-| **Training Time (45 samples)** | **2.05 ms** | **27,197.41 ms** (~27.2 seconds) | Classical is ~13,260x faster |
-| **Inference Time (15 test samples)** | **0.29 ms** | **16,793.07 ms** (~16.8 seconds) | Classical is ~57,900x faster |
+| **Test Accuracy** | **100.0%** (15 / 15) | **86.7%** (13 / 15) | Classical +13.3% |
+| **Precision** | **1.000** | **0.857** | Classical +0.143 |
+| **Recall** | **1.000** | **0.857** | Classical +0.143 |
+| **F1-Score** | **1.000** | **0.857** | Classical +0.143 |
+| **Training Time (45 samples)** | **3.1 ms** | **27,012.02 ms** (~27.0 seconds) | Classical is ~8,713x faster |
+| **Inference Time (15 test samples)** | **0.35 ms** | **17,393.71 ms** (~17.4 seconds) | Classical is ~49,696x faster |
 
 ## 4. Confusion Matrix Details (Held-Out Test Set, n=15)
 
@@ -41,12 +41,12 @@ The table below reflects the actual measured performance from the live backend `
 - **True Positives (Detected Fault):** 7
 
 ### Genuine Qiskit QSVC:
-- **True Negatives (Normal):** 6
-- **False Positives (False Alarm):** 2
-- **False Negatives (Missed Fault):** 0
-- **True Positives (Detected Fault):** 7
+- **True Negatives (Normal):** 7
+- **False Positives (False Alarm):** 1
+- **False Negatives (Missed Fault):** 1
+- **True Positives (Detected Fault):** 6
 
-Both models successfully captured all 7 true fault conditions (100% recall). The quantum model experienced 2 false positive classifications on borderline nominal samples, resulting in 86.67% overall accuracy.
+The classical SVC achieved flawless 100% precision, recall, and accuracy on this partition. Genuine QSVC correctly classified 13 of 15 samples (7 true negatives and 6 true positives), with 1 false alarm and 1 missed fault, resulting in 86.7% accuracy and 0.857 F1-score.
 
 ## 5. Low-Data Sample Regime Analysis
 When evaluating models across reduced training partitions ($N \in \{15, 25, 35, 45\}$):

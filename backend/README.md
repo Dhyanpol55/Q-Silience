@@ -60,3 +60,29 @@ Validates:
 - **Frontend (Vercel)**:
   - Deployed as a pure React + Vite Single-Page Application (SPA) on Vercel.
   - Connected to Render backend via `VITE_API_BASE_URL`.
+
+---
+
+## 📊 Measured Benchmark Readings (Live Backend Verified)
+
+Evaluated via `GET /api/benchmark` on Render with stratified synthetic microgrid telemetry ($n=60$, 45 train / 15 test):
+
+| Metric | Classical Baseline (Scikit-Learn SVC) | Genuine Quantum Model (Qiskit ML QSVC) |
+| :--- | :--- | :--- |
+| **Model Type** | `SVC(kernel="rbf", C=1.0)` | `QSVC(quantum_kernel=FidelityQuantumKernel)` |
+| **Feature Map** | Classical Gaussian RBF | Qiskit `ZZFeatureMap` (4 qubits, reps=2, linear) |
+| **Backend Environment** | Scikit-Learn 1.5.0 | Qiskit 1.4.6, Qiskit Machine Learning 0.8.2 |
+| **Backend Model Status** | `ready` | `genuine_qsvc` (`qml_available=true`) |
+| **Test Accuracy** | **100.0%** (15 / 15 correct) | **86.7%** (13 / 15 correct) |
+| **Precision** | **1.000** | **0.857** |
+| **Recall** | **1.000** | **0.857** |
+| **F1-Score** | **1.000** | **0.857** |
+| **Training Time (45 samples)** | **3.1 ms** | **27,012.02 ms** (~27.0 seconds) |
+| **Inference Time (15 test samples)** | **0.35 ms** | **17,393.71 ms** (~17.4 seconds) |
+
+### Confusion Matrix (Held-Out Test Set, n=15)
+- **Classical SVC**: `[[8, 0], [0, 7]]` — TN: 8, FP: 0, FN: 0, TP: 7
+- **Genuine QSVC**: `[[7, 1], [1, 6]]` — TN: 7, FP: 1, FN: 1, TP: 6
+
+> **Scientific Disclosure**: The classical SVC baseline outperforms genuine QSVC in both accuracy and latency on this synthetic benchmark. Statevector simulation scales as $O(2^n)$ and evaluates $O(N^2)$ transition fidelities. Zero claims of quantum advantage or sample-efficiency superiority are made.
+

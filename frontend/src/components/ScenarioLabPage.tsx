@@ -257,10 +257,10 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
+              <h2 className={`text-xl sm:text-2xl font-bold tracking-tight ${headingClass}`}>
                 Scenario Simulation Lab
-              </h1>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+              </h2>
+              <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
                 SYNTHETIC TELEMETRY
               </span>
             </div>
@@ -467,9 +467,9 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
                   <div className="w-5 h-5 rounded-md bg-slate-200/60 dark:bg-slate-800 flex items-center justify-center shrink-0">
                     {getPresetIcon(preset.id)}
                   </div>
-                  <span className={`text-[11px] font-bold truncate ${headingClass}`}>{preset.name}</span>
+                  <span className={`text-xs font-bold leading-tight ${headingClass}`}>{preset.name}</span>
                 </div>
-                <div className="text-[10px] text-cyan-800 dark:text-cyan-300 font-mono font-semibold truncate">
+                <div className="text-xs text-cyan-800 dark:text-cyan-300 font-mono font-semibold">
                   {preset.badge}
                 </div>
               </button>
@@ -486,10 +486,10 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
               <Sliders className="w-4 h-4" />
             </div>
             <div>
-              <h2 className={`text-xs font-bold uppercase tracking-wider ${headingClass}`}>
+              <h2 className={`text-sm font-bold ${headingClass}`}>
                 What-If Differential Telemetry &amp; Model Transition Analyzer
               </h2>
-              <p className={`text-[11px] ${textMutedClass}`}>
+              <p className={`text-xs ${textMutedClass}`}>
                 Baseline snapshot: <strong className="text-cyan-700 dark:text-cyan-300">{baselineValues.name}</strong> (locked at {baselineLockedAt})
               </p>
             </div>
@@ -1285,8 +1285,8 @@ export const ScenarioLabPage: React.FC<ScenarioLabPageProps> = ({
               }`}
             >
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-mono font-bold text-rose-700 dark:text-rose-400">{st.code}</span>
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
+                <span className="text-xs font-mono font-bold text-rose-700 dark:text-rose-400">{st.code}</span>
+                <span className="text-xs px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
                   {st.category}
                 </span>
               </div>

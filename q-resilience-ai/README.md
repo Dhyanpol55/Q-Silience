@@ -1,8 +1,15 @@
 <div align="center">
 
-# Ctrl_AI
+# Q-Resilience AI (Ctrl_AI)
 
 **VTU-QFF-HC-0025** &nbsp;|&nbsp; Tier: **Both**
+
+An Autonomous Dual-Model Quantum vs Classical Microgrid Anomaly Detection Platform built for the **VTU-Qiskit Fall Fest 2026 Hackathon**.
+
+[![Live Frontend](https://img.shields.io/badge/Vercel-Live_App-blue?logo=vercel)](https://qresilience.vercel.app)
+[![Live Backend](https://img.shields.io/badge/Render-FastAPI_Backend-green?logo=fastapi)](https://q-silience.onrender.com/health)
+[![Video Demo](https://img.shields.io/badge/YouTube-Video_Demo-red?logo=youtube)](https://youtu.be/HAgrzv3rs3k)
+[![GitHub Primary](https://img.shields.io/badge/GitHub-Dhyanpol55%2FQ--Silience-181717?logo=github)](https://github.com/Dhyanpol55/Q-Silience)
 
 </div>
 
@@ -15,7 +22,8 @@
 | **Team** | Ctrl_AI |
 | **Team ID** | VTU-QFF-HC-0025 |
 | **Tier** | Both |
-| **Repository** | [vtu-hc-ctrl-ai](https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git) |
+| **Primary Repo** | [Dhyanpol55/Q-Silience](https://github.com/Dhyanpol55/Q-Silience) |
+| **Hackathon Repo** | [vtu-hc-ctrl-ai](https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git) |
 | **Organisation** | [vtu-qiskit-fall-fest-2026](https://github.com/vtu-qiskit-fall-fest-2026) |
 | **Event** | VTU-QFF Hackathon — VTU-Qiskit Fall Fest 2026 |
 
@@ -25,89 +33,125 @@
 
 ## 📌 Table of Contents
 
-- [Team Members](#-team-members-github-ids)
+- [Live Deployments & Demo](#-live-deployments--demo)
 - [Problem Statement](#-problem-statement)
 - [Proposed Solution](#-proposed-solution)
 - [Approach & Architecture](#-approach--architecture)
+- [Empirical Benchmark & Measured Results](#-empirical-benchmark--measured-results)
+- [Scientific Disclosures & Integrity](#-scientific-disclosures--integrity)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [How to Run](#-how-to-run)
-- [How to Push Code](#-how-to-push-code)
 - [Submission Checklist](#-submission-checklist)
-- [Resources](#-resources)
 - [License](#-license)
 
 ---
 
-## 👥 Team Members (GitHub IDs)
+## 🌐 Live Deployments & Demo
 
-> Members are added to this repository as **collaborators** and must accept the
-> GitHub invitation before they can push. Add your GitHub username below.
-
-| # | Name | GitHub Username | Role |
-| :-- | :--- | :--- | :--- |
-| 1 | _Add your name_ | _your-github-username_ | _Team Lead_ |
-| 2 | _Add your name_ | _your-github-username_ | _Developer_ |
-| 3 | _Add your name_ | _your-github-username_ | _Developer_ |
-
-<!--
-Optional: add a plain list instead of the table above.
-- @username1
-- @username2
--->
+- **Live Production App (Vercel)**: [https://qresilience.vercel.app](https://qresilience.vercel.app)
+- **Live Backend API (Render)**: [https://q-silience.onrender.com](https://q-silience.onrender.com)
+  - Health & Version Status: [`https://q-silience.onrender.com/health`](https://q-silience.onrender.com/health)
+  - Empirical Benchmark Endpoint: [`https://q-silience.onrender.com/api/benchmark`](https://q-silience.onrender.com/api/benchmark)
+  - Interactive API Docs (Swagger): [`https://q-silience.onrender.com/docs`](https://q-silience.onrender.com/docs)
+- **Video Walkthrough**: [https://youtu.be/HAgrzv3rs3k](https://youtu.be/HAgrzv3rs3k)
 
 ---
 
 ## ❓ Problem Statement
 
-<!--
-State the problem you are solving. Be specific: what is broken or missing,
-who experiences it, and why does it matter. Link to the official problem
-statement from the brief if one applies.
--->
+**Problem:** Modern smart microgrids operating with high penetration of inverter-based distributed energy resources (DERs) suffer from ultra-low physical inertia. Transients such as cloud-induced solar PV ramp loss, industrial load surges, and battery inverter tripping evolve within sub-second timescales, rendering conventional SCADA threshold heuristics slow, brittle, and susceptible to cascading outages.
 
-**Problem:** _Describe the problem in 2–3 sentences._
+**Why it matters:** As electrical grids decarbonize, detecting non-linear voltage and frequency deviations before islanding or tripping occurs is vital for power system resilience. Assessing whether quantum Hilbert space feature representations offer viable fault classification boundaries under low-sample constraints is a key open question in applied quantum machine learning.
 
-**Why it matters:** _Explain the impact or opportunity._
-
-**Track / Category:** _Online / Offline · Track 1 / Track 2 · <domain>_
+**Track / Category:** Both (Online / Offline Track) · Clean Energy & Smart Power Systems · Quantum Machine Learning
 
 ---
 
 ## 💡 Proposed Solution
 
-<!--
-Describe your solution. Keep it concrete: the core idea, the user flow, and
-the quantum/ML technique you are applying.
--->
+**Solution:** Q-Resilience AI provides an end-to-end, dual-model microgrid anomaly detection platform. It evaluates synthetic multi-bus telemetry against an IEEE 1547.4 physics model and performs simultaneous inference using a classical baseline (`SVC` with RBF kernel) and a genuine quantum model (Qiskit Machine Learning `QSVC` using a 4-qubit `ZZFeatureMap` and `FidelityQuantumKernel`).
 
-**Solution:** _In 2–3 sentences, describe what you built._
+**Key idea:** Non-linear sensor telemetry $[P_d, P_{pv}, \Delta V, \Delta f]$ is min-max scaled into $[0, \pi]$ and encoded into quantum state amplitudes via parameterized single-qubit rotations and entangling $ZZ(\theta)$ gates, enabling empirical evaluation of quantum kernel classification against classical baselines.
 
-**Key idea:** _The one-line technical summary of your approach._
-
-**Why this works:** _How your approach addresses the problem statement._
+**Why this works:** The platform offers side-by-side transparency: operators can observe real-time telemetry streaming, simulate operational stress scenarios, inspect the exact parameterized quantum circuits, and review rigorous empirical benchmark statistics directly fetched from a live cloud backend.
 
 ---
 
 ## 🧩 Approach & Architecture
 
-<!--
-Walk through how it works. A simple pipeline diagram in text or Mermaid is ideal.
--->
-
 ```mermaid
-flowchart LR
-    A[Input Data] --> B[Preprocessing]
-    B --> C[Quantum Circuit / Model]
-    C --> D[Post-processing]
-    D --> E[Output]
+flowchart TD
+    Sensor[Microgrid Telemetry<br/>Active Load, Solar PV, Voltage, Frequency]
+    Pre[Stratified Preprocessing<br/>MinMaxScaler to 0..pi]
+    Classical[Classical SVC Baseline<br/>Scikit-Learn RBF Kernel]
+    Quantum[Genuine Qiskit QSVC<br/>4-Qubit ZZFeatureMap + Fidelity Kernel]
+    Bench[Empirical Evaluation<br/>Accuracy, Precision, Recall, F1, Latency]
+
+    Sensor --> Pre
+    Pre --> Classical
+    Pre --> Quantum
+    Classical --> Bench
+    Quantum --> Bench
 ```
 
-1. **Input** — _what data goes in and in what format_
-2. **Preprocessing** — _cleaning, feature extraction, encoding_
-3. **Quantum core** — _the circuit, ansatz, or algorithm used_
-4. **Post-processing** — _decoding, measurement, scoring_
-5. **Output** — _what the user finally gets_
+1. **Input**: 4 physical telemetry streams normalized to $[0, \pi]$ (active load $P_d$, PV generation $P_{pv}$, voltage deviation $\Delta V$, and frequency deviation $\Delta f$).
+2. **Preprocessing**: Stratified 75% train (45 samples), 25% test (15 samples) with seed `42` and zero data leakage.
+3. **Quantum Core**: Qiskit `ZZFeatureMap` (4 qubits, reps=2, linear entanglement) paired with `FidelityQuantumKernel` executing via Qiskit 1.4.6 and Qiskit Machine Learning 0.8.2.
+4. **Classical Core**: Scikit-Learn `SVC(kernel="rbf", C=1.0, gamma="scale")`.
+5. **Output**: Real-time dual classification (Normal vs Anomaly), probability confidence, statevector fidelities, and benchmark metrics.
+
+---
+
+## 📊 Empirical Benchmark & Measured Results
+
+The table below presents the **actual, exact measured empirical readings** evaluated on the live Render cloud service (`/api/benchmark`) on the held-out test partition ($n=15$ test samples, $n=45$ training samples):
+
+| Metric | Classical Baseline (Scikit-Learn SVC) | Genuine Quantum Model (Qiskit ML QSVC) | Empirical Finding |
+| :--- | :--- | :--- | :--- |
+| **Model Type** | `SVC(kernel="rbf", C=1.0)` | `QSVC(quantum_kernel=FidelityQuantumKernel)` | Baseline vs Quantum |
+| **Feature Map** | Classical Gaussian RBF | Qiskit `ZZFeatureMap` (4 qubits, reps=2, linear) | Hilbert space encoding |
+| **Backend Environment** | Scikit-Learn 1.5.0 | Qiskit 1.4.6, Qiskit Machine Learning 0.8.2 | Python 3.11 on Render |
+| **Backend Model Status** | `ready` | `genuine_qsvc` (`qml_available=true`) | Real Qiskit QML execution |
+| **Test Accuracy** | **100.0%** (15 / 15 correct) | **86.7%** (13 / 15 correct) | Classical leads by +13.3% |
+| **Precision** | **1.000** | **0.857** | Classical leads by +0.143 |
+| **Recall** | **1.000** | **0.857** | Classical leads by +0.143 |
+| **F1-Score** | **1.000** | **0.857** | Classical leads by +0.143 |
+| **Training Time (45 samples)** | **3.1 ms** | **27,012.02 ms** (~27.0 seconds) | Classical is ~8,713x faster |
+| **Inference Time (15 test samples)** | **0.35 ms** | **17,393.71 ms** (~17.4 seconds) | Classical is ~49,696x faster |
+
+### Confusion Matrix (Held-Out Test Set, n=15)
+
+- **Classical SVC**: `[[8, 0], [0, 7]]`
+  - True Negatives (Nominal): **8**
+  - False Positives (False Alarm): **0**
+  - False Negatives (Missed Fault): **0**
+  - True Positives (Detected Fault): **7**
+  - *Result*: Flawless 100% precision, recall, and accuracy on this partition.
+
+- **Genuine QSVC**: `[[7, 1], [1, 6]]`
+  - True Negatives (Nominal): **7**
+  - False Positives (False Alarm): **1**
+  - False Negatives (Missed Fault): **1**
+  - True Positives (Detected Fault): **6**
+  - *Result*: 13 / 15 correct classifications yielding 86.7% accuracy, 0.857 precision, 0.857 recall, and 0.857 F1-score.
+
+---
+
+## 🔬 Scientific Disclosures & Integrity
+
+In accordance with strict scientific disclosure guidelines:
+
+1. **No Evidence of Quantum Advantage**:
+   - The genuine QSVC demonstrates that quantum state embedding and kernel evaluation successfully classify microgrid anomalies (86.7% accuracy, 0.857 F1).
+   - However, **classical SVC achieves 100% test accuracy in a fraction of a millisecond (0.35 ms vs 17,393.71 ms)**.
+   - We make **zero claims of quantum supremacy or sample-efficiency superiority** over classical baselines on this dataset.
+2. **Computational Overhead of Quantum Simulation**:
+   - Classical statevector simulation of quantum circuits scales exponentially ($O(2^n)$) and requires quadratic transition evaluations ($O(N^2)$). For 45 training samples, $45 \times 45 = 2,025$ kernel circuits are evaluated, explaining the ~27.0s training latency.
+3. **Synthetic Telemetry Disclaimer**:
+   - Telemetry is generated from mathematical representations of IEEE 1547.4 distributed energy resource physics for benchmarking purposes; physical grid deployment would require validation against real-world PMU/synchrophasor hardware streams.
+4. **Data Source Transparency**:
+   - The UI provides an explicit toggle between **Local Demo** (in-browser client simulation) and **Live Backend** (`/api/benchmark`), preventing cross-contamination of metrics.
 
 ---
 
@@ -115,12 +159,11 @@ flowchart LR
 
 | Layer | Technology |
 | :--- | :--- |
-| Language | Python 3.11+ |
-| Quantum SDK | Qiskit `>=1.0`, Qiskit Aer, Qiskit Runtime |
-| Optimisation | Qiskit Optimization / COBYLA / SPSA |
-| Simulation | AerSimulator (statevector / noisemodel) |
-| Environment | JupyterLab / VS Code, `venv` |
-| Version control | Git + GitHub |
+| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS, Recharts, Lucide Icons |
+| **Backend API** | Python 3.11, FastAPI, Uvicorn, Pydantic |
+| **Quantum SDK** | Qiskit 1.4.6, Qiskit Machine Learning 0.8.2, Qiskit Aer |
+| **Classical ML** | Scikit-Learn 1.5.0, NumPy, Pandas |
+| **Hosting & CI/CD** | Vercel (Frontend Edge SPA), Render (FastAPI Cloud Service), GitHub Actions |
 
 ---
 
@@ -128,185 +171,81 @@ flowchart LR
 
 ```text
 vtu-hc-ctrl-ai/
-├── README.md              # This file
-├── requirements.txt       # Python dependencies
-├── pyproject.toml         # Project metadata (optional)
-├── .gitignore
-├── notebooks/             # Jupyter notebooks for experiments
-│   └── exploration.ipynb
-├── src/
-│   ├── __init__.py
-│   ├── circuit.py         # Quantum circuit construction
-│   ├── optimizer.py       # Optimization loop
-│   └── main.py            # Entry point
-├── data/                  # Datasets (use Git LFS for large files)
-├── tests/                 # Unit tests
-│   └── test_circuit.py
-└── docs/                  # Notes, diagrams, reports
+├── README.md                      # Primary project documentation
+├── package.json                   # Root frontend dependencies & scripts
+├── Dockerfile.frontend            # Container definition for frontend
+├── Dockerfile.backend             # Container definition for backend
+├── docker-compose.yml             # Local multi-service orchestration
+├── docs/
+│   ├── architecture.md            # System architecture details
+│   ├── benchmark_report.md        # Comprehensive empirical benchmark findings
+│   └── quantum_mechanics.md       # ZZFeatureMap & Hilbert space math
+├── backend/                       # Python FastAPI backend service
+│   ├── main.py                    # API endpoints (/health, /api/benchmark, /api/predict)
+│   ├── requirements.txt           # Python dependencies
+│   └── tests/                     # Backend test suite
+├── frontend/                      # React SPA source mirror
+│   ├── README.md                  # Frontend setup guide
+│   └── src/                       # Components, hooks, services, types
+├── q-resilience-ai/               # Hackathon module submission
+│   ├── README.md                  # Submission overview & metrics
+│   └── src/                       # Standalone Python ML modules
+├── src/                           # React SPA source code
+│   ├── components/                # UI Pages (Overview, ScenarioLab, Benchmark, etc.)
+│   └── services/                  # API client & quantum simulation
+└── tests/
+    └── benchmark_validation.test.ts # Automated empirical benchmark test suite
 ```
 
 ---
 
 ## 🚀 How to Run
 
-### Prerequisites
-
-- Python 3.11 or newer
-- [Git](https://git-scm.com/downloads)
-- A GitHub account (you need collaborator access to this repo)
-
-### 1. Clone the repository
-
+### 1. Frontend Development
 ```bash
-git clone https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git
-cd vtu-hc-ctrl-ai
+npm install
+npm run dev
+# Server starts on http://localhost:3000
 ```
 
-### 2. Create a virtual environment
-
+### 2. Backend API
 ```bash
+cd backend
 python3 -m venv .venv
-source .venv/bin/activate        # Linux / macOS
-# .venv\Scripts\activate         # Windows (PowerShell)
-```
-
-### 3. Install dependencies
-
-```bash
-pip install --upgrade pip
+source .venv/bin/activate
 pip install -r requirements.txt
+python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 4. Run
-
+### 3. Run Benchmark Validation Tests
 ```bash
-python -m src.main
+npm run test:validation
 ```
-
-Or launch the notebook workflow:
-
-```bash
-jupyter lab
-```
-
-### 5. Run the tests
-
-```bash
-pytest -q
-```
-
----
-
-## 🔁 How to Push Code
-
-> Full walkthrough: **[Git & Collaboration Handbook](../vtu-hc-guide-git-and-collaboration)** — collaboration
-> workflow, branches, pull requests, reviews and conflict resolution.
-
-### Configure Git (first time only)
-
-```bash
-git config --global user.name  "Your Name"
-git config --global user.email "you@example.com"
-```
-
-### Everyday workflow
-
-```bash
-# 1. Get the latest changes
-git checkout main
-git pull origin main
-
-# 2. Create a branch for your work
-git checkout -b feature/my-task
-
-# 3. Commit your work
-git add .
-git commit -m "feat: add variational circuit for the search problem"
-
-# 4. Push the branch
-git push -u origin feature/my-task
-
-# 5. Open a Pull Request on GitHub and request a review
-#    https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai/compare/main...feature/my-task
-
-# 6. After approval, merge into main
-git checkout main
-git pull origin main
-git branch -d feature/my-task
-```
-
-### Commit message convention
-
-| Prefix | Meaning |
-| :--- | :--- |
-| `feat:` | New feature |
-| `fix:` | Bug fix |
-| `docs:` | Documentation only |
-| `test:` | Adding or fixing tests |
-| `refactor:` | Code restructure, no behaviour change |
-| `chore:` | Build/config/dependency changes |
-
-### Useful commands
-
-```bash
-git status              # what changed
-git log --oneline -10   # recent commits
-git diff                # review changes before committing
-git stash               # shelve changes temporarily
-git pull --rebase       # update your branch on top of main
-```
-
-### Collaborating on the same repo
-
-- **Never push directly to `main`** — open a Pull Request.
-- **Pull before you push** to avoid rejected commits.
-- **Commit often** with clear messages.
-- **Resolve conflicts** locally: `git pull --rebase`, fix the files, then `git add` + `git rebase --continue`.
-- **Ask for a review** before merging — a second pair of eyes catches bugs fast.
 
 ---
 
 ## ✅ Submission Checklist
 
-- [ ] Repository created and **public**
-- [ ] All team members added as **collaborators** and invitations accepted
-- [ ] `README.md` updated with project details, problem statement and solution
-- [ ] Team members listed under [Team Members](#-team-members-github-ids)
-- [ ] `requirements.txt` committed and project runs from a clean clone
-- [ ] Code pushed to `main` and the latest `main` builds successfully
-- [ ] Notebooks committed with **cleared outputs** (or use `nbstrip`)
-- [ ] `README` includes a demo screenshot / video link
-- [ ] Short project summary submitted on the hackathon portal
-
----
-
-## 📚 Resources
-
-| Resource | Link |
-| :--- | :--- |
-| 🔁 Git & collaboration handbook | [Git & Collaboration Handbook](../vtu-hc-guide-git-and-collaboration) |
-| ❓ Problem statements, solutions & terms | [Problem Statements, Solutions & Terms](../vtu-hc-guide-problem-and-solution) |
-| 📄 README writing guide | [README Guide & Template](../vtu-hc-guide-readme-template) |
-| ⚛️ Qiskit documentation | https://docs.quantum.ibm.com/ |
-| ⚛️ Qiskit Runtime & primitives | https://quantum.cloud.ibm.com/docs/ |
-| 🧪 Qiskit Aer simulator | https://docs.quantum.ibm.com/guides/simulator |
-| 💻 IBM Quantum Platform | https://quantum.cloud.ibm.com/ |
-| 🎓 Qiskit textbook | https://qiskit.qotlabs.org/learning/ |
-| 📋 GitHub Docs | https://docs.github.com/ |
+- [x] Repository created and public: [https://github.com/Dhyanpol55/Q-Silience](https://github.com/Dhyanpol55/Q-Silience)
+- [x] Hackathon repository configured: [https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git](https://github.com/vtu-qiskit-fall-fest-2026/vtu-hc-ctrl-ai.git)
+- [x] Live web deployment active: [https://qresilience.vercel.app](https://qresilience.vercel.app)
+- [x] Live backend API active: [https://q-silience.onrender.com](https://q-silience.onrender.com)
+- [x] Video demo link included: [https://youtu.be/HAgrzv3rs3k](https://youtu.be/HAgrzv3rs3k)
+- [x] Accurate empirical benchmark readings documented (100% vs 86.7%, 3.1ms vs 27,012.02ms)
+- [x] Zero unsupported claims of quantum advantage or supremacy
+- [x] Clean unit & validation test suite passing (`npm run test:validation`)
 
 ---
 
 ## 📄 License
 
-Released under the [MIT License](LICENSE). See `LICENSE` for details.
-
----
+Released under the [MIT License](LICENSE).
 
 <div align="center">
 
-**Ctrl_AI** · Team ID `VTU-QFF-HC-0025` · Tier `Both`
-· Built with ⚛️ Qiskit for the VTU-QFF Hackathon
+**Ctrl_AI** · Team ID `VTU-QFF-HC-0025` · Tier `Both`  
+Built with ⚛️ Qiskit for the VTU-Qiskit Fall Fest 2026 Hackathon
 
-[⬆ Back to Top](#ctrl_ai)
+[⬆ Back to Top](#q-resilience-ai-ctrl_ai)
 
 </div>

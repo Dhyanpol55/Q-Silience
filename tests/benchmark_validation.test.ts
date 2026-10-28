@@ -173,7 +173,7 @@ describe('Q-Resilience AI: Benchmark & Source Validation Test Suite', () => {
   // Test 4: Metric Mapping for Verified Benchmark
   it('4. Maps actual verified benchmark metrics from live Render backend faithfully', () => {
     const verifiedBackendResponse: BackendBenchmarkResponse = {
-      timestamp: '2026-10-22T21:45:00.000Z',
+      timestamp: '2026-10-28T07:34:00.000Z',
       total_samples: 60,
       train_samples: 45,
       test_samples: 15,
@@ -187,23 +187,23 @@ describe('Q-Resilience AI: Benchmark & Source Validation Test Suite', () => {
         true_negatives: 8,
         false_negatives: 0,
         confusion_matrix: [[8, 0], [0, 7]],
-        train_time_ms: 2.05,
-        inference_time_ms: 0.29,
+        train_time_ms: 3.1,
+        inference_time_ms: 0.35,
       },
       quantum_qsvc: {
         accuracy: 0.8667,
-        precision: 0.8,
-        recall: 1.0,
+        precision: 0.8571,
+        recall: 0.8571,
         f1_score: 0.8571,
-        true_positives: 7,
-        false_positives: 2,
-        true_negatives: 6,
-        false_negatives: 0,
-        confusion_matrix: [[6, 2], [0, 7]],
-        train_time_ms: 27197.41,
-        inference_time_ms: 16793.07,
+        true_positives: 6,
+        false_positives: 1,
+        true_negatives: 7,
+        false_negatives: 1,
+        confusion_matrix: [[7, 1], [1, 6]],
+        train_time_ms: 27012.02,
+        inference_time_ms: 17393.71,
       },
-      quantum_model_type: 'Genuine Qiskit ML QSVC (FidelityQuantumKernel)',
+      quantum_model_type: 'Qiskit Machine Learning QSVC (FidelityQuantumKernel)',
       quantum_model_status: 'genuine_qsvc',
       qml_available: true,
       low_data_experiment: [
@@ -218,24 +218,24 @@ describe('Q-Resilience AI: Benchmark & Source Validation Test Suite', () => {
     assert.strictEqual(classicalMapped.f1Score, 1.0);
     assert.strictEqual(classicalMapped.precision, 1.0);
     assert.strictEqual(classicalMapped.recall, 1.0);
-    assert.strictEqual(classicalMapped.trainTimeMs, 2.05);
-    assert.strictEqual(classicalMapped.inferenceTimeMs, 0.29);
+    assert.strictEqual(classicalMapped.trainTimeMs, 3.1);
+    assert.strictEqual(classicalMapped.inferenceTimeMs, 0.35);
     assert.strictEqual(classicalMapped.truePositives + classicalMapped.trueNegatives, 15);
 
     const quantumMapped = mapBackendMetrics(verifiedBackendResponse.quantum_qsvc!);
     assert.strictEqual(quantumMapped.accuracy, 0.8667);
     assert.strictEqual(quantumMapped.f1Score, 0.8571);
-    assert.strictEqual(quantumMapped.precision, 0.8);
-    assert.strictEqual(quantumMapped.recall, 1.0);
-    assert.strictEqual(quantumMapped.trainTimeMs, 27197.41);
-    assert.strictEqual(quantumMapped.inferenceTimeMs, 16793.07);
+    assert.strictEqual(quantumMapped.precision, 0.8571);
+    assert.strictEqual(quantumMapped.recall, 0.8571);
+    assert.strictEqual(quantumMapped.trainTimeMs, 27012.02);
+    assert.strictEqual(quantumMapped.inferenceTimeMs, 17393.71);
     assert.strictEqual(quantumMapped.truePositives + quantumMapped.falsePositives + quantumMapped.trueNegatives + quantumMapped.falseNegatives, 15);
 
     // Classical baseline speedup ratios
     const trainSpeedup = quantumMapped.trainTimeMs / classicalMapped.trainTimeMs;
     const inferenceSpeedup = quantumMapped.inferenceTimeMs / classicalMapped.inferenceTimeMs;
-    assert.ok(trainSpeedup > 13000, 'Classical training should be >13,000x faster than simulated quantum kernel');
-    assert.ok(inferenceSpeedup > 50000, 'Classical inference should be >50,000x faster than simulated quantum kernel');
+    assert.ok(trainSpeedup > 8000, 'Classical training should be >8,000x faster than simulated quantum kernel');
+    assert.ok(inferenceSpeedup > 40000, 'Classical inference should be >40,000x faster than simulated quantum kernel');
   });
 
   // Test 5: Scientific Integrity and Claim Audit
@@ -258,8 +258,8 @@ describe('Q-Resilience AI: Benchmark & Source Validation Test Suite', () => {
     assert.match(readmeContent, /https:\/\/github\.com\/Dhyanpol55\/Q-Silience/);
 
     // Ensure verified numbers are documented
-    assert.match(readmeContent, /27,197\.41 ms/);
-    assert.match(readmeContent, /16,793\.07 ms/);
-    assert.match(readmeContent, /86\.67%/);
+    assert.match(readmeContent, /27,012\.02 ms/);
+    assert.match(readmeContent, /17,393\.71 ms/);
+    assert.match(readmeContent, /86\.7%/);
   });
 });

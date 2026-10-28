@@ -200,14 +200,14 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
               <div className="leading-tight">
                 <div className="flex items-center gap-2">
-                  <h1 className="text-base sm:text-lg font-extrabold tracking-tight">
+                  <span className="text-base sm:text-lg font-extrabold tracking-tight">
                     Q-RESILIENCE AI
-                  </h1>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded font-bold bg-cyan-100 text-cyan-900 dark:bg-cyan-500/20 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/30">
+                  </span>
+                  <span className="text-xs font-mono px-2 py-0.5 rounded-md font-bold bg-cyan-100 text-cyan-900 dark:bg-cyan-500/20 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/30">
                     QISKIT
                   </span>
                 </div>
-                <div className="text-[11px] text-slate-600 dark:text-slate-400 font-medium hidden sm:flex items-center gap-1.5">
+                <div className="text-xs text-slate-600 dark:text-slate-400 font-medium hidden sm:flex items-center gap-1.5">
                   <span>Quantum Microgrid Resilience</span>
                   <span aria-hidden="true" className="text-slate-400">
                     ·

@@ -195,12 +195,12 @@ export const BenchmarkPage: React.FC<BenchmarkPageProps> = ({
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className={`text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2.5 ${headingClass}`}>
+          <h2 className={`text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2.5 ${headingClass}`}>
             <div className="w-8 h-8 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200 dark:border-cyan-800 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shadow-2xs">
               <Scale className="w-4.5 h-4.5 stroke-[2.2]" />
             </div>
             <span>Fair Classical vs Quantum Model Benchmark</span>
-          </h1>
+          </h2>
           <p className={`mt-1 text-xs sm:text-sm ${textMutedClass}`}>
             Rigorous evaluation on identical stratified 75/25 splits with train-fitted scalers and zero data leakage.
           </p>

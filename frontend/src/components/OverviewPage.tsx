@@ -266,7 +266,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
       <div className={`scroll-reveal delay-100 p-4 rounded-2xl border flex flex-wrap items-center justify-between gap-4 font-mono text-xs ${cardClass}`}>
         <div className="flex items-center gap-2.5">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-xs shadow-emerald-500/50" />
-          <span className={`font-bold uppercase tracking-wider ${headingClass}`}>Live Telemetry Bus</span>
+          <span className={`font-bold ${headingClass}`}>Live Telemetry Bus</span>
           <span className="text-slate-300 dark:text-slate-700">·</span>
           <span className={textSubtleClass}>IEEE 1547.4 Physical Envelope</span>
         </div>

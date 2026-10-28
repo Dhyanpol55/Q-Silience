@@ -5,10 +5,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-  }
-
-  html.dark {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
@@ -19,11 +16,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-  }
-
-  .dark body, body.dark, html.dark body, html.dark {
-    background-color: #070a12;
-    color: #f8fafc;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -86,10 +78,10 @@
 }
 
 /* Stagger delays for child items */
-.delay-100 { transition-delay: 100ms; }
-.delay-150 { transition-delay: 150ms; }
-.delay-200 { transition-delay: 200ms; }
-.delay-300 { transition-delay: 300ms; }
+.delay-100 { transition-delay: 60ms; }
+.delay-150 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 140ms; }
+.delay-300 { transition-delay: 200ms; }
 
 /* Prefers-reduced-motion compliance */
 @media (prefers-reduced-motion: reduce) {
@@ -97,7 +89,8 @@
     scroll-behavior: auto !important;
   }
 
-  .scroll-reveal {
+  .scroll-reveal,
+  .tab-section {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
@@ -272,41 +265,16 @@
 }
 
 /* -------------------------------------------------------------------------- */
-/* Tab Section Scroll Animations & Scroll Spy Styling                          */
+/* Tab Section High-Performance Layout & Zero-Jank Scroll Spy                  */
 /* -------------------------------------------------------------------------- */
 .tab-section {
-  scroll-margin-top: 5.5rem;
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  scroll-margin-top: 5rem;
+  opacity: 1; /* Keep visible by default so rapid scrolling never drops frames or flashes */
+  transform: none;
 }
 
-.tab-section.section-visible,
-.tab-section.section-active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Staggered entrance for section children */
-.tab-section .section-header-reveal {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
-}
-
-.tab-section .section-content-reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
-}
-
-.tab-section.section-visible .section-header-reveal,
-.tab-section.section-active .section-header-reveal,
-.tab-section.section-visible .section-content-reveal,
-.tab-section.section-active .section-content-reveal {
-  opacity: 1;
-  transform: translateY(0);
+.tab-section.section-targeted {
+  animation: sectionArrivalPulse 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Subtle arrival pulse on targeted section */

@@ -181,16 +181,24 @@ The following are the **actual measured benchmark results** evaluated on the liv
 | **Feature Map** | Classical Gaussian RBF | Qiskit `ZZFeatureMap` (4 qubits, reps=2, linear) |
 | **Backend Environment** | Scikit-Learn 1.5.0 | Qiskit 1.4.6, Qiskit Machine Learning 0.8.2 |
 | **Backend Model Status** | `ready` | `genuine_qsvc` (`qml_available=true`) |
-| **Test Accuracy** | **100.0%** (15 / 15 correct) | **86.67%** (13 / 15 correct) |
-| **Precision** | **1.000** | **0.8000** |
-| **Recall** | **1.000** | **1.0000** |
-| **F1-Score** | **1.000** | **0.8571** |
-| **Training Time** | **2.05 ms** | **27,197.41 ms** (~27.2 seconds) |
-| **Inference Time (15 test samples)** | **0.29 ms** | **16,793.07 ms** (~16.8 seconds) |
+| **Test Accuracy** | **100.0%** (15 / 15 correct) | **86.7%** (13 / 15 correct) |
+| **Precision** | **1.000** | **0.857** |
+| **Recall** | **1.000** | **0.857** |
+| **F1-Score** | **1.000** | **0.857** |
+| **Training Time** | **3.1 ms** | **27,012.02 ms** (~27.0 seconds) |
+| **Inference Time (15 test samples)** | **0.35 ms** | **17,393.71 ms** (~17.4 seconds) |
 
 #### Confusion Matrix (Held-Out Test Set, n=15)
-- **Classical SVC**: `[[8, 0], [0, 7]]` — TN: 8, FP: 0, FN: 0, TP: 7 (100% precision & recall)
-- **Genuine QSVC**: `[[6, 2], [0, 7]]` — TN: 6, FP: 2, FN: 0, TP: 7 (100% fault recall, 2 nominal false alarms)
+- **Classical SVC**: `[[8, 0], [0, 7]]`
+  - True Negatives (Normal): **8**
+  - False Positives (False Alarm): **0**
+  - False Negatives (Missed): **0**
+  - True Positives (Detected): **7**
+- **Genuine QSVC**: `[[7, 1], [1, 6]]`
+  - True Negatives (Normal): **7**
+  - False Positives (False Alarm): **1**
+  - False Negatives (Missed): **1**
+  - True Positives (Detected): **6**
 
 > **Note on Latency & Simulation Metrics:**  
 > Genuine Qiskit Machine Learning `QSVC` with `FidelityQuantumKernel` evaluates $45 \times 45 = 2,025$ transition probability circuits during training and $15 \times 45 = 675$ circuits during batch test inference on Render CPU. The ~1.2s – 1.3s figure occasionally referenced in preliminary presentation slides corresponds to the local in-browser analytical statevector transition matrix calculation over a smaller batch, not full Python Qiskit circuit execution.
@@ -202,14 +210,14 @@ The following are the **actual measured benchmark results** evaluated on the liv
 In compliance with the VTU-Qiskit Fall Fest scientific integrity guidelines:
 
 1. **No Proof of Quantum Advantage**:
-   - The genuine Qiskit QSVC model demonstrates that quantum state embedding and kernel evaluation successfully classify microgrid faults (86.67% accuracy, 0.8571 F1).
-   - However, **the classical RBF SVC baseline achieves higher accuracy (100%) in a fraction of a millisecond (0.29 ms vs 16,793 ms)**.
+   - The genuine Qiskit QSVC model demonstrates that quantum state embedding and kernel evaluation successfully classify microgrid faults (86.7% accuracy, 0.857 F1).
+   - However, **the classical RBF SVC baseline achieves higher accuracy (100%) in a fraction of a millisecond (0.35 ms vs 17,393.71 ms)**.
    - We make **zero claims of quantum supremacy or sample-efficiency advantage** over classical methods on this dataset.
 2. **Synthetic Data Methodology**:
    - The dataset consists of simulated 4-channel telemetry generated via physical equations modeling PV solar irradiance, industrial load surges, battery state-of-charge, and feeder voltage/frequency droop.
    - These are preliminary exploratory results on synthetic benchmarks, **not proof of real-world physical grid deployment**.
 3. **Classical Simulation of Quantum Circuits**:
-   - On the current Render backend, the quantum circuit is simulated classically using Qiskit statevector primitives. Statevector simulation scales exponentially ($O(2^n)$), which explains the ~27s training latency for 45 samples.
+   - On the current Render backend, the quantum circuit is simulated classically using Qiskit statevector primitives. Statevector simulation scales exponentially ($O(2^n)$), which explains the ~27.0s training latency for 45 samples.
    - Physical execution on IBM Quantum hardware would introduce gate noise, decoherence ($T_1, T_2$), and shot-sampling errors requiring error mitigation (ZNE, twirling).
 4. **Data Source Transparency**:
    - The application strictly distinguishes between **Local Demo** calculations (in-browser client simulation) and **Live Backend** metrics fetched from `/api/benchmark`.
